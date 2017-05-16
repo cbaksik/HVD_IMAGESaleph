@@ -1,0 +1,26 @@
+<div>
+ <div class="hvfullsize">
+     <div ng-repeat="item in $ctrl.items track by $index" class="hvbox" ng-mouseEnter="$ctrl.showTooltip($index)" ng-mouseLeave="$ctrl.hideTooltip()">
+            <img class="photo" src="{{item.pnx.links.thumbnail|urlFilter}}" ng-if="item.pnx.links.thumbnail" alt="{{item.pnx.display.title[0]}}"/>
+            <div class="nophoto" ng-if="!item.pnx.links.thumbnail">
+            </div>
+            <div ng-if="$ctrl.tooltip.flag[$index]" class="hvtooltip">{{item.pnx.display.title[0]}}</div>
+     </div>
+ </div>
+ <div class="row">
+     <div class="column" ng-if="$ctrl.searchInfo.totalItems > 10">
+     <md-select ng-model="$ctrl.searchInfo.pageSize" ng-change="$ctrl.changeRow()">
+         <md-option ng-repeat="r in $ctrl.selectRows track by $index" ng-value="r">
+             {{r}}
+         </md-option>
+     </md-select>
+     </div>
+     <div class="column" ng-if="$ctrl.searchInfo.totalItems">
+        {{(($ctrl.searchInfo.currentPage - 1) * $ctrl.searchInfo.pageSize) + 1}} - {{($ctrl.searchInfo.currentPage * $ctrl.searchInfo.pageSize)}} of {{$ctrl.searchInfo.totalItems}}
+     </div>
+     <div class="column" ng-if="$ctrl.searchInfo.totalItems > $ctrl.searchInfo.pageSize">
+     <ul uib-pagination max-size="6" previous-text="Prev" boundary-links="true" direction-links="true" total-items="$ctrl.searchInfo.totalItems" ng-model="$ctrl.searchInfo.currentPage" ng-change="$ctrl.pageChanged()"></ul>
+     </div>
+ </div>
+</div>
+

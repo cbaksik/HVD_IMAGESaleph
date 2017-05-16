@@ -1,71 +1,86 @@
+angular.module('viewCustom')
+    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','$http','prmSearchService', function ($sce, angularLoad, $http, prmSearchService) {
+    // local variables
+    this.tooltip ={'flag':[]};
+    this.showTooltip=function (index) {
+        this.tooltip.flag[index]=true;
+    };
+    this.hideTooltip=function () {
+      for(let i=0; i < this.searchInfo.pageSize; i++) {
+          this.tooltip.flag[i] = false;
+      }
+    };
 
+    this.searchInfo ={'pageSize':10,'totalItems':0,'currentPage':1};
+    let sv=prmSearchService;
 
-app.controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad', function ($sce, angularLoad) {
     let vm = this;
+    this.selectRows = [10,20,30];
+    this.changeRow = function () {
+        this.searchInfo.currentPage=1;
+        this.search();
+    };
+
+    this.search=function () {
+       var params={'addfields':[],'offset':0,'limit':10,'lang':'en_US','inst':'HVD','getMore':0,'pcAvailability':true,'q':'','rtaLinks':true,
+       'sortby':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':''};
+       params.limit=this.searchInfo.pageSize;
+       params.q=vm.parentCtrl.$stateParams.query;
+       params.lang=vm.parentCtrl.$stateParams.lang;
+       params.vid=vm.parentCtrl.$stateParams.vid;
+       params.sortby=vm.parentCtrl.$stateParams.sortby;
+       params.currentPage = this.searchInfo.currentPage;
+       params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
+       params.addfields='vertitle,title,collection,creator,contributor,subject,ispartof,description,relation,publisher,creationdate,format,language,identifier,citation,source';
+
+       vm.parentCtrl.currentPage = params.currentPage;
+       vm.parentCtrl.$stateParams.offset = params.offset;
+       vm.parentCtrl.searchInfo.first = params.offset;
+       vm.parentCtrl.searchInfo.last = this.searchInfo.currentPage * this.searchInfo.pageSize;
+
+        let url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
+
+       sv.getAjax(url,params,'get')
+           .then(function (data) {
+                let mydata = data.data;
+                vm.items = mydata.docs;
+                console.log(data.data);
+           },
+            function (err) {
+               console.log(err);
+            }
+           )
+    };
+
+    this.pageChanged=function () {
+        this.search();
+
+    };
+
     vm.items = vm.parentCtrl.searchResults;
 
-    vm.tiles = buildGridModel({
-        icon : "prm-grid-image-",
-        title: "",
-        background: ""
-    });
 
-    function buildGridModel(tileTmpl){
-        var it, results = [ ];
+    vm.$onInit = function () {
+        vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults, (newVal, oldVal)=>{
+            if(oldVal !== newVal){
+                this.searchInfo.currentPage = vm.parentCtrl.currentPage;
+                this.searchInfo.totalItems = vm.parentCtrl.totalItems;
+                this.searchInfo.pageSize = vm.parentCtrl.itemsPerPage;
 
-        var images = {
-            0 : 'sports',
-            1 : 'abstract',
-            2 : 'animals',
-            3 : 'nature',
-            4 : 'transport',
-            5 : 'cats'
+                console.log('*** searchInfo ***');
+                console.log(vm.parentCtrl);
 
-        }
-        for (var j=0; j<vm.items.length; j++) {
+                vm.items = newVal;
 
-            it = angular.extend({},tileTmpl);
-            it.icon  = it.icon + (images[j % 5 ] || 'food');
-            console.log(vm.items);
-            it.title = vm.items[j].pnx.display.title[0] || '';
-            it.span  = { row : 1, col : 1 };
 
-            switch(j+1) {
-                case 1:
-                    it.background = "red";
-                    it.span.row = it.span.col = 2;
-                    break;
+                console.log('*** vm.items ***');
+                console.log(vm.items);
 
-                case 2: it.background = "green";         break;
-                case 3: it.background = "darkBlue";      break;
-                case 4:
-                    it.background = "blue";
-                    it.span.col = 2;
-                    break;
-
-                case 5:
-                    it.background = "yellow";
-                    it.span.row = it.span.col = 2;
-                    break;
-
-                case 6: it.background = "pink";          break;
-                case 7: it.background = "darkBlue";      break;
-                case 8: it.background = "purple";        break;
-                case 9: it.background = "deepBlue";      break;
-                case 10: it.background = "lightPurple";  break;
-                case 11: it.background = "yellow";       break;
             }
 
-            results.push(it);
-        }
-        return results;
-    }
-   /* vm.$onInit = function () {
-        angularLoad.loadScript('custom/HVD/img/avatar-icons.svg').then(function () {
-            console.log('1111');
-        });
-    }*/
 
+        });
+    }
 
 
 
@@ -73,27 +88,30 @@ app.controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad', fu
 
 }]);
 
+// custom filter
+angular.module('viewCustom').filter('urlFilter',function () {
+
+    return function (url) {
+        var newUrl='';
+        var pattern=/^(\$\$U)/;
+        if(url){
+            newUrl=url[0];
+            if(pattern.test(newUrl)){
+                newUrl = newUrl.substring(3,newUrl.length);
+            }
+        }
+
+        return newUrl;
+    }
+
+});
+
 /*http://dc03kg0084eu.hosted.exlibrisgroup.com:8991/pds*/
 
-app.component('prmSearchResultListAfter', {
+angular.module('viewCustom')
+    .component('prmSearchResultListAfter', {
     bindings: {parentCtrl: '<'},
     controller: 'prmSearchResultListAfterController',
-    template: `<div class="gridListdemoDynamicTiles" flex ng-cloak>
-  <md-grid-list
-        md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6"
-        md-row-height-gt-md="1:1" md-row-height="4:3"
-        md-gutter="8px" md-gutter-gt-sm="4px" >
-
-    <md-grid-tile ng-repeat="tile in $ctrl.tiles"
-                  md-rowspan="{{tile.span.row}}"
-                  md-colspan="{{tile.span.col}}"
-                  md-colspan-sm="1"
-                  md-colspan-xs="1"
-                  ng-class="tile.background" >
-                  
-      <div class="prm-grid-image {{tile.icon}}"></div>
-      <md-grid-tile-footer><h3>{{tile.title}}</h3></md-grid-tile-footer>
-    </md-grid-tile>
-  </md-grid-list>
-</div>`
+    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/prm-search-results.html'
 });
+
