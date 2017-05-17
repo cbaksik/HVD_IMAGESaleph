@@ -12,9 +12,21 @@
   border:1px solid #c3c3c3;
   width:200px;
   height:200px;
-  overflow: hidden;
   color:#000000;
   box-shadow:2px 2px 2px #666666;
+}
+
+.hvbox > .photoBox {
+  display: inline-flex;
+  overflow: hidden;
+  height:150px;
+  width:150px;
+  background:#ffffff;
+  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .hvbox:hover {
@@ -27,23 +39,11 @@
 .photo {
   width: auto;
   height:150px;
-  margin: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .nophoto {
-  background: #ffffff;
-  width:150px;
+  width:auto;
   height:150px;
-  color:#000000;
-  margin: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 ul.pagination {

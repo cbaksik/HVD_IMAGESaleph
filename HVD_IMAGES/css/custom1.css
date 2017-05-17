@@ -662,6 +662,16 @@ div.hollis-logo a:hover {
 	box-shadow: inset 0 -1px 0 0 #fff;
 }
 	
+.full-view-section.loc-altemtrics{
+    background-color:#f3f3f3;
+    margin-top:0px;
+    padding-left: 3em;
+}
+
+.bigPhoto {
+    height: auto;
+    width:100%;
+}
 
 .hvfullsize {
   width: 100%;
@@ -676,9 +686,21 @@ div.hollis-logo a:hover {
   border:1px solid #c3c3c3;
   width:200px;
   height:200px;
-  overflow: hidden;
   color:#000000;
   box-shadow:2px 2px 2px #666666;
+}
+
+.hvbox > .photoBox {
+  display: inline-flex;
+  overflow: hidden;
+  height:150px;
+  width:150px;
+  background:#ffffff;
+  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .hvbox:hover {
@@ -691,23 +713,11 @@ div.hollis-logo a:hover {
 .photo {
   width: auto;
   height:150px;
-  margin: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 .nophoto {
-  background: #ffffff;
-  width:150px;
+  width:auto;
   height:150px;
-  color:#000000;
-  margin: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
 ul.pagination {

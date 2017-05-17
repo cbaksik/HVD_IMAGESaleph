@@ -4,7 +4,44 @@
 
 angular.module('viewCustom', ['angularLoad', 'ui.bootstrap']);
 
-angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', '$http', 'prmSearchService', function ($sce, angularLoad, $http, prmSearchService) {
+/**
+ * Created by samsan on 5/17/17.
+ */
+angular.module('viewCustom').controller('FullViewAfterController', ['$sce', 'angularLoad', '$http', 'prmSearchService', '$window', function ($sce, angularLoad, $http, prmSearchService, $window) {
+  // local variables
+
+  var vm = this;
+  this.item = vm.parentCtrl.item;
+
+  console.log('*** full view after ***');
+  console.log(vm.parentCtrl);
+
+  vm.$onInit = function () {
+    vm.parentCtrl.$scope.$watch(function () {
+      return vm.parentCtrl.searchResults;
+    }, function (newVal, oldVal) {
+
+      console.log('*** searchInfo ***');
+      console.log(vm.parentCtrl);
+
+      if (oldVal !== newVal) {
+
+        console.log('*** searchInfo ***');
+        console.log(vm.parentCtrl);
+
+        vm.items = newVal;
+      }
+    });
+  };
+}]);
+
+angular.module('viewCustom').component('prmFullViewAfter', {
+  bindings: { parentCtrl: '<' },
+  controller: 'FullViewAfterController',
+  templateUrl: '/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
+});
+
+angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', '$http', 'prmSearchService', '$window', function ($sce, angularLoad, $http, prmSearchService, $window) {
   // local variables
   this.tooltip = { 'flag': [] };
   this.showTooltip = function (index) {
@@ -20,9 +57,13 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
   var sv = prmSearchService;
 
   var vm = this;
+  vm.progress = { 'flag': false, 'val': 30 };
+
   this.selectRows = [10, 20, 30];
   this.changeRow = function () {
+    console.log(this.searchInfo.pageSize);
     this.searchInfo.currentPage = 1;
+    vm.parentCtrl.searchInfo.maxTotal = this.searchInfo.pageSize;
     this.search();
   };
 
@@ -67,9 +108,11 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
       return vm.parentCtrl.searchResults;
     }, function (newVal, oldVal) {
       if (oldVal !== newVal) {
-        _this.searchInfo.currentPage = vm.parentCtrl.currentPage;
-        _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
         _this.searchInfo.pageSize = vm.parentCtrl.itemsPerPage;
+        if (vm.parentCtrl.searchInfo) {
+          _this.searchInfo.currentPage = parseInt(vm.parentCtrl.searchInfo.last / _this.searchInfo.pageSize);
+        }
+        _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
 
         console.log('*** searchInfo ***');
         console.log(vm.parentCtrl);
@@ -78,8 +121,27 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
         console.log('*** vm.items ***');
         console.log(vm.items);
+
+        console.log('*** searchInfo ***');
+        console.log(_this.searchInfo);
       }
     });
+  };
+
+  this.openDialog = function (item) {
+    console.log(item);
+    vm.parentCtrl.PAGE_SIZE = this.searchInfo.pageSize;
+    vm.parentCtrl.currentPage = this.searchInfo.currentPage;
+    vm.parentCtrl.searchInfo.maxTotal = this.searchInfo.pageSize;
+
+    console.log('*** searchInfo ***');
+    console.log(vm.parentCtrl);
+
+    var offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
+    var url = '/primo-explore/fulldisplay?docid=' + item.pnx.control.recordid[0] + '&adaptor=' + item.adaptor + '&context=' + item.context + '&lang=' + vm.parentCtrl.$stateParams.lang + '&query=' + vm.parentCtrl.$stateParams.query + '&sortby=' + vm.parentCtrl.$stateParams.sortby + '&tab=' + vm.parentCtrl.$stateParams.tab + '&search_scope=' + vm.parentCtrl.$stateParams.search_scope + '&offset=' + offset + '&vid=' + vm.parentCtrl.$stateParams.vid + '&limit=' + this.searchInfo.pageSize + '&currentPage=' + this.searchInfo.currentPage + '&itemsPerPage=' + this.searchInfo.pageSize;
+
+    console.log(url);
+    $window.location.href = url;
   };
 }]);
 

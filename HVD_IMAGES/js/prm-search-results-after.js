@@ -1,7 +1,7 @@
 angular.module('viewCustom')
-    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','$http','prmSearchService', function ($sce, angularLoad, $http, prmSearchService) {
+    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','$http','prmSearchService','$window', function ($sce, angularLoad, $http, prmSearchService, $window) {
     // local variables
-    this.tooltip ={'flag':[]};
+    this.tooltip = {'flag':[]};
     this.showTooltip=function (index) {
         this.tooltip.flag[index]=true;
     };
@@ -15,9 +15,13 @@ angular.module('viewCustom')
     let sv=prmSearchService;
 
     let vm = this;
+    vm.progress = {'flag':false,'val':30};
+
     this.selectRows = [10,20,30];
     this.changeRow = function () {
+        console.log(this.searchInfo.pageSize);
         this.searchInfo.currentPage=1;
+        vm.parentCtrl.searchInfo.maxTotal = this.searchInfo.pageSize;
         this.search();
     };
 
@@ -63,9 +67,11 @@ angular.module('viewCustom')
     vm.$onInit = function () {
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults, (newVal, oldVal)=>{
             if(oldVal !== newVal){
-                this.searchInfo.currentPage = vm.parentCtrl.currentPage;
-                this.searchInfo.totalItems = vm.parentCtrl.totalItems;
                 this.searchInfo.pageSize = vm.parentCtrl.itemsPerPage;
+                if(vm.parentCtrl.searchInfo) {
+                    this.searchInfo.currentPage = parseInt(vm.parentCtrl.searchInfo.last / this.searchInfo.pageSize);
+                }
+                this.searchInfo.totalItems = vm.parentCtrl.totalItems;
 
                 console.log('*** searchInfo ***');
                 console.log(vm.parentCtrl);
@@ -76,15 +82,33 @@ angular.module('viewCustom')
                 console.log('*** vm.items ***');
                 console.log(vm.items);
 
+                console.log('*** searchInfo ***');
+                console.log(this.searchInfo);
+
             }
 
 
         });
+    };
+
+    this.openDialog=function (item) {
+        console.log(item);
+        vm.parentCtrl.PAGE_SIZE=this.searchInfo.pageSize;
+        vm.parentCtrl.currentPage=this.searchInfo.currentPage;
+        vm.parentCtrl.searchInfo.maxTotal = this.searchInfo.pageSize;
+
+        console.log('*** searchInfo ***');
+        console.log(vm.parentCtrl);
+
+        let offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
+        let url='/primo-explore/fulldisplay?docid='+item.pnx.control.recordid[0]+'&adaptor='+
+        item.adaptor+'&context='+item.context+'&lang='+vm.parentCtrl.$stateParams.lang+'&query='+vm.parentCtrl.$stateParams.query+
+        '&sortby='+vm.parentCtrl.$stateParams.sortby+'&tab='+vm.parentCtrl.$stateParams.tab+'&search_scope='+vm.parentCtrl.$stateParams.search_scope+
+        '&offset='+offset+'&vid='+vm.parentCtrl.$stateParams.vid +'&limit='+this.searchInfo.pageSize+'&currentPage='+this.searchInfo.currentPage +'&itemsPerPage='+this.searchInfo.pageSize;
+
+        console.log(url);
+        $window.location.href=url;
     }
-
-
-
-
 
 }]);
 

@@ -1,10 +1,18 @@
-<div>
+<md-content layout-padding  ng-cloak>
  <div class="hvfullsize">
+     <md-progress-linear class="header-progress-bar animation-scale-up-down" md-mode="indeterminate" ng-show="prmSearch.searchInProgress">
+     </md-progress-linear>
+
      <div ng-repeat="item in $ctrl.items track by $index" class="hvbox" ng-mouseEnter="$ctrl.showTooltip($index)" ng-mouseLeave="$ctrl.hideTooltip()">
-            <img class="photo" src="{{item.pnx.links.thumbnail|urlFilter}}" ng-if="item.pnx.links.thumbnail" alt="{{item.pnx.display.title[0]}}"/>
-            <div class="nophoto" ng-if="!item.pnx.links.thumbnail">
-            </div>
-            <div ng-if="$ctrl.tooltip.flag[$index]" class="hvtooltip">{{item.pnx.display.title[0]}}</div>
+
+         <div class="photoBox">
+             <a title="{{item.pnx.display.title[0]}}" ng-click="$ctrl.openDialog(item)">
+                 <img class="photo" src="{{item.pnx.links.thumbnail|urlFilter}}" ng-if="item.pnx.links.thumbnail" alt="{{item.pnx.display.title[0]}}"/>
+                 <img src="img/icon_image.png" class="photo" ng-if="!item.pnx.links.thumbnail"  alt="{{item.pnx.display.title[0]}}"/>
+             </a>
+         </div>
+
+         <div ng-click="$ctrl.openDialog(item)" ng-if="$ctrl.tooltip.flag[$index]" class="hvtooltip">{{item.pnx.display.title[0]}}</div>
      </div>
  </div>
  <div class="row">
@@ -22,5 +30,5 @@
      <ul uib-pagination max-size="6" previous-text="Prev" boundary-links="true" direction-links="true" total-items="$ctrl.searchInfo.totalItems" ng-model="$ctrl.searchInfo.currentPage" ng-change="$ctrl.pageChanged()"></ul>
      </div>
  </div>
-</div>
+</md-content>
 
