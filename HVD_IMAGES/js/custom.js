@@ -44,29 +44,46 @@ angular.module('viewCustom').component('prmFullViewAfter', {
 angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', '$http', 'prmSearchService', '$window', function ($sce, angularLoad, $http, prmSearchService, $window) {
   // local variables
   this.tooltip = { 'flag': [] };
+  // show tooltip function when mouse over
   this.showTooltip = function (index) {
     this.tooltip.flag[index] = true;
   };
+  // hide tooltip function when mouse out
   this.hideTooltip = function () {
     for (var i = 0; i < this.searchInfo.pageSize; i++) {
       this.tooltip.flag[i] = false;
     }
   };
 
-  this.searchInfo = { 'pageSize': 10, 'totalItems': 0, 'currentPage': 1 };
   var sv = prmSearchService;
+  this.searchInfo = sv.getPage(); // get page info object
 
   var vm = this;
-  vm.progress = { 'flag': false, 'val': 30 };
 
+  // set up page counter
+  vm.pageCounter = { 'min': 0, 'max': 0 };
+  this.findPageCounter = function () {
+    vm.pageCounter.min = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize + 1;
+
+    if (vm.pageCounter.min > this.searchInfo.totalItems) {
+      vm.pageCounter.min = this.searchInfo.totalItems;
+    }
+    vm.pageCounter.max = this.searchInfo.currentPage * this.searchInfo.pageSize;
+    if (vm.pageCounter.max > this.searchInfo.totalItems) {
+      vm.pageCounter.max = this.searchInfo.totalItems;
+    }
+  };
+  // numbers of row per page when a user select the drop down menu
   this.selectRows = [10, 20, 30];
+  // when a user select numbers of row per page, it call the search function again
   this.changeRow = function () {
-    console.log(this.searchInfo.pageSize);
-    this.searchInfo.currentPage = 1;
-    vm.parentCtrl.searchInfo.maxTotal = this.searchInfo.pageSize;
+    this.searchInfo.currentPage = 1; // reset the current page to 1
+    sv.setPage(this.searchInfo); // keep track user select row from the drop down menu
     this.search();
+    this.findPageCounter();
   };
 
+  // when a user click on next page or select new row from the drop down, it call this search function to get new data
   this.search = function () {
     var params = { 'addfields': [], 'offset': 0, 'limit': 10, 'lang': 'en_US', 'inst': 'HVD', 'getMore': 0, 'pcAvailability': true, 'q': '', 'rtaLinks': true,
       'sortby': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '' };
@@ -77,50 +94,85 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     params.sortby = vm.parentCtrl.$stateParams.sortby;
     params.currentPage = this.searchInfo.currentPage;
     params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
-    params.addfields = 'vertitle,title,collection,creator,contributor,subject,ispartof,description,relation,publisher,creationdate,format,language,identifier,citation,source';
+    params.bulkSize = this.searchInfo.pageSize;
+    params.to = this.searchInfo.pageSize * this.searchInfo.currentPage;
+    params.newSearch = true;
+    params.searchInProgress = true;
+    //params.addfields='vertitle,title,collection,creator,contributor,subject,ispartof,description,relation,publisher,creationdate,format,language,identifier,citation,source';
 
     vm.parentCtrl.currentPage = params.currentPage;
     vm.parentCtrl.$stateParams.offset = params.offset;
     vm.parentCtrl.searchInfo.first = params.offset;
     vm.parentCtrl.searchInfo.last = this.searchInfo.currentPage * this.searchInfo.pageSize;
+    // start ajax loader progress bar
+    vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = true;
+    vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = true;
 
+    // get the current search rest url
     var url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
 
     sv.getAjax(url, params, 'get').then(function (data) {
       var mydata = data.data;
       vm.items = mydata.docs;
-      console.log(data.data);
+      console.log(mydata);
+      // stop the ajax loader progress bar
+      vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
+      vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = false;
     }, function (err) {
       console.log(err);
+      vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
+      vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = false;
     });
   };
 
-  this.pageChanged = function () {
+  // when a user click on next page or prev page, it call this function.
+  this.pageChanged = function (currentPage) {
+    this.searchInfo.currentPage = currentPage;
+    sv.setPage(this.searchInfo); // keep track a user click on each current page
     this.search();
+    this.findPageCounter();
   };
 
-  vm.items = vm.parentCtrl.searchResults;
+  vm.items = [];
 
   vm.$onInit = function () {
     var _this = this;
+
+    this.searchInfo = sv.getPage(); // get page info object
+    vm.parentCtrl.$scope.$watch(function () {
+      return vm.parentCtrl.searchString;
+    }, function (newVal, oldVal) {
+      if (vm.parentCtrl.searchString !== _this.searchInfo.searchString) {
+        _this.searchInfo.currentPage = 1;
+      }
+    });
 
     vm.parentCtrl.$scope.$watch(function () {
       return vm.parentCtrl.searchResults;
     }, function (newVal, oldVal) {
       if (oldVal !== newVal) {
-        _this.searchInfo.pageSize = vm.parentCtrl.itemsPerPage;
-        if (vm.parentCtrl.searchInfo) {
-          _this.searchInfo.currentPage = parseInt(vm.parentCtrl.searchInfo.last / _this.searchInfo.pageSize);
-        }
+
         _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
 
-        console.log('*** searchInfo ***');
+        console.log('*** searchService ***');
         console.log(vm.parentCtrl);
 
-        vm.items = newVal;
+        if (vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === '') {
+          vm.items = newVal;
+        } else if (vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === vm.parentCtrl.$stateParams.query) {
+          vm.items = newVal;
+        } else {
+          _this.search();
+        }
 
-        console.log('*** vm.items ***');
-        console.log(vm.items);
+        _this.findPageCounter();
+
+        _this.searchInfo.query = vm.parentCtrl.$stateParams.query;
+        _this.searchInfo.searchString = vm.parentCtrl.searchString;
+        sv.setPage(_this.searchInfo);
+
+        console.log('*** searchObject ***');
+        console.log(vm.parentCtrl.searchService.searchStateService.searchObject);
 
         console.log('*** searchInfo ***');
         console.log(_this.searchInfo);
@@ -145,7 +197,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
   };
 }]);
 
-// custom filter
+// custom filter to remove $$U infront of url in pnx.links
 angular.module('viewCustom').filter('urlFilter', function () {
 
   return function (url) {
@@ -174,9 +226,10 @@ angular.module('viewCustom').component('prmSearchResultListAfter', {
  * Created by samsan on 5/12/17.
  */
 
-angular.module('viewCustom').service('prmSearchService', ['$http', '$q', function ($http, $q) {
+angular.module('viewCustom').service('prmSearchService', ['$http', '$window', function ($http, $window) {
   var serviceObj = {};
 
+  //http ajax service, pass in URL, parameters, method. The method can be get, post, put, delete
   serviceObj.getAjax = function (url, param, methodType) {
     return $http({
       'method': methodType,
@@ -185,8 +238,26 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$q', functio
     });
   };
 
-  serviceObj.get = function () {
-    return 'hello world';
+  // default page info
+  serviceObj.page = { 'pageSize': 10, 'totalItems': 0, 'currentPage': 1, 'query': '', 'searchString': '' };
+  // getter for page info
+  serviceObj.getPage = function () {
+    // localStorage page info exist, just use the old one
+    if ($window.localStorage.getItem('pageInfo')) {
+      return JSON.parse($window.localStorage.getItem('pageInfo'));
+    } else {
+      return serviceObj.page;
+    }
+  };
+
+  // setter for page info
+  serviceObj.setPage = function (pageInfo) {
+    // store page info on client browser by using html 5 local storage
+    if ($window.localStorage.getItem('pageInfo')) {
+      $window.localStorage.removeItem('pageInfo');
+    }
+    $window.localStorage.setItem('pageInfo', JSON.stringify(pageInfo));
+    serviceObj.page = pageInfo;
   };
 
   return serviceObj;

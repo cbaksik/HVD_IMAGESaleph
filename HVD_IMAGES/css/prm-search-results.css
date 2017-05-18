@@ -64,9 +64,21 @@ ul.pagination > li:hover {
   background:#efefef;
 }
 
-ul.pagination > li.active {
-  background:#ffffff;
+ul.pagination > li.active  {
+  background:#efefef;
   cursor: none;
+}
+
+ul.pagination > li.active > a {
+  color:#ff0000;
+  cursor: none;
+  text-decoration: none;
+}
+
+ul.pagination > li > a.active:hover {
+  color:#ff0000;
+  cursor: none;
+  text-decoration: none;
 }
 
 .row > .column {
@@ -87,4 +99,12 @@ ul.pagination > li.active {
   border:1px solid #c3c3c3;
   border-radius:5px;
   text-align: left;
+}
+
+body {
+  background: #ffffff !important;
+}
+
+.main {
+  background: #ffffff !important;
 }

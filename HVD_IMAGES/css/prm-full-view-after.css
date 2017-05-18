@@ -1,10 +1,11 @@
 .full-view-section.loc-altemtrics{
     background-color:#f3f3f3;
     margin-top:0px;
-    padding-left: 3em;
+    padding-left: 10px;
+    width:inherit;
+    overflow-x: auto;
 }
 
 .bigPhoto {
-    height: auto;
-    width:100%;
+    
 }

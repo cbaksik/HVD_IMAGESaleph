@@ -1,18 +1,11 @@
 <md-content layout-padding  ng-cloak>
  <div class="hvfullsize">
-     <md-progress-linear class="header-progress-bar animation-scale-up-down" md-mode="indeterminate" ng-show="prmSearch.searchInProgress">
-     </md-progress-linear>
-
-     <div ng-repeat="item in $ctrl.items track by $index" class="hvbox" ng-mouseEnter="$ctrl.showTooltip($index)" ng-mouseLeave="$ctrl.hideTooltip()">
-
+     <div ng-repeat="item in $ctrl.items track by $index" class="hvbox" ng-mouseEnter="$ctrl.showTooltip($index)" ng-mouseLeave="$ctrl.hideTooltip()" ng-click="$ctrl.openDialog(item)">
          <div class="photoBox">
-             <a title="{{item.pnx.display.title[0]}}" ng-click="$ctrl.openDialog(item)">
-                 <img class="photo" src="{{item.pnx.links.thumbnail|urlFilter}}" ng-if="item.pnx.links.thumbnail" alt="{{item.pnx.display.title[0]}}"/>
-                 <img src="img/icon_image.png" class="photo" ng-if="!item.pnx.links.thumbnail"  alt="{{item.pnx.display.title[0]}}"/>
-             </a>
+             <img class="photo" src="{{item.pnx.links.thumbnail|urlFilter}}" ng-if="item.pnx.links.thumbnail" alt="{{item.pnx.display.title[0]}}"/>
+             <img src="img/icon_image.png" class="photo" ng-if="!item.pnx.links.thumbnail"  alt="{{item.pnx.display.title[0]}}"/>
          </div>
-
-         <div ng-click="$ctrl.openDialog(item)" ng-if="$ctrl.tooltip.flag[$index]" class="hvtooltip">{{item.pnx.display.title[0]}}</div>
+         <div ng-if="$ctrl.tooltip.flag[$index]" class="hvtooltip">{{item.pnx.display.title[0]}}</div>
      </div>
  </div>
  <div class="row">
@@ -24,10 +17,10 @@
      </md-select>
      </div>
      <div class="column" ng-if="$ctrl.searchInfo.totalItems">
-        {{(($ctrl.searchInfo.currentPage - 1) * $ctrl.searchInfo.pageSize) + 1}} - {{($ctrl.searchInfo.currentPage * $ctrl.searchInfo.pageSize)}} of {{$ctrl.searchInfo.totalItems}}
+        {{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}
      </div>
      <div class="column" ng-if="$ctrl.searchInfo.totalItems > $ctrl.searchInfo.pageSize">
-     <ul uib-pagination max-size="6" previous-text="Prev" boundary-links="true" direction-links="true" total-items="$ctrl.searchInfo.totalItems" ng-model="$ctrl.searchInfo.currentPage" ng-change="$ctrl.pageChanged()"></ul>
+     <ul uib-pagination max-size="7" items-per-page="$ctrl.searchInfo.pageSize" previous-text="Prev" boundary-links="true" direction-links="true" total-items="$ctrl.searchInfo.totalItems" ng-model="$ctrl.searchInfo.currentPage" ng-change="$ctrl.pageChanged($ctrl.searchInfo.currentPage)"></ul>
      </div>
  </div>
 </md-content>
