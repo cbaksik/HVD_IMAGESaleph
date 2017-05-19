@@ -185,9 +185,12 @@ angular.module('viewCustom').filter('countFilter',function () {
         var pattern=/[\[\]]+/g;
         if(qty){
             nums=qty.replace(pattern,'');
-            nums=nums.split('');
+            nums=nums.split(' ');
             if(nums.length > 0){
-                nums=nums[0];
+                nums=parseInt(nums[0]);
+                if(isNaN(nums)) {
+                    nums='';
+                }
             }
         }
 
