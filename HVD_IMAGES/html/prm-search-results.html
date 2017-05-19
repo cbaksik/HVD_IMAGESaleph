@@ -1,8 +1,11 @@
 <md-content layout-padding  ng-cloak>
  <div class="hvfullsize">
      <div ng-repeat="item in $ctrl.items track by $index" class="hvbox" ng-mouseEnter="$ctrl.showTooltip($index)" ng-mouseLeave="$ctrl.hideTooltip()" ng-click="$ctrl.openDialog(item)">
+         <div class="text-right" ng-if="item.pnx.display.lds28">
+            <div class="badge">{{item.pnx.display.lds28[0]|countFilter}}</div>
+         </div>
          <div class="photoBox">
-             <img class="photo" src="{{item.pnx.links.thumbnail|urlFilter}}" ng-if="item.pnx.links.thumbnail" alt="{{item.pnx.display.title[0]}}"/>
+             <img class="photo" ng-if="item.pnx.links.thumbnail"  src="{{item.pnx.links.thumbnail|urlFilter}}" alt="{{item.pnx.display.title[0]}}"/>
              <img src="img/icon_image.png" class="photo" ng-if="!item.pnx.links.thumbnail"  alt="{{item.pnx.display.title[0]}}"/>
          </div>
          <div ng-if="$ctrl.tooltip.flag[$index]" class="hvtooltip">{{item.pnx.display.title[0]}}</div>

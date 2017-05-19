@@ -108,3 +108,25 @@ body {
 .main {
   background: #ffffff !important;
 }
+
+.disabled > a {
+  color:#efefef;
+}
+
+.disabled > a:hover {
+  background: transparent;
+  cursor: none;
+}
+
+ul.pagination > li > .disabled  {
+  background: transparent;
+}
+
+.text-right {
+  position: absolute;
+  float: right;
+}
+
+.badge {display:block; width:20px; height:20px; border-radius:10px; background:#efefef; color:#0c640c;
+  text-align: center; border:1px solid #c3c3c3; position: absolute; top: -8px;
+  right: -13px; left:185px;}

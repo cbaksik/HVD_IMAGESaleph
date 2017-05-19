@@ -107,6 +107,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     // start ajax loader progress bar
     vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = true;
     vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = true;
+    vm.parentCtrl.searchService.searchStateService.searchObject.offset = params.offset;
 
     // get the current search rest url
     var url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
@@ -114,6 +115,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     sv.getAjax(url, params, 'get').then(function (data) {
       var mydata = data.data;
       vm.items = mydata.docs;
+      console.log('*** data from ajax call ***');
       console.log(mydata);
       // stop the ajax loader progress bar
       vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
@@ -143,6 +145,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
       return vm.parentCtrl.searchString;
     }, function (newVal, oldVal) {
       if (vm.parentCtrl.searchString !== _this.searchInfo.searchString) {
+        _this.searchInfo.totalItems = 0;
         _this.searchInfo.currentPage = 1;
       }
     });
@@ -154,12 +157,9 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
         _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
 
-        console.log('*** searchService ***');
-        console.log(vm.parentCtrl);
-
-        if (vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === '') {
+        if (vm.parentCtrl.currentPage === _this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === '' && newVal) {
           vm.items = newVal;
-        } else if (vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === vm.parentCtrl.$stateParams.query) {
+        } else if (vm.parentCtrl.currentPage === _this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === vm.parentCtrl.$stateParams.query && newVal) {
           vm.items = newVal;
         } else {
           _this.search();
@@ -199,7 +199,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
 // custom filter to remove $$U infront of url in pnx.links
 angular.module('viewCustom').filter('urlFilter', function () {
-
   return function (url) {
     var newUrl = '';
     var pattern = /^(\$\$U)/;
@@ -211,6 +210,23 @@ angular.module('viewCustom').filter('urlFilter', function () {
     }
 
     return newUrl;
+  };
+});
+
+// extract [6 images] from pnx.display.lds28 field
+angular.module('viewCustom').filter('countFilter', function () {
+  return function (qty) {
+    var nums = '';
+    var pattern = /[\[\]]+/g;
+    if (qty) {
+      nums = qty.replace(pattern, '');
+      nums = nums.split('');
+      if (nums.length > 0) {
+        nums = nums[0];
+      }
+    }
+
+    return nums;
   };
 });
 

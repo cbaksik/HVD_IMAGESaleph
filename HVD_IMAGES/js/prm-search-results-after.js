@@ -58,7 +58,7 @@ angular.module('viewCustom')
        params.newSearch = true;
        params.searchInProgress = true;
        //params.addfields='vertitle,title,collection,creator,contributor,subject,ispartof,description,relation,publisher,creationdate,format,language,identifier,citation,source';
-
+        
        vm.parentCtrl.currentPage = params.currentPage;
        vm.parentCtrl.$stateParams.offset = params.offset;
        vm.parentCtrl.searchInfo.first = params.offset;
@@ -66,6 +66,8 @@ angular.module('viewCustom')
        // start ajax loader progress bar
        vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=true;
        vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=true;
+        vm.parentCtrl.searchService.searchStateService.searchObject.offset=params.offset;
+
 
        // get the current search rest url
        let url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
@@ -74,6 +76,7 @@ angular.module('viewCustom')
            .then(function (data) {
                 let mydata = data.data;
                 vm.items = mydata.docs;
+                console.log('*** data from ajax call ***');
                 console.log(mydata);
                 // stop the ajax loader progress bar
                 vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=false;
@@ -102,6 +105,7 @@ angular.module('viewCustom')
         this.searchInfo = sv.getPage(); // get page info object
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchString,(newVal, oldVal)=>{
             if(vm.parentCtrl.searchString !== this.searchInfo.searchString){
+                this.searchInfo.totalItems = 0;
                 this.searchInfo.currentPage = 1;
             }
         });
@@ -111,12 +115,9 @@ angular.module('viewCustom')
 
                 this.searchInfo.totalItems = vm.parentCtrl.totalItems;
 
-                console.log('*** searchService ***');
-                console.log(vm.parentCtrl);
-
-                if(vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query==='') {
+                if(vm.parentCtrl.currentPage===this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query==='' && newVal) {
                     vm.items = newVal;
-                } else if(vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query === vm.parentCtrl.$stateParams.query) {
+                } else if(vm.parentCtrl.currentPage===this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query === vm.parentCtrl.$stateParams.query && newVal) {
                     vm.items = newVal;
                 } else {
                     this.search();
@@ -162,7 +163,6 @@ angular.module('viewCustom')
 
 // custom filter to remove $$U infront of url in pnx.links
 angular.module('viewCustom').filter('urlFilter',function () {
-
     return function (url) {
         var newUrl='';
         var pattern=/^(\$\$U)/;
@@ -174,6 +174,24 @@ angular.module('viewCustom').filter('urlFilter',function () {
         }
 
         return newUrl;
+    }
+
+});
+
+// extract [6 images] from pnx.display.lds28 field
+angular.module('viewCustom').filter('countFilter',function () {
+    return function (qty) {
+        var nums='';
+        var pattern=/[\[\]]+/g;
+        if(qty){
+            nums=qty.replace(pattern,'');
+            nums=nums.split('');
+            if(nums.length > 0){
+                nums=nums[0];
+            }
+        }
+
+        return nums;
     }
 
 });
