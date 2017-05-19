@@ -6,27 +6,22 @@
 
 .hvbox {
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   margin-top:20px;
-  margin-right:20px;
-  border:1px solid #c3c3c3;
-  width:200px;
-  height:200px;
   color:#000000;
-  box-shadow:2px 2px 2px #666666;
+  width:auto;
+  height:auto;
+  top:0px;
+  padding-right:20px;
+  background:#c3c3c3;
 }
 
 .hvbox > .photoBox {
   display: inline-flex;
   overflow: hidden;
   height:150px;
-  width:150px;
-  background:#ffffff;
-  margin: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  width:auto;
+  vertical-align: top;
 }
 
 .hvbox:hover {
@@ -37,13 +32,19 @@
 }
 
 .photo {
+  display:block;
   width: auto;
-  height:150px;
+  height:auto;
 }
 
 .nophoto {
-  width:auto;
+  display: block;
+  width:150px;
   height:150px;
+  text-align: center;
+  background:#efefef;
+  border:1px solid #c3c3c3;
+  line-height:150px;
 }
 
 ul.pagination {
@@ -123,10 +124,11 @@ ul.pagination > li > .disabled  {
 }
 
 .text-right {
-  position: absolute;
-  float: right;
+  text-align: left;
 }
 
-.badge {display:block; width:20px; height:20px; border-radius:10px; background:#efefef; color:#0c640c;
-  text-align: center; border:1px solid #c3c3c3; position: absolute; top: -8px;
-  right: -13px; left:185px;}
+.badge {color: #3a3a3a; padding:5px; position: absolute; float: right;}
+
+.hvInline {list-style: none; }
+
+.hvInline > li { display: inline-block;}

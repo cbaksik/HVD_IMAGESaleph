@@ -74,7 +74,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     }
   };
   // numbers of row per page when a user select the drop down menu
-  this.selectRows = [10, 20, 30];
+  this.selectRows = [10, 20, 30, 40, 50];
   // when a user select numbers of row per page, it call the search function again
   this.changeRow = function () {
     this.searchInfo.currentPage = 1; // reset the current page to 1
@@ -220,13 +220,6 @@ angular.module('viewCustom').filter('countFilter', function () {
     var pattern = /[\[\]]+/g;
     if (qty) {
       nums = qty.replace(pattern, '');
-      nums = nums.split(' ');
-      if (nums.length > 0) {
-        nums = parseInt(nums[0]);
-        if (isNaN(nums)) {
-          nums = '';
-        }
-      }
     }
 
     return nums;
