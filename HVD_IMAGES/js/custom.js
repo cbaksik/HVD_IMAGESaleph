@@ -41,6 +41,24 @@ angular.module('viewCustom').component('prmFullViewAfter', {
   templateUrl: '/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
 });
 
+/**
+ * Created by samsan on 5/22/17.
+ */
+angular.module('viewCustom').controller('prmSearchBarAfterController', ['angularLoad', function (angularLoad) {
+  var vm = this;
+
+  vm.parentCtrl.searchService.searchStateService.searchObject.bulkSize = 40;
+  vm.parentCtrl.bulkSize = 40;
+
+  console.log('*** parentCtrl ***');
+  console.log(vm.parentCtrl);
+}]);
+
+angular.module('viewCustom').component('prmSearchBarAfter', {
+  bindings: { parentCtrl: '<' },
+  controller: 'prmSearchBarAfterController'
+});
+
 angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', '$http', 'prmSearchService', '$window', function ($sce, angularLoad, $http, prmSearchService, $window) {
   // local variables
   this.tooltip = { 'flag': [] };
@@ -164,6 +182,14 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         } else {
           _this.search();
         }
+
+        //vm.items = newVal;
+
+        console.log('*** vm.parentCtrl ***');
+        console.log(vm.parentCtrl);
+
+        console.log('*** vm.items ***');
+        console.log(vm.items);
 
         _this.findPageCounter();
 

@@ -123,6 +123,15 @@ angular.module('viewCustom')
                     this.search();
                 }
 
+                //vm.items = newVal;
+
+                console.log('*** vm.parentCtrl ***');
+                console.log(vm.parentCtrl);
+
+                console.log('*** vm.items ***');
+                console.log(vm.items);
+
+
                 this.findPageCounter();
 
                 this.searchInfo.query = vm.parentCtrl.$stateParams.query;

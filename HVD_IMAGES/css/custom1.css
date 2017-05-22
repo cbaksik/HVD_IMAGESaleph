@@ -679,25 +679,23 @@ div.hollis-logo a:hover {
 }
 
 
+.hvInline {list-style: none; }
+
+.hvInline > li { display: inline-table; text-align: left; cursor: pointer;
+  margin-bottom:5px; margin-right:10px; width: auto; height:180px; vertical-align: top; padding:5px;}
+
+ .badge {color: #ffffff; padding-left:5px; padding-right:5px; position: relative; bottom:-2px; font-size:80%;
+  display:inline-block; background:#666666; border-top-right-radius:3px; border-top-left-radius: 3px;}
+
+.nobadge {color: #000000; padding:2px;
+  display:inline-block; }
+
+
 .hvbox {
-  display: inline-flex;
-  flex-direction: row;
-  margin-top:20px;
-  color:#000000;
-  width:auto;
-  height:auto;
-  top:0px;
-  padding-right:20px;
-  background:#c3c3c3;
+  text-align: right;
+  display: inline-block;
 }
 
-.hvbox > .photoBox {
-  display: inline-flex;
-  overflow: hidden;
-  height:150px;
-  width:auto;
-  vertical-align: top;
-}
 
 .hvbox:hover {
   cursor: pointer;
@@ -707,18 +705,15 @@ div.hollis-logo a:hover {
 }
 
 .photo {
-  display:block;
-  width: auto;
+  width:auto;
   height:auto;
 }
 
 .nophoto {
-  display: block;
   width:150px;
   height:150px;
   text-align: center;
   background:#efefef;
-  border:1px solid #c3c3c3;
   line-height:150px;
 }
 
@@ -761,21 +756,6 @@ ul.pagination > li > a.active:hover {
    display: inline-flex;
 }
 
-.hvtooltip {
-  position: absolute;
-  margin: auto;
-  top:30%;
-  left:30%;
-  width:200px;
-  display:inline;
-  z-index: 10000000;
-  background:#ffffff;
-  color:#000000 !important;
-  padding:5px;
-  border:1px solid #c3c3c3;
-  border-radius:5px;
-  text-align: left;
-}
 
 body {
   background: #ffffff !important;
@@ -802,8 +782,18 @@ ul.pagination > li > .disabled  {
   text-align: left;
 }
 
-.badge {color: #3a3a3a; padding:5px; position: absolute; float: right;}
 
-.hvInline {list-style: none; }
-
-.hvInline > li { display: inline-block;}
+.hvtooltip {
+  z-index: 10000000;
+  background:#ffffff;
+  color:#000000 !important;
+  position: absolute;
+  padding:5px;
+  border:1px solid #c3c3c3;
+  border-radius:5px;
+  text-align: left;
+  width:200px;
+  top:40%;
+  left:30%;
+  margin: auto;
+}
