@@ -1,5 +1,5 @@
 angular.module('viewCustom')
-    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','$http','prmSearchService','$window', function ($sce, angularLoad, $http, prmSearchService, $window) {
+    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','$http','prmSearchService','$window','$element', function ($sce, angularLoad, $http, prmSearchService, $window, $element) {
     // local variables
     this.tooltip = {'flag':[]};
     // show tooltip function when mouse over
@@ -17,6 +17,7 @@ angular.module('viewCustom')
     this.searchInfo = sv.getPage(); // get page info object
 
     let vm = this;
+    vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
 
     // set up page counter
     vm.pageCounter = {'min':0,'max':0};
@@ -61,13 +62,12 @@ angular.module('viewCustom')
         
        vm.parentCtrl.currentPage = params.currentPage;
        vm.parentCtrl.$stateParams.offset = params.offset;
-       vm.parentCtrl.searchInfo.first = params.offset;
-       vm.parentCtrl.searchInfo.last = this.searchInfo.currentPage * this.searchInfo.pageSize;
+
        // start ajax loader progress bar
        vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=true;
        vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=true;
-        vm.parentCtrl.searchService.searchStateService.searchObject.offset=params.offset;
-
+       vm.parentCtrl.searchService.searchStateService.searchObject.offset=params.offset;
+       vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
 
        // get the current search rest url
        let url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
@@ -75,9 +75,14 @@ angular.module('viewCustom')
        sv.getAjax(url,params,'get')
            .then(function (data) {
                 let mydata = data.data;
-                vm.items = mydata.docs;
+                vm.items=sv.covertData( mydata.docs);
+
+                console.log('*** vm.items ***');
+                console.log(vm.items);
+
                 console.log('*** data from ajax call ***');
                 console.log(mydata);
+
                 // stop the ajax loader progress bar
                 vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=false;
                 vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=false;
@@ -103,6 +108,9 @@ angular.module('viewCustom')
 
     vm.$onInit = function () {
         this.searchInfo = sv.getPage(); // get page info object
+        vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
+        //vm.parentCtrl.PAGE_SIZE=this.searchInfo.pageSize;
+
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchString,(newVal, oldVal)=>{
             if(vm.parentCtrl.searchString !== this.searchInfo.searchString){
                 this.searchInfo.totalItems = 0;
@@ -111,25 +119,26 @@ angular.module('viewCustom')
         });
 
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults, (newVal, oldVal)=>{
-            if(oldVal !== newVal){
 
-                this.searchInfo.totalItems = vm.parentCtrl.totalItems;
+            this.searchInfo.totalItems = vm.parentCtrl.totalItems;
 
                 if(vm.parentCtrl.currentPage===this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query==='' && newVal) {
-                    vm.items = newVal;
+                    vm.items = sv.covertData(newVal);
+                    console.log('*** here 1 ***');
                 } else if(vm.parentCtrl.currentPage===this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query === vm.parentCtrl.$stateParams.query && newVal) {
-                    vm.items = newVal;
+                    vm.items = sv.covertData(newVal);
+                    console.log('*** here 2 ***');
                 } else {
                     this.search();
+                    console.log('*** here 3 ***');
                 }
 
-                //vm.items = newVal;
 
                 console.log('*** vm.parentCtrl ***');
                 console.log(vm.parentCtrl);
 
-                console.log('*** vm.items ***');
-                console.log(vm.items);
+                console.log('*** newVal ***');
+                console.log(newVal);
 
 
                 this.findPageCounter();
@@ -138,16 +147,11 @@ angular.module('viewCustom')
                 this.searchInfo.searchString = vm.parentCtrl.searchString;
                 sv.setPage(this.searchInfo);
 
-                console.log('*** searchObject ***');
-                console.log(vm.parentCtrl.searchService.searchStateService.searchObject);
 
-                console.log('*** searchInfo ***');
-                console.log(this.searchInfo);
-
-            }
 
         });
     };
+
 
     this.openDialog=function (item) {
         console.log(item);

@@ -34,6 +34,11 @@
   height:auto;
 }
 
+.responsivePhoto {
+   height:150px;
+   width: auto;
+}
+
 .nophoto {
   width:150px;
   height:150px;
@@ -121,4 +126,11 @@ ul.pagination > li > .disabled  {
   top:40%;
   left:30%;
   margin: auto;
+}
+
+.lockIcon {
+  position: absolute;
+  z-index:100;
+  float: right;
+  margin-top:-35px;
 }

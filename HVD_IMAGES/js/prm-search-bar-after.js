@@ -1,14 +1,22 @@
 /**
  * Created by samsan on 5/22/17.
+ * Access search box json data. Then change the number item per page. See prm-search-service.js file
  */
 angular.module('viewCustom')
-    .controller('prmSearchBarAfterController', [ 'angularLoad', function (angularLoad) {
+    .controller('prmSearchBarAfterController', [ 'angularLoad','prmSearchService', function (angularLoad,prmSearchService) {
         let vm=this;
+        // initialize custom service search
+        let sv=prmSearchService;
+        // get page object
+        let pageObj=sv.getPage();
 
-        vm.parentCtrl.searchService.searchStateService.searchObject.bulkSize=40;
-        vm.parentCtrl.bulkSize = 40;
+        console.log('*** pageObj ****');
+        console.log(pageObj);
 
-        console.log('*** parentCtrl ***');
+        // number items per page to display from search box, updated the limit size in http request
+        vm.parentCtrl.searchService.searchStateService.resultsBulkSize=pageObj.pageSize;
+
+        console.log('*** parentCtrl of search bar ***');
         console.log(vm.parentCtrl);
 
     }]);
@@ -17,7 +25,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmSearchBarAfter', {
-        bindings: {parentCtrl: '<'},
+        bindings: {parentCtrl: '='},
         controller: 'prmSearchBarAfterController'
     });
 

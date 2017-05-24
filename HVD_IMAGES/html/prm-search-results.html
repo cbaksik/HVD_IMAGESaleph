@@ -6,7 +6,7 @@
              <div ng-if="item.pnx.display.lds20[0] > 1" class="badge">{{item.pnx.display.lds28[0]|countFilter}}</div>
              <div ng-if="item.pnx.display.lds20[0] < 2" class="nobadge">&nbsp;</div>
              <div class="photo" ng-if="item.pnx.links.thumbnail">
-                 <img src="{{item.pnx.links.thumbnail|urlFilter}}" alt="{{item.pnx.display.title[0]}}"/>
+                 <thumbnail src="item.pnx.links.thumbnail[0]" title="item.pnx.display.title[0]" restricted="item.restrictedImage"></thumbnail>
              </div>
              <div class="nophoto" ng-if="!item.pnx.links.thumbnail"  alt="{{item.pnx.display.title[0]}}">
                  {{item.pnx.display.lds28[0]|countFilter}}
@@ -34,9 +34,3 @@
      </div>
  </div>
 </md-content>
-
-
-<image xmlns:xlink="http://www.w3.org/TR/xlink" altComponentID="5688826" componentID="W481729_1" restrictedImage="false"xlink:href="http://nrs.harvard.edu/urn-3:FHCL:3521203">
-    <thumbnail xlink:href="http://nrs.harvard.edu/urn-3:FHCL:3521203"/>
-</image>
-

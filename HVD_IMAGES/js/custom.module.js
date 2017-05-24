@@ -1,4 +1,4 @@
 
-angular.module('viewCustom', ['angularLoad','ui.bootstrap']);
+angular.module('viewCustom', ['angularLoad','ui.bootstrap','ngMaterial']);
 
 

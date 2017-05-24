@@ -2,7 +2,7 @@
 "use strict";
 'use strict';
 
-angular.module('viewCustom', ['angularLoad', 'ui.bootstrap']);
+angular.module('viewCustom', ['angularLoad', 'ui.bootstrap', 'ngMaterial']);
 
 /**
  * Created by samsan on 5/17/17.
@@ -43,23 +43,31 @@ angular.module('viewCustom').component('prmFullViewAfter', {
 
 /**
  * Created by samsan on 5/22/17.
+ * Access search box json data. Then change the number item per page. See prm-search-service.js file
  */
-angular.module('viewCustom').controller('prmSearchBarAfterController', ['angularLoad', function (angularLoad) {
+angular.module('viewCustom').controller('prmSearchBarAfterController', ['angularLoad', 'prmSearchService', function (angularLoad, prmSearchService) {
   var vm = this;
+  // initialize custom service search
+  var sv = prmSearchService;
+  // get page object
+  var pageObj = sv.getPage();
 
-  vm.parentCtrl.searchService.searchStateService.searchObject.bulkSize = 40;
-  vm.parentCtrl.bulkSize = 40;
+  console.log('*** pageObj ****');
+  console.log(pageObj);
 
-  console.log('*** parentCtrl ***');
+  // number items per page to display from search box, updated the limit size in http request
+  vm.parentCtrl.searchService.searchStateService.resultsBulkSize = pageObj.pageSize;
+
+  console.log('*** parentCtrl of search bar ***');
   console.log(vm.parentCtrl);
 }]);
 
 angular.module('viewCustom').component('prmSearchBarAfter', {
-  bindings: { parentCtrl: '<' },
+  bindings: { parentCtrl: '=' },
   controller: 'prmSearchBarAfterController'
 });
 
-angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', '$http', 'prmSearchService', '$window', function ($sce, angularLoad, $http, prmSearchService, $window) {
+angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', '$http', 'prmSearchService', '$window', '$element', function ($sce, angularLoad, $http, prmSearchService, $window, $element) {
   // local variables
   this.tooltip = { 'flag': [] };
   // show tooltip function when mouse over
@@ -77,6 +85,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
   this.searchInfo = sv.getPage(); // get page info object
 
   var vm = this;
+  vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
 
   // set up page counter
   vm.pageCounter = { 'min': 0, 'max': 0 };
@@ -120,21 +129,26 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
     vm.parentCtrl.currentPage = params.currentPage;
     vm.parentCtrl.$stateParams.offset = params.offset;
-    vm.parentCtrl.searchInfo.first = params.offset;
-    vm.parentCtrl.searchInfo.last = this.searchInfo.currentPage * this.searchInfo.pageSize;
+
     // start ajax loader progress bar
     vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = true;
     vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = true;
     vm.parentCtrl.searchService.searchStateService.searchObject.offset = params.offset;
+    vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
 
     // get the current search rest url
     var url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
 
     sv.getAjax(url, params, 'get').then(function (data) {
       var mydata = data.data;
-      vm.items = mydata.docs;
+      vm.items = sv.covertData(mydata.docs);
+
+      console.log('*** vm.items ***');
+      console.log(vm.items);
+
       console.log('*** data from ajax call ***');
       console.log(mydata);
+
       // stop the ajax loader progress bar
       vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
       vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = false;
@@ -159,6 +173,9 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     var _this = this;
 
     this.searchInfo = sv.getPage(); // get page info object
+    vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
+    //vm.parentCtrl.PAGE_SIZE=this.searchInfo.pageSize;
+
     vm.parentCtrl.$scope.$watch(function () {
       return vm.parentCtrl.searchString;
     }, function (newVal, oldVal) {
@@ -171,38 +188,31 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     vm.parentCtrl.$scope.$watch(function () {
       return vm.parentCtrl.searchResults;
     }, function (newVal, oldVal) {
-      if (oldVal !== newVal) {
 
-        _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
+      _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
 
-        if (vm.parentCtrl.currentPage === _this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === '' && newVal) {
-          vm.items = newVal;
-        } else if (vm.parentCtrl.currentPage === _this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === vm.parentCtrl.$stateParams.query && newVal) {
-          vm.items = newVal;
-        } else {
-          _this.search();
-        }
-
-        //vm.items = newVal;
-
-        console.log('*** vm.parentCtrl ***');
-        console.log(vm.parentCtrl);
-
-        console.log('*** vm.items ***');
-        console.log(vm.items);
-
-        _this.findPageCounter();
-
-        _this.searchInfo.query = vm.parentCtrl.$stateParams.query;
-        _this.searchInfo.searchString = vm.parentCtrl.searchString;
-        sv.setPage(_this.searchInfo);
-
-        console.log('*** searchObject ***');
-        console.log(vm.parentCtrl.searchService.searchStateService.searchObject);
-
-        console.log('*** searchInfo ***');
-        console.log(_this.searchInfo);
+      if (vm.parentCtrl.currentPage === _this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === '' && newVal) {
+        vm.items = sv.covertData(newVal);
+        console.log('*** here 1 ***');
+      } else if (vm.parentCtrl.currentPage === _this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === _this.searchInfo.pageSize && _this.searchInfo.query === vm.parentCtrl.$stateParams.query && newVal) {
+        vm.items = sv.covertData(newVal);
+        console.log('*** here 2 ***');
+      } else {
+        _this.search();
+        console.log('*** here 3 ***');
       }
+
+      console.log('*** vm.parentCtrl ***');
+      console.log(vm.parentCtrl);
+
+      console.log('*** newVal ***');
+      console.log(newVal);
+
+      _this.findPageCounter();
+
+      _this.searchInfo.query = vm.parentCtrl.$stateParams.query;
+      _this.searchInfo.searchString = vm.parentCtrl.searchString;
+      sv.setPage(_this.searchInfo);
     });
   };
 
@@ -264,7 +274,7 @@ angular.module('viewCustom').component('prmSearchResultListAfter', {
  * Created by samsan on 5/12/17.
  */
 
-angular.module('viewCustom').service('prmSearchService', ['$http', '$window', function ($http, $window) {
+angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$filter', function ($http, $window, $filter) {
   var serviceObj = {};
 
   //http ajax service, pass in URL, parameters, method. The method can be get, post, put, delete
@@ -277,7 +287,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', fu
   };
 
   // default page info
-  serviceObj.page = { 'pageSize': 10, 'totalItems': 0, 'currentPage': 1, 'query': '', 'searchString': '' };
+  serviceObj.page = { 'pageSize': 40, 'totalItems': 0, 'currentPage': 1, 'query': '', 'searchString': '' };
   // getter for page info
   serviceObj.getPage = function () {
     // localStorage page info exist, just use the old one
@@ -298,8 +308,69 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', fu
     serviceObj.page = pageInfo;
   };
 
+  //parse xml
+  serviceObj.parseXml = function (str) {
+    return xmlToJSON.parseString(str);
+  };
+
+  // maninpulate data and convert xml data to json
+  serviceObj.covertData = function (data) {
+    var newData = [];
+    for (var i = 0; i < data.length; i++) {
+      var obj = data[i];
+      obj.restrictedImage = false;
+      if (obj.pnx.addata.mis1.length > 0) {
+        var xml = obj.pnx.addata.mis1[0];
+        var jsonData = serviceObj.parseXml(xml);
+        if (jsonData.work) {
+          obj.mis1Data = jsonData.work[0];
+          if (jsonData.work[0].surrogate) {
+            if (jsonData.work[0].surrogate[0].image) {
+              obj.restrictedImage = jsonData.work[0].surrogate[0].image[0]._attr.restrictedImage._value;
+            }
+          }
+        }
+      }
+      // remove the $$U infront of url
+      if (obj.pnx.links.thumbnail) {
+        var imgUrl = $filter('urlFilter')(obj.pnx.links.thumbnail);
+        obj.pnx.links.thumbnail[0] = imgUrl;
+      }
+      newData[i] = obj;
+    }
+
+    return newData;
+  };
+
   return serviceObj;
 }]);
+
+/**
+ * Created by samsan on 5/23/17.
+ * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
+ */
+
+angular.module('viewCustom').component('thumbnail', {
+  template: '<img src="{{$ctrl.src}}" class="{{$ctrl.imgClass}}" alt="{{$ctrl.title}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img src="custom/HVD_IMAGES/img/icon_lock.png"/></div>',
+  bindings: {
+    src: '<',
+    title: '<',
+    restricted: '<'
+  },
+  controller: function controller($element) {
+    var vm = this;
+    vm.imgClass = '';
+    // check if image is not empty and it has width and height and greater than 150, then add css class
+    vm.$doCheck = function () {
+      if (vm.src) {
+        var img = $element[0].firstChild;
+        if (img.height > 150) {
+          vm.imgClass = 'responsivePhoto';
+        }
+      }
+    };
+  }
+});
 
 /*
  * angular-ui-bootstrap
@@ -5391,5 +5462,247 @@ angular.module('ui.bootstrap.tooltip').run(function () {
 });
 angular.module('ui.bootstrap.position').run(function () {
   !angular.$$csp().noInlineStyle && !angular.$$uibPositionCss && angular.element(document).find('head').prepend('<style type="text/css">.uib-position-measure{display:block !important;visibility:hidden !important;position:absolute !important;top:-9999px !important;left:-9999px !important;}.uib-position-scrollbar-measure{position:absolute !important;top:-9999px !important;width:50px !important;height:50px !important;overflow:scroll !important;}.uib-position-body-scrollbar-measure{overflow:scroll !important;}</style>');angular.$$uibPositionCss = true;
+});
+/* Copyright 2015 William Summers, MetaTribal LLC
+ * adapted from https://developer.mozilla.org/en-US/docs/JXON
+ *
+ * Licensed under the MIT License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://opensource.org/licenses/MIT
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * @author William Summers
+ *
+ */
+
+var xmlToJSON = function () {
+
+  this.version = "1.3";
+
+  var options = { // set up the default options
+    mergeCDATA: true, // extract cdata and merge with text
+    grokAttr: true, // convert truthy attributes to boolean, etc
+    grokText: true, // convert truthy text/attr to boolean, etc
+    normalize: true, // collapse multiple spaces to single space
+    xmlns: true, // include namespaces as attribute in output
+    namespaceKey: '_ns', // tag name for namespace objects
+    textKey: '_text', // tag name for text nodes
+    valueKey: '_value', // tag name for attribute values
+    attrKey: '_attr', // tag for attr groups
+    cdataKey: '_cdata', // tag for cdata nodes (ignored if mergeCDATA is true)
+    attrsAsObject: true, // if false, key is used as prefix to name, set prefix to '' to merge children and attrs.
+    stripAttrPrefix: true, // remove namespace prefixes from attributes
+    stripElemPrefix: true, // for elements of same name in diff namespaces, you can enable namespaces and access the nskey property
+    childrenAsArray: true // force children into arrays
+  };
+
+  var prefixMatch = new RegExp(/(?!xmlns)^.*:/);
+  var trimMatch = new RegExp(/^\s+|\s+$/g);
+
+  this.grokType = function (sValue) {
+    if (/^\s*$/.test(sValue)) {
+      return null;
+    }
+    if (/^(?:true|false)$/i.test(sValue)) {
+      return sValue.toLowerCase() === "true";
+    }
+    if (isFinite(sValue)) {
+      return parseFloat(sValue);
+    }
+    return sValue;
+  };
+
+  this.parseString = function (xmlString, opt) {
+    return this.parseXML(this.stringToXML(xmlString), opt);
+  };
+
+  this.parseXML = function (oXMLParent, opt) {
+
+    // initialize options
+    for (var key in opt) {
+      options[key] = opt[key];
+    }
+
+    var vResult = {},
+        nLength = 0,
+        sCollectedTxt = "";
+
+    // parse namespace information
+    if (options.xmlns && oXMLParent.namespaceURI) {
+      vResult[options.namespaceKey] = oXMLParent.namespaceURI;
+    }
+
+    // parse attributes
+    // using attributes property instead of hasAttributes method to support older browsers
+    if (oXMLParent.attributes && oXMLParent.attributes.length > 0) {
+      var vAttribs = {};
+
+      for (nLength; nLength < oXMLParent.attributes.length; nLength++) {
+        var oAttrib = oXMLParent.attributes.item(nLength);
+        vContent = {};
+        var attribName = '';
+
+        if (options.stripAttrPrefix) {
+          attribName = oAttrib.name.replace(prefixMatch, '');
+        } else {
+          attribName = oAttrib.name;
+        }
+
+        if (options.grokAttr) {
+          vContent[options.valueKey] = this.grokType(oAttrib.value.replace(trimMatch, ''));
+        } else {
+          vContent[options.valueKey] = oAttrib.value.replace(trimMatch, '');
+        }
+
+        if (options.xmlns && oAttrib.namespaceURI) {
+          vContent[options.namespaceKey] = oAttrib.namespaceURI;
+        }
+
+        if (options.attrsAsObject) {
+          // attributes with same local name must enable prefixes
+          vAttribs[attribName] = vContent;
+        } else {
+          vResult[options.attrKey + attribName] = vContent;
+        }
+      }
+
+      if (options.attrsAsObject) {
+        vResult[options.attrKey] = vAttribs;
+      } else {}
+    }
+
+    // iterate over the children
+    if (oXMLParent.hasChildNodes()) {
+      for (var oNode, sProp, vContent, nItem = 0; nItem < oXMLParent.childNodes.length; nItem++) {
+        oNode = oXMLParent.childNodes.item(nItem);
+
+        if (oNode.nodeType === 4) {
+          if (options.mergeCDATA) {
+            sCollectedTxt += oNode.nodeValue;
+          } else {
+            if (vResult.hasOwnProperty(options.cdataKey)) {
+              if (vResult[options.cdataKey].constructor !== Array) {
+                vResult[options.cdataKey] = [vResult[options.cdataKey]];
+              }
+              vResult[options.cdataKey].push(oNode.nodeValue);
+            } else {
+              if (options.childrenAsArray) {
+                vResult[options.cdataKey] = [];
+                vResult[options.cdataKey].push(oNode.nodeValue);
+              } else {
+                vResult[options.cdataKey] = oNode.nodeValue;
+              }
+            }
+          }
+        } /* nodeType is "CDATASection" (4) */
+        else if (oNode.nodeType === 3) {
+            sCollectedTxt += oNode.nodeValue;
+          } /* nodeType is "Text" (3) */
+          else if (oNode.nodeType === 1) {
+              /* nodeType is "Element" (1) */
+
+              if (nLength === 0) {
+                vResult = {};
+              }
+
+              // using nodeName to support browser (IE) implementation with no 'localName' property
+              if (options.stripElemPrefix) {
+                sProp = oNode.nodeName.replace(prefixMatch, '');
+              } else {
+                sProp = oNode.nodeName;
+              }
+
+              vContent = xmlToJSON.parseXML(oNode);
+
+              if (vResult.hasOwnProperty(sProp)) {
+                if (vResult[sProp].constructor !== Array) {
+                  vResult[sProp] = [vResult[sProp]];
+                }
+                vResult[sProp].push(vContent);
+              } else {
+                if (options.childrenAsArray) {
+                  vResult[sProp] = [];
+                  vResult[sProp].push(vContent);
+                } else {
+                  vResult[sProp] = vContent;
+                }
+                nLength++;
+              }
+            }
+      }
+    } else if (!sCollectedTxt) {
+      // no children and no text, return null
+      if (options.childrenAsArray) {
+        vResult[options.textKey] = [];
+        vResult[options.textKey].push(null);
+      } else {
+        vResult[options.textKey] = null;
+      }
+    }
+
+    if (sCollectedTxt) {
+      if (options.grokText) {
+        var value = this.grokType(sCollectedTxt.replace(trimMatch, ''));
+        if (value !== null && value !== undefined) {
+          vResult[options.textKey] = value;
+        }
+      } else if (options.normalize) {
+        vResult[options.textKey] = sCollectedTxt.replace(trimMatch, '').replace(/\s+/g, " ");
+      } else {
+        vResult[options.textKey] = sCollectedTxt.replace(trimMatch, '');
+      }
+    }
+
+    return vResult;
+  };
+
+  // Convert xmlDocument to a string
+  // Returns null on failure
+  this.xmlToString = function (xmlDoc) {
+    try {
+      var xmlString = xmlDoc.xml ? xmlDoc.xml : new XMLSerializer().serializeToString(xmlDoc);
+      return xmlString;
+    } catch (err) {
+      return null;
+    }
+  };
+
+  // Convert a string to XML Node Structure
+  // Returns null on failure
+  this.stringToXML = function (xmlString) {
+    try {
+      var xmlDoc = null;
+
+      if (window.DOMParser) {
+
+        var parser = new DOMParser();
+        xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+        return xmlDoc;
+      } else {
+        xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+        xmlDoc.async = false;
+        xmlDoc.loadXML(xmlString);
+
+        return xmlDoc;
+      }
+    } catch (e) {
+      return null;
+    }
+  };
+
+  return this;
+}.call({});
+
+if (typeof module != "undefined" && module !== null && module.exports) module.exports = xmlToJSON;else if (typeof define === "function" && define.amd) define(function () {
+  return xmlToJSON;
 });
 })();
