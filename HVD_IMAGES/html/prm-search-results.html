@@ -30,7 +30,7 @@
         {{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}
      </div>
      <div class="column" ng-if="$ctrl.searchInfo.totalItems > $ctrl.searchInfo.pageSize">
-     <ul uib-pagination max-size="7" items-per-page="$ctrl.searchInfo.pageSize" previous-text="Prev" boundary-links="true" direction-links="true" total-items="$ctrl.searchInfo.totalItems" ng-model="$ctrl.searchInfo.currentPage" ng-change="$ctrl.pageChanged($ctrl.searchInfo.currentPage)"></ul>
+         <cl-paging flex cl-pages="$ctrl.searchInfo.totalPages" cl-steps="6" cl-page-changed="$ctrl.pageChanged($ctrl.searchInfo.currentPage)" cl-align="start start" cl-current-page="$ctrl.searchInfo.currentPage"></cl-paging>
      </div>
  </div>
 </md-content>

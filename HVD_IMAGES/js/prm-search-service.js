@@ -16,7 +16,7 @@ angular.module('viewCustom')
     };
 
     // default page info
-    serviceObj.page = {'pageSize':40,'totalItems':0,'currentPage':1,'query':'','searchString':''};
+    serviceObj.page = {'pageSize':40,'totalItems':0,'currentPage':1,'query':'','searchString':'','totalPages':0};
     // getter for page info
     serviceObj.getPage=function () {
        // localStorage page info exist, just use the old one

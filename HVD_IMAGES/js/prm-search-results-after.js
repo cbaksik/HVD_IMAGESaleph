@@ -1,5 +1,5 @@
 angular.module('viewCustom')
-    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','$http','prmSearchService','$window','$element', function ($sce, angularLoad, $http, prmSearchService, $window, $element) {
+    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$cookies','$cookieStore', function ($sce, angularLoad, prmSearchService, $window, $cookies, $cookieStore) {
     // local variables
     this.tooltip = {'flag':[]};
     // show tooltip function when mouse over
@@ -38,6 +38,11 @@ angular.module('viewCustom')
     // when a user select numbers of row per page, it call the search function again
     this.changeRow = function () {
         this.searchInfo.currentPage=1; // reset the current page to 1
+        this.searchInfo.totalPages = parseInt(this.searchInfo.totalItems / this.searchInfo.pageSize);
+        vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
+        if((this.searchInfo.pageSize * this.searchInfo.totalPages) < this.searchInfo.totalItems) {
+            this.searchInfo.totalPages++;
+        }
         sv.setPage(this.searchInfo); // keep track user select row from the drop down menu
         this.search();
         this.findPageCounter();
@@ -121,39 +126,46 @@ angular.module('viewCustom')
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults, (newVal, oldVal)=>{
 
             this.searchInfo.totalItems = vm.parentCtrl.totalItems;
+            this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / vm.parentCtrl.searchService.searchStateService.resultsBulkSize);
+            if((vm.parentCtrl.searchService.searchStateService.resultsBulkSize * this.searchInfo.totalPages) < this.searchInfo.totalItems) {
+                this.searchInfo.totalPages++;
+            }
 
-                if(vm.parentCtrl.currentPage===this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query==='' && newVal) {
-                    vm.items = sv.covertData(newVal);
-                    console.log('*** here 1 ***');
-                } else if(vm.parentCtrl.currentPage===this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query === vm.parentCtrl.$stateParams.query && newVal) {
-                    vm.items = sv.covertData(newVal);
-                    console.log('*** here 2 ***');
-                } else {
-                    this.search();
-                    console.log('*** here 3 ***');
-                }
-
-
-                console.log('*** vm.parentCtrl ***');
-                console.log(vm.parentCtrl);
-
-                console.log('*** newVal ***');
-                console.log(newVal);
+            if(vm.parentCtrl.currentPage===this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query==='' && newVal) {
+                vm.items = sv.covertData(newVal);
+            } else if(vm.parentCtrl.currentPage===this.searchInfo.currentPage && vm.parentCtrl.itemsPerPage === this.searchInfo.pageSize && this.searchInfo.query === vm.parentCtrl.$stateParams.query && newVal) {
+                vm.items = sv.covertData(newVal);
+            } else {
+                this.search();
+            }
 
 
-                this.findPageCounter();
+            console.log('*** vm.parentCtrl ***');
+            console.log(vm.parentCtrl);
 
-                this.searchInfo.query = vm.parentCtrl.$stateParams.query;
-                this.searchInfo.searchString = vm.parentCtrl.searchString;
-                sv.setPage(this.searchInfo);
+            console.log('*** newVal ***');
+            console.log(newVal);
 
 
+            this.findPageCounter();
+
+            this.searchInfo.query = vm.parentCtrl.$stateParams.query;
+            this.searchInfo.searchString = vm.parentCtrl.searchString;
+            sv.setPage(this.searchInfo);
+
+            console.log('*** searchInfo ***');
+            console.log(this.searchInfo);
 
         });
     };
 
 
     this.openDialog=function (item) {
+
+        console.log('*** cookies ***');
+        console.log($cookieStore);
+        console.log($cookieStore.get('SESSIONID'));
+
         console.log(item);
         vm.parentCtrl.PAGE_SIZE=this.searchInfo.pageSize;
         vm.parentCtrl.currentPage=this.searchInfo.currentPage;
@@ -169,7 +181,7 @@ angular.module('viewCustom')
         '&offset='+offset+'&vid='+vm.parentCtrl.$stateParams.vid +'&limit='+this.searchInfo.pageSize+'&currentPage='+this.searchInfo.currentPage +'&itemsPerPage='+this.searchInfo.pageSize;
 
         console.log(url);
-        $window.location.href=url;
+        //$window.location.href=url;
     }
 
 }]);
