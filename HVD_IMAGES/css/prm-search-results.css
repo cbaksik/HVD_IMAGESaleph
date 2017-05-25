@@ -4,7 +4,7 @@
 }
 
 
-.hvInline {list-style: none; }
+.hvInline {list-style: none; margin-left:-45px; margin-top: -20px;}
 
 .hvInline > li { display: inline-table; text-align: left; cursor: pointer;
   margin-bottom:5px; margin-right:10px; width: auto; height:180px; vertical-align: top; padding:5px;}
@@ -22,7 +22,14 @@
 }
 
 
-.hvbox:hover {
+.hvInline > li:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+  transition:0.4s;
+  transition-timing-function: ease-out;
+}
+
+.hvInline> li:focus {
   cursor: pointer;
   transform: scale(1.05);
   transition:0.4s;
@@ -32,6 +39,7 @@
 .photo {
   width:auto;
   height:auto;
+  z-index: 0;
 }
 
 .responsivePhoto {
@@ -45,6 +53,7 @@
   text-align: center;
   background:#efefef;
   line-height:150px;
+  z-index: 0;
 }
 
 
@@ -80,7 +89,7 @@ ul.pagination > li > .disabled  {
 
 
 .hvtooltip {
-  z-index: 10000000;
+  z-index: 100000;
   background:#ffffff;
   color:#000000 !important;
   position: absolute;
@@ -96,7 +105,15 @@ ul.pagination > li > .disabled  {
 
 .lockIcon {
   position: absolute;
-  z-index:100;
+  z-index:1;
   float: right;
   margin-top:-35px;
+}
+
+cl-paging > button.md-icon-button {
+  background:#f5f5f5;
+}
+
+.hvPanel {
+  margin-bottom:50px;
 }

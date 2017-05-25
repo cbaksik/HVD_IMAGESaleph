@@ -1,5 +1,5 @@
 angular.module('viewCustom')
-    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$cookies','$cookieStore', function ($sce, angularLoad, prmSearchService, $window, $cookies, $cookieStore) {
+    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window', function ($sce, angularLoad, prmSearchService, $window) {
     // local variables
     this.tooltip = {'flag':[]};
     // show tooltip function when mouse over
@@ -33,20 +33,7 @@ angular.module('viewCustom')
       }
 
     };
-    // numbers of row per page when a user select the drop down menu
-    this.selectRows = [10,20,30,40,50];
-    // when a user select numbers of row per page, it call the search function again
-    this.changeRow = function () {
-        this.searchInfo.currentPage=1; // reset the current page to 1
-        this.searchInfo.totalPages = parseInt(this.searchInfo.totalItems / this.searchInfo.pageSize);
-        vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
-        if((this.searchInfo.pageSize * this.searchInfo.totalPages) < this.searchInfo.totalItems) {
-            this.searchInfo.totalPages++;
-        }
-        sv.setPage(this.searchInfo); // keep track user select row from the drop down menu
-        this.search();
-        this.findPageCounter();
-    };
+
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
     this.search=function () {
@@ -153,26 +140,20 @@ angular.module('viewCustom')
             this.searchInfo.searchString = vm.parentCtrl.searchString;
             sv.setPage(this.searchInfo);
 
-            console.log('*** searchInfo ***');
-            console.log(this.searchInfo);
-
         });
     };
 
 
     this.openDialog=function (item) {
+        let logID=sv.getLogInID();
 
-        console.log('*** cookies ***');
-        console.log($cookieStore);
-        console.log($cookieStore.get('SESSIONID'));
+        console.log(logID);
+        console.log(item.restrictedImage);
 
-        console.log(item);
         vm.parentCtrl.PAGE_SIZE=this.searchInfo.pageSize;
         vm.parentCtrl.currentPage=this.searchInfo.currentPage;
         vm.parentCtrl.searchInfo.maxTotal = this.searchInfo.pageSize;
-
-        console.log('*** searchInfo ***');
-        console.log(vm.parentCtrl);
+        vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
 
         let offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
         let url='/primo-explore/fulldisplay?docid='+item.pnx.control.recordid[0]+'&adaptor='+
@@ -180,8 +161,19 @@ angular.module('viewCustom')
         '&sortby='+vm.parentCtrl.$stateParams.sortby+'&tab='+vm.parentCtrl.$stateParams.tab+'&search_scope='+vm.parentCtrl.$stateParams.search_scope+
         '&offset='+offset+'&vid='+vm.parentCtrl.$stateParams.vid +'&limit='+this.searchInfo.pageSize+'&currentPage='+this.searchInfo.currentPage +'&itemsPerPage='+this.searchInfo.pageSize;
 
-        console.log(url);
-        //$window.location.href=url;
+        if(item.restrictedImage && logID===false) {
+            url='https://www.pin1.harvard.edu/cas/login?service=https://hollis.harvard.edu/pds?func=load-login&calling_system=primo&institute=HVD&lang=eng&url=https://qa.hollis.harvard.edu:443/primo_library/libweb/pdsLogin?targetURL=http://localhost:8003/primo-explore/search?vid=HVD_IMAGES&sortby=rank&lang=en%255FUS&from-new-ui=1&authenticationProfile=Profile+1';
+            $window.location.href = url;
+        } else {
+           $window.location.href = url;
+        }
+    };
+
+    // When a user press enter by using tab key
+    this.openDialog2=function(e,item){
+        if(e.which===13){
+            this.openDialog(item);
+        }
     }
 
 }]);

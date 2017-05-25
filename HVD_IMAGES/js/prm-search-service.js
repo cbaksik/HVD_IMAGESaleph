@@ -16,7 +16,7 @@ angular.module('viewCustom')
     };
 
     // default page info
-    serviceObj.page = {'pageSize':40,'totalItems':0,'currentPage':1,'query':'','searchString':'','totalPages':0};
+    serviceObj.page = {'pageSize':50,'totalItems':0,'currentPage':1,'query':'','searchString':'','totalPages':0};
     // getter for page info
     serviceObj.getPage=function () {
        // localStorage page info exist, just use the old one
@@ -72,6 +72,16 @@ angular.module('viewCustom')
        }
 
        return newData;
+    };
+
+    // get user login ID
+    serviceObj.logID=false;
+    serviceObj.setLogInID=function (logID) {
+        serviceObj.logID=logID;
+    };
+
+    serviceObj.getLogInID=function () {
+        return serviceObj.logID;
     };
 
 

@@ -2,7 +2,7 @@
 "use strict";
 'use strict';
 
-angular.module('viewCustom', ['angularLoad', 'ngMaterial', 'cl.paging', 'ngCookies']);
+angular.module('viewCustom', ['angularLoad', 'cl.paging']);
 
 /**
  *
@@ -49,8 +49,8 @@ angular.module('viewCustom', ['angularLoad', 'ngMaterial', 'cl.paging', 'ngCooki
         };
     }
 
-    ClPagingController.$inject = ['$scope'];
-    function ClPagingController($scope) {
+    ClPagingController.$inject = ['$scope', '$location', '$anchorScroll'];
+    function ClPagingController($scope, $location, $anchorScroll) {
         var vm = this;
 
         vm.first = '<<';
@@ -62,27 +62,37 @@ angular.module('viewCustom', ['angularLoad', 'ngMaterial', 'cl.paging', 'ngCooki
 
         vm.goto = function (index) {
             $scope.clCurrentPage = vm.page[index];
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         vm.gotoPrev = function () {
             $scope.clCurrentPage = vm.index;
             vm.index -= vm.clSteps;
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         vm.gotoNext = function () {
             vm.index += vm.clSteps;
             $scope.clCurrentPage = vm.index + 1;
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         vm.gotoFirst = function () {
             vm.index = 0;
             $scope.clCurrentPage = 1;
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         vm.gotoLast = function () {
             vm.index = parseInt($scope.clPages / vm.clSteps) * vm.clSteps;
             vm.index === $scope.clPages ? vm.index = vm.index - vm.clSteps : '';
             $scope.clCurrentPage = $scope.clPages;
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         $scope.$watch('clCurrentPage', function (value) {
@@ -113,6 +123,30 @@ angular.module('viewCustom', ['angularLoad', 'ngMaterial', 'cl.paging', 'ngCooki
         };
     };
 })();
+/**
+ * Created by samsan on 5/25/17.
+ */
+
+angular.module('viewCustom').controller('prmAuthenticationAfterController', ['angularLoad', 'prmSearchService', function (angularLoad, prmSearchService) {
+    var vm = this;
+    // initialize custom service search
+    var sv = prmSearchService;
+
+    console.log('*** prm authentication after ***');
+    console.log(vm.parentCtrl);
+
+    // check if a user login
+    vm.$doCheck = function () {
+        var loginID = vm.parentCtrl.isLoggedIn;
+        sv.setLogInID(loginID);
+    };
+}]);
+
+angular.module('viewCustom').component('prmAuthenticationAfter', {
+    bindings: { parentCtrl: '<' },
+    controller: 'prmAuthenticationAfterController'
+});
+
 /**
  * Created by samsan on 5/17/17.
  */
@@ -176,7 +210,7 @@ angular.module('viewCustom').component('prmSearchBarAfter', {
     controller: 'prmSearchBarAfterController'
 });
 
-angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$window', '$cookies', '$cookieStore', function ($sce, angularLoad, prmSearchService, $window, $cookies, $cookieStore) {
+angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$window', function ($sce, angularLoad, prmSearchService, $window) {
     // local variables
     this.tooltip = { 'flag': [] };
     // show tooltip function when mouse over
@@ -208,20 +242,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         if (vm.pageCounter.max > this.searchInfo.totalItems) {
             vm.pageCounter.max = this.searchInfo.totalItems;
         }
-    };
-    // numbers of row per page when a user select the drop down menu
-    this.selectRows = [10, 20, 30, 40, 50];
-    // when a user select numbers of row per page, it call the search function again
-    this.changeRow = function () {
-        this.searchInfo.currentPage = 1; // reset the current page to 1
-        this.searchInfo.totalPages = parseInt(this.searchInfo.totalItems / this.searchInfo.pageSize);
-        vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
-        if (this.searchInfo.pageSize * this.searchInfo.totalPages < this.searchInfo.totalItems) {
-            this.searchInfo.totalPages++;
-        }
-        sv.setPage(this.searchInfo); // keep track user select row from the drop down menu
-        this.search();
-        this.findPageCounter();
     };
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
@@ -328,31 +348,36 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             _this.searchInfo.query = vm.parentCtrl.$stateParams.query;
             _this.searchInfo.searchString = vm.parentCtrl.searchString;
             sv.setPage(_this.searchInfo);
-
-            console.log('*** searchInfo ***');
-            console.log(_this.searchInfo);
         });
     };
 
     this.openDialog = function (item) {
+        var logID = sv.getLogInID();
 
-        console.log('*** cookies ***');
-        console.log($cookieStore);
-        console.log($cookieStore.get('SESSIONID'));
+        console.log(logID);
+        console.log(item.restrictedImage);
 
-        console.log(item);
         vm.parentCtrl.PAGE_SIZE = this.searchInfo.pageSize;
         vm.parentCtrl.currentPage = this.searchInfo.currentPage;
         vm.parentCtrl.searchInfo.maxTotal = this.searchInfo.pageSize;
-
-        console.log('*** searchInfo ***');
-        console.log(vm.parentCtrl);
+        vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
 
         var offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
         var url = '/primo-explore/fulldisplay?docid=' + item.pnx.control.recordid[0] + '&adaptor=' + item.adaptor + '&context=' + item.context + '&lang=' + vm.parentCtrl.$stateParams.lang + '&query=' + vm.parentCtrl.$stateParams.query + '&sortby=' + vm.parentCtrl.$stateParams.sortby + '&tab=' + vm.parentCtrl.$stateParams.tab + '&search_scope=' + vm.parentCtrl.$stateParams.search_scope + '&offset=' + offset + '&vid=' + vm.parentCtrl.$stateParams.vid + '&limit=' + this.searchInfo.pageSize + '&currentPage=' + this.searchInfo.currentPage + '&itemsPerPage=' + this.searchInfo.pageSize;
 
-        console.log(url);
-        //$window.location.href=url;
+        if (item.restrictedImage && logID === false) {
+            url = 'https://www.pin1.harvard.edu/cas/login?service=https://hollis.harvard.edu/pds?func=load-login&calling_system=primo&institute=HVD&lang=eng&url=https://qa.hollis.harvard.edu:443/primo_library/libweb/pdsLogin?targetURL=http://localhost:8003/primo-explore/search?vid=HVD_IMAGES&sortby=rank&lang=en%255FUS&from-new-ui=1&authenticationProfile=Profile+1';
+            $window.location.href = url;
+        } else {
+            $window.location.href = url;
+        }
+    };
+
+    // When a user press enter by using tab key
+    this.openDialog2 = function (e, item) {
+        if (e.which === 13) {
+            this.openDialog(item);
+        }
     };
 }]);
 
@@ -410,7 +435,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
     };
 
     // default page info
-    serviceObj.page = { 'pageSize': 40, 'totalItems': 0, 'currentPage': 1, 'query': '', 'searchString': '', 'totalPages': 0 };
+    serviceObj.page = { 'pageSize': 50, 'totalItems': 0, 'currentPage': 1, 'query': '', 'searchString': '', 'totalPages': 0 };
     // getter for page info
     serviceObj.getPage = function () {
         // localStorage page info exist, just use the old one
@@ -465,16 +490,50 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         return newData;
     };
 
+    // get user login ID
+    serviceObj.logID = false;
+    serviceObj.setLogInID = function (logID) {
+        serviceObj.logID = logID;
+    };
+
+    serviceObj.getLogInID = function () {
+        return serviceObj.logID;
+    };
+
     return serviceObj;
 }]);
 
+/**
+ * Created by samsan on 5/25/17.
+ * This component is to capture if user login or not
+ */
+
+angular.module('viewCustom').controller('prmUserAreaAfterController', ['angularLoad', 'prmSearchService', function (angularLoad, prmSearchService) {
+    var vm = this;
+    // initialize custom service search
+    var sv = prmSearchService;
+
+    // check if a user login
+    vm.$doCheck = function () {
+        var loginID = vm.parentCtrl.userSessionManagerService;
+        if (loginID.areaName) {
+            // capture user id and store into the service to use with restrict image validation
+            //sv.setLogInID(loginID.areaName);
+        }
+    };
+}]);
+
+angular.module('viewCustom').component('prmUserAreaAfter', {
+    bindings: { parentCtrl: '<' },
+    controller: 'prmUserAreaAfterController'
+});
 /**
  * Created by samsan on 5/23/17.
  * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
  */
 
 angular.module('viewCustom').component('thumbnail', {
-    template: '<img src="{{$ctrl.src}}" class="{{$ctrl.imgClass}}" alt="{{$ctrl.title}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img src="custom/HVD_IMAGES/img/icon_lock.png"/></div>',
+    template: '<img src="{{$ctrl.src}}" class="{{$ctrl.imgClass}}" alt="{{$ctrl.title}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>',
     bindings: {
         src: '<',
         title: '<',

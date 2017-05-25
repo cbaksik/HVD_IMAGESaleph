@@ -1,4 +1,4 @@
 
-angular.module('viewCustom', ['angularLoad','ngMaterial','cl.paging','ngCookies']);
+angular.module('viewCustom', ['angularLoad','cl.paging']);
 
 

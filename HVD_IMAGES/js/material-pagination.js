@@ -54,8 +54,8 @@
         };
     }
 
-    ClPagingController.$inject = ['$scope'];
-    function ClPagingController($scope) {
+    ClPagingController.$inject = ['$scope','$location','$anchorScroll'];
+    function ClPagingController($scope, $location, $anchorScroll) {
         var vm = this;
 
         vm.first = '<<';
@@ -67,27 +67,37 @@
 
         vm.goto = function (index) {
             $scope.clCurrentPage = vm.page[index];
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         vm.gotoPrev = function () {
             $scope.clCurrentPage = vm.index;
             vm.index -= vm.clSteps;
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         vm.gotoNext = function () {
             vm.index += vm.clSteps;
             $scope.clCurrentPage = vm.index + 1;
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         vm.gotoFirst = function () {
             vm.index = 0;
             $scope.clCurrentPage = 1;
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         vm.gotoLast = function () {
             vm.index = parseInt($scope.clPages / vm.clSteps) * vm.clSteps;
             vm.index === $scope.clPages ? vm.index = vm.index - vm.clSteps : '';
             $scope.clCurrentPage = $scope.clPages;
+            $location.hash('searchResultList');
+            $anchorScroll();
         };
 
         $scope.$watch('clCurrentPage', function (value) {
