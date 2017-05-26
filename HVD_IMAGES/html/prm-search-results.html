@@ -6,9 +6,9 @@
     </div>
  <div class="hvfullsize">
      <ul class="hvInline">
-     <li role="image item" ng-repeat="item in $ctrl.items track by $index" ng-mouseEnter="$ctrl.showTooltip($index)" ng-focus="$ctrl.showTooltip($index)" ng-blur="$ctrl.hideTooltip()" ng-mouseLeave="$ctrl.hideTooltip()" ng-click="$ctrl.openDialog(item)" ng-keypress="$ctrl.openDialog2($event,item)" tabindex="0" aria-label="Go to {{item.pnx.display.title[0]}}">
+     <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index" ng-mouseEnter="$ctrl.showTooltip($index)" ng-focus="$ctrl.showTooltip($index)" ng-blur="$ctrl.hideTooltip()" ng-mouseLeave="$ctrl.hideTooltip()" ng-click="$ctrl.openDialog(item)" ng-keypress="$ctrl.openDialog2($event,item)" tabindex="0" aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
          <div class="hvbox">
-             <div ng-if="item.pnx.display.lds20[0] > 1" class="badge" aria-label="{{item.pnx.display.lds28[0]|countFilter}}}">{{item.pnx.display.lds28[0]|countFilter}}</div>
+             <label role="multiple images" ng-if="item.pnx.display.lds20[0] > 1" class="badge" aria-label="{{item.pnx.display.lds28[0]|countFilter}}}">{{item.pnx.display.lds28[0]|countFilter}}</label>
              <div ng-if="item.pnx.display.lds20[0] < 2" class="nobadge">&nbsp;</div>
              <div class="photo" ng-if="item.pnx.links.thumbnail">
                  <thumbnail src="item.pnx.links.thumbnail[0]" title="item.pnx.display.title[0]" restricted="item.restrictedImage"></thumbnail>

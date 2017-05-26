@@ -1,5 +1,5 @@
 angular.module('viewCustom')
-    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window', function ($sce, angularLoad, prmSearchService, $window) {
+    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$timeout', function ($sce, angularLoad, prmSearchService, $window, $timeout) {
     // local variables
     this.tooltip = {'flag':[]};
     // show tooltip function when mouse over
@@ -145,14 +145,11 @@ angular.module('viewCustom')
 
 
     this.openDialog=function (item) {
+        // get user login status, true for login, false for not login
         let logID=sv.getLogInID();
-
-        console.log(logID);
-        console.log(item.restrictedImage);
-
-        vm.parentCtrl.PAGE_SIZE=this.searchInfo.pageSize;
-        vm.parentCtrl.currentPage=this.searchInfo.currentPage;
-        vm.parentCtrl.searchInfo.maxTotal = this.searchInfo.pageSize;
+        //vm.parentCtrl.PAGE_SIZE=this.searchInfo.pageSize;
+        //vm.parentCtrl.currentPage=this.searchInfo.currentPage;
+        //vm.parentCtrl.searchInfo.maxTotal = this.searchInfo.pageSize;
         vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
 
         let offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
@@ -162,8 +159,14 @@ angular.module('viewCustom')
         '&offset='+offset+'&vid='+vm.parentCtrl.$stateParams.vid +'&limit='+this.searchInfo.pageSize+'&currentPage='+this.searchInfo.currentPage +'&itemsPerPage='+this.searchInfo.pageSize;
 
         if(item.restrictedImage && logID===false) {
-            url='https://www.pin1.harvard.edu/cas/login?service=https://hollis.harvard.edu/pds?func=load-login&calling_system=primo&institute=HVD&lang=eng&url=https://qa.hollis.harvard.edu:443/primo_library/libweb/pdsLogin?targetURL=http://localhost:8003/primo-explore/search?vid=HVD_IMAGES&sortby=rank&lang=en%255FUS&from-new-ui=1&authenticationProfile=Profile+1';
-            $window.location.href = url;
+            // if image is restricted and user is not login, trigger click event on user login button through dom
+            var doc=document.getElementsByClassName('user-menu-button')[1];
+            $timeout(function (e) {
+                doc.click();
+                var prmTag=document.getElementsByTagName('prm-authentication')[1];
+                var button = prmTag.getElementsByTagName('button');
+                button[0].click();
+            },500);
         } else {
            $window.location.href = url;
         }

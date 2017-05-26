@@ -10,7 +10,7 @@ angular.module('viewCustom')
 
 
         console.log('*** prm authentication after ***');
-        console.log(vm.parentCtrl);
+        console.log(vm);
 
         // check if a user login
         vm.$doCheck=function(){
