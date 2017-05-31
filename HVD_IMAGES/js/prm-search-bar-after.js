@@ -10,14 +10,18 @@ angular.module('viewCustom')
         // get page object
         let pageObj=sv.getPage();
 
-        console.log('*** pageObj ****');
-        console.log(pageObj);
 
-        // number items per page to display from search box, updated the limit size in http request
-        vm.parentCtrl.searchService.searchStateService.resultsBulkSize=pageObj.pageSize;
+        vm.$onInit=function() {
+            // number items per page to display from search box, updated the limit size in http request
+            vm.parentCtrl.searchService.searchStateService.resultsBulkSize = pageObj.pageSize;
+            pageObj.currentPage = 1;
+            pageObj.totalItems = 0;
+            pageObj.totalPages = 0;
+            sv.setPage(pageObj);
 
-        console.log('*** parentCtrl of search bar ***');
-        console.log(vm.parentCtrl);
+            console.log('*** parentCtrl of search bar ***');
+            console.log(vm.parentCtrl);
+        }
 
     }]);
 
@@ -26,7 +30,8 @@ angular.module('viewCustom')
 angular.module('viewCustom')
     .component('prmSearchBarAfter', {
         bindings: {parentCtrl: '='},
-        controller: 'prmSearchBarAfterController'
+        controller: 'prmSearchBarAfterController',
+        'template':`<div id="searchResultList"></div>`
     });
 
 

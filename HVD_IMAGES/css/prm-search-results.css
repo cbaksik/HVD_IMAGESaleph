@@ -117,3 +117,17 @@ cl-paging > button.md-icon-button {
 .hvPanel {
   margin-bottom:50px;
 }
+
+.bigCloseIcon {
+  width:100px;
+  height:100px;
+  fill:#FFF;
+  stroke:#ccc;
+  stroke-width: 2;
+  position: fixed;
+  left:30px;
+  top:50%;
+
+}
+
+.fullscreen {  height: 100vh; width: auto;}

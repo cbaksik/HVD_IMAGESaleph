@@ -17,6 +17,9 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  *
+ * Github - use bower install - from this url https://github.com/Crawlink/material-angular-paging
+ * Modify by Sam San
+ *
  */
 
 
@@ -67,6 +70,7 @@
 
         vm.goto = function (index) {
             $scope.clCurrentPage = vm.page[index];
+            // customize scroll up
             $location.hash('searchResultList');
             $anchorScroll();
         };
@@ -81,6 +85,7 @@
         vm.gotoNext = function () {
             vm.index += vm.clSteps;
             $scope.clCurrentPage = vm.index + 1;
+            // customize to scroll up
             $location.hash('searchResultList');
             $anchorScroll();
         };
@@ -88,6 +93,7 @@
         vm.gotoFirst = function () {
             vm.index = 0;
             $scope.clCurrentPage = 1;
+            // customize to scroll up
             $location.hash('searchResultList');
             $anchorScroll();
         };
@@ -96,6 +102,7 @@
             vm.index = parseInt($scope.clPages / vm.clSteps) * vm.clSteps;
             vm.index === $scope.clPages ? vm.index = vm.index - vm.clSteps : '';
             $scope.clCurrentPage = $scope.clPages;
+            // customize to scroll up
             $location.hash('searchResultList');
             $anchorScroll();
         };

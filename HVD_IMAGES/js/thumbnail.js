@@ -5,7 +5,7 @@
 
 angular.module('viewCustom')
     .component('thumbnail', {
-        template:`<img src="{{$ctrl.src}}" class="{{$ctrl.imgClass}}" alt="{{$ctrl.title}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>`,
+        template:`<img src="/primo-explore/custom/HVD_IMAGES/img/ajax-loader.gif" class="{{$ctrl.imgClass}}" alt="{{$ctrl.title}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>`,
         bindings: {
           src:'<',
           title: '<',
@@ -14,16 +14,28 @@ angular.module('viewCustom')
         controller:function ($element) {
             var vm=this;
             vm.imgClass='';
+            vm.hideLockIcon=true;
             // check if image is not empty and it has width and height and greater than 150, then add css class
-            vm.$doCheck=function () {
+            vm.$onChanges=function () {
                 if(vm.src) {
                     var img=$element[0].firstChild;
-                    if(img.height > 150){
-                        vm.imgClass='responsivePhoto';
+                    // use default image if it is a broken link image
+                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                    if(pattern.test(vm.src)) {
+                        img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                    } else {
+                        img.src = vm.src;
                     }
-
+                    img.onload=vm.callback;
                 }
             };
+            vm.callback=function () {
+                var image=$element[0].firstChild;
+                if(image.height > 150){
+                    vm.imgClass='responsivePhoto';
+                }
+                vm.hideLockIcon=false;
+            }
 
         }
     });

@@ -43,7 +43,7 @@ angular.module('viewCustom')
     };
 
     // maninpulate data and convert xml data to json
-    serviceObj.covertData=function (data) {
+    serviceObj.convertData=function (data) {
        var newData=[];
        for(var i=0; i < data.length; i++){
            var obj=data[i];

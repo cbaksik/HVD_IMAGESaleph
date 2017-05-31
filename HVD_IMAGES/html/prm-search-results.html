@@ -1,12 +1,15 @@
-<md-content layout-padding ng-cloak class="hvPanel" id="searchResultList">
+<md-icon ng-if="$ctrl.modalDialogFlag" md-svg-icon="primo-ui:close" aria-label="Close icon" class="bigCloseIcon"></md-icon>
+
+<md-content layout-padding ng-cloak class="hvPanel" ng-if="$ctrl.searchInProgress===false">
     <div layout="row" layout-align="center center">
         <label flex ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
              {{$ctrl.searchInfo.totalItems|number}} results
         </label>
     </div>
- <div class="hvfullsize">
+    <div class="hvfullsize">
      <ul class="hvInline">
-     <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index" ng-mouseEnter="$ctrl.showTooltip($index)" ng-focus="$ctrl.showTooltip($index)" ng-blur="$ctrl.hideTooltip()" ng-mouseLeave="$ctrl.hideTooltip()" ng-click="$ctrl.openDialog(item)" ng-keypress="$ctrl.openDialog2($event,item)" tabindex="0" aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
+     <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index" ng-mouseEnter="$ctrl.showTooltip($index)" ng-focus="$ctrl.showTooltip($index)" ng-blur="$ctrl.hideTooltip()" ng-mouseLeave="$ctrl.hideTooltip()"  tabindex="0" aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}"
+         ng-click="$ctrl.openDialog($event,item)" ng-keypress="$ctrl.openDialog2($event,item)">
          <div class="hvbox">
              <label role="multiple images" ng-if="item.pnx.display.lds20[0] > 1" class="badge" aria-label="{{item.pnx.display.lds28[0]|countFilter}}}">{{item.pnx.display.lds28[0]|countFilter}}</label>
              <div ng-if="item.pnx.display.lds20[0] < 2" class="nobadge">&nbsp;</div>
@@ -20,10 +23,16 @@
                  {{item.pnx.display.title[0]}}
              </div>
          </div>
+
      </li>
      </ul>
- </div>
+     <!-- NO result show this message -->
+     <h3 ng-if="$ctrl.items.length===0">
+        No search result is found
+     </h3>
+    </div>
 
+    <!-- pagination start here -->
     <div layout="row" layout-align="center center">
         <label flex="20" ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
             {{$ctrl.pageCounter.min|number}} - {{$ctrl.pageCounter.max|number}} of {{$ctrl.searchInfo.totalItems|number}}
@@ -32,7 +41,5 @@
             <cl-paging flex cl-pages="$ctrl.searchInfo.totalPages" cl-steps="6" cl-page-changed="$ctrl.pageChanged($ctrl.searchInfo.currentPage)" cl-align="start start" cl-current-page="$ctrl.searchInfo.currentPage"></cl-paging>
         </div>
     </div>
-
+    <!-- end pagination -->
 </md-content>
-
-
