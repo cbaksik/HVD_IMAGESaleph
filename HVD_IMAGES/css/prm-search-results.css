@@ -131,3 +131,8 @@ cl-paging > button.md-icon-button {
 }
 
 .fullscreen {  height: 100vh; width: auto;}
+
+.responsiveImage {
+  width:500px;
+  height: auto;
+}

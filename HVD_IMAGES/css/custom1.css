@@ -662,17 +662,8 @@ div.hollis-logo a:hover {
 	box-shadow: inset 0 -1px 0 0 #fff;
 }
 	
-.full-view-section.loc-altemtrics{
-    background-color:#f3f3f3;
-    margin-top:0px;
-    padding-left: 10px;
-    width:inherit;
-    overflow-x: auto;
-}
 
-.bigPhoto {
-    
-}
+
 
 .hvfullsize {
   width: 100%;
@@ -806,3 +797,8 @@ cl-paging > button.md-icon-button {
 }
 
 .fullscreen {  height: 100vh; width: auto;}
+
+.responsiveImage {
+  width:500px;
+  height: auto;
+}

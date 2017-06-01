@@ -11,7 +11,7 @@ angular.module('viewCustom')
         let pageObj=sv.getPage();
 
 
-        vm.$onInit=function() {
+        vm.$onChanges=function() {
             // number items per page to display from search box, updated the limit size in http request
             vm.parentCtrl.searchService.searchStateService.resultsBulkSize = pageObj.pageSize;
             pageObj.currentPage = 1;

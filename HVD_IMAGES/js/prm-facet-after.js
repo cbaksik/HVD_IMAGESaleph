@@ -12,7 +12,7 @@ angular.module('viewCustom')
 
 
 
-        vm.$doCheck=function() {
+        vm.$onChanges=function() {
 
             var prmTag=document.getElementsByTagName('prm-facet-exact');
 

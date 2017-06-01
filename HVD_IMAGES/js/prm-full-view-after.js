@@ -2,13 +2,17 @@
  * Created by samsan on 5/17/17.
  */
 angular.module('viewCustom')
-    .controller('FullViewAfterController', [ '$sce', 'angularLoad','prmSearchService', function ($sce, angularLoad, prmSearchService) {
+    .controller('prmFullViewAfterController', [ '$sce', 'angularLoad','prmSearchService', function ($sce, angularLoad, prmSearchService) {
 
 
         let vm = this;
+        let sv=prmSearchService;
+        vm.item=sv.getItem();
 
-        console.log('*** full view after ***');
-        console.log(vm.parentCtrl);
+        vm.$onChanges=function() {
+           console.log('**** online item ***');
+           console.log(vm.item);
+        }
 
 
     }]);
@@ -18,7 +22,7 @@ angular.module('viewCustom')
     .component('prmFullViewAfter', {
         bindings: {parentCtrl: '='},
         controller: 'prmFullViewAfterController',
-        'template':`<h1>Full View After Template</h1>`
+        'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
     });
 
 

@@ -83,9 +83,6 @@ angular.module('viewCustom')
                 console.log('*** vm.items in search function ***');
                 console.log(vm.items);
 
-                console.log('*** data from ajax call ***');
-                console.log(mydata);
-
                 // stop the ajax loader progress bar
                 vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=false;
                 vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=false;
@@ -183,15 +180,9 @@ angular.module('viewCustom')
     this.openDialog=function ($event,item) {
         // get user login status, true for login, false for not login
         let logID=sv.getLogInID();
+        sv.setItem(item);
 
         vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
-
-        let offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
-        let url='/primo-explore/fulldisplay?docid='+item.pnx.control.recordid[0]+'&adaptor='+
-        item.adaptor+'&context='+item.context+'&lang='+vm.parentCtrl.$stateParams.lang+'&query='+vm.parentCtrl.$stateParams.query+
-        '&sortby='+vm.parentCtrl.$stateParams.sortby+'&tab='+vm.parentCtrl.$stateParams.tab+'&search_scope='+vm.parentCtrl.$stateParams.search_scope+
-        '&offset='+offset+'&vid='+vm.parentCtrl.$stateParams.vid +'&limit='+this.searchInfo.pageSize+'&currentPage='+this.searchInfo.currentPage +'&itemsPerPage='+this.searchInfo.pageSize;
-        item.url=url;
 
         if(item.restrictedImage && logID===false) {
             // if image is restricted and user is not login, trigger click event on user login button through dom
@@ -203,9 +194,7 @@ angular.module('viewCustom')
                 button[0].click();
             },500);
         } else {
-            //$window.location.href = url;
-            console.log('*** I am here ***');
-            console.log(url);
+           // modal dialog pop up here
             $mdDialog.show({
                 title:'Full View Details',
                 target:$event,

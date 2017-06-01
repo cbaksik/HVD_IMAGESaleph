@@ -13,7 +13,7 @@ angular.module('viewCustom')
         console.log(vm);
 
         // check if a user login
-        vm.$doCheck=function(){
+        vm.$onChanges=function(){
             // This flag is return true or false
             let loginID=vm.parentCtrl.isLoggedIn;
             sv.setLogInID(loginID);

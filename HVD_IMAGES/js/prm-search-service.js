@@ -37,8 +37,16 @@ angular.module('viewCustom')
         serviceObj.page=pageInfo;
     };
 
+    // replace & . It cause error in firefox;
+    serviceObj.removeInvalidString=function (str) {
+        var pattern=/[\&]/;
+        return str.replace(pattern,'');
+    };
+
     //parse xml
     serviceObj.parseXml=function (str) {
+
+        str=serviceObj.removeInvalidString(str);
         return xmlToJSON.parseString(str);
     };
 
@@ -48,17 +56,32 @@ angular.module('viewCustom')
        for(var i=0; i < data.length; i++){
            var obj=data[i];
            obj.restrictedImage=false;
+
            if(obj.pnx.addata.mis1.length > 0) {
                var xml = obj.pnx.addata.mis1[0];
                var jsonData = serviceObj.parseXml(xml);
+               console.log('*** index = '+i);
+               console.log(jsonData);
+
                if (jsonData.work) {
+                   // it has a single image
                    obj.mis1Data = jsonData.work[0];
                    if (jsonData.work[0].surrogate) {
                        if(jsonData.work[0].surrogate[0].image) {
                            obj.restrictedImage = jsonData.work[0].surrogate[0].image[0]._attr.restrictedImage._value;
                        }
+                   } else if(jsonData.work[0].image[0]) {
+                       obj.restrictedImage = jsonData.work[0].image[0]._attr.restrictedImage._value;
                    }
 
+               } else if(jsonData.group) {
+                   // it has multiple images
+                   obj.mis1Data = jsonData.group[0].subwork;
+                   for(var k=0; k < obj.mis1Data.length; k++){
+                       if(obj.mis1Data[k].image[0]._attr.restrictedImage._value) {
+                           obj.restrictedImage=obj.mis1Data[k].image[0]._attr.restrictedImage._value;
+                       }
+                   }
                }
 
            }
@@ -82,6 +105,16 @@ angular.module('viewCustom')
 
     serviceObj.getLogInID=function () {
         return serviceObj.logID;
+    };
+
+    // getter and setter for item data for view full detail page
+    serviceObj.item={};
+    serviceObj.setItem=function (item) {
+        serviceObj.item=item;
+    };
+
+    serviceObj.getItem=function() {
+        return serviceObj.item;
     };
 
 

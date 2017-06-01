@@ -7,15 +7,19 @@ angular.module('viewCustom', ['angularLoad', 'cl.paging']);
 /**
  * Created by samsan on 5/17/17.
  */
-angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', '$http', 'prmSearchService', '$window', 'items', function ($sce, angularLoad, $http, prmSearchService, $window, items) {
+angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', 'prmSearchService', 'items', function ($sce, angularLoad, prmSearchService, items) {
     // local variables
-    console.log('*** local items from dialog ***');
-    console.log(items);
-
     var vm = this;
     vm.item = items;
+    // hide virtual browse shelf section on the page
+    if (vm.item.enrichment.virtualBrowseObject) {
+        vm.item.enrichment.virtualBrowseObject.isVirtualBrowseEnabled = false;
+    }
+    // hide online
+    console.log(vm.item.delivery.GetIt1[0].links[0].isLinktoOnline);
+    vm.item.delivery.GetIt1[0].links[0].isLinktoOnline = false;
 
-    console.log('*** full view after ***');
+    console.log('*** vm.item of dialog ***');
     console.log(vm.item);
 }]);
 
@@ -158,7 +162,7 @@ angular.module('viewCustom').controller('prmAuthenticationAfterController', ['an
     console.log(vm);
 
     // check if a user login
-    vm.$doCheck = function () {
+    vm.$onChanges = function () {
         // This flag is return true or false
         var loginID = vm.parentCtrl.isLoggedIn;
         sv.setLogInID(loginID);
@@ -181,7 +185,7 @@ angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad
     // get page object
     var pageObj = sv.getPage();
 
-    vm.$doCheck = function () {
+    vm.$onChanges = function () {
 
         var prmTag = document.getElementsByTagName('prm-facet-exact');
 
@@ -210,18 +214,22 @@ angular.module('viewCustom').component('prmFacetAfter', {
 /**
  * Created by samsan on 5/17/17.
  */
-angular.module('viewCustom').controller('FullViewAfterController', ['$sce', 'angularLoad', 'prmSearchService', function ($sce, angularLoad, prmSearchService) {
+angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'angularLoad', 'prmSearchService', function ($sce, angularLoad, prmSearchService) {
 
     var vm = this;
+    var sv = prmSearchService;
+    vm.item = sv.getItem();
 
-    console.log('*** full view after ***');
-    console.log(vm.parentCtrl);
+    vm.$onChanges = function () {
+        console.log('**** online item ***');
+        console.log(vm.item);
+    };
 }]);
 
 angular.module('viewCustom').component('prmFullViewAfter', {
     bindings: { parentCtrl: '=' },
     controller: 'prmFullViewAfterController',
-    'template': '<h1>Full View After Template</h1>'
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
 });
 
 /**
@@ -235,7 +243,7 @@ angular.module('viewCustom').controller('prmSearchBarAfterController', ['angular
     // get page object
     var pageObj = sv.getPage();
 
-    vm.$onInit = function () {
+    vm.$onChanges = function () {
         // number items per page to display from search box, updated the limit size in http request
         vm.parentCtrl.searchService.searchStateService.resultsBulkSize = pageObj.pageSize;
         pageObj.currentPage = 1;
@@ -335,9 +343,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             console.log('*** vm.items in search function ***');
             console.log(vm.items);
 
-            console.log('*** data from ajax call ***');
-            console.log(mydata);
-
             // stop the ajax loader progress bar
             vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
             vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = false;
@@ -433,12 +438,9 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     this.openDialog = function ($event, item) {
         // get user login status, true for login, false for not login
         var logID = sv.getLogInID();
+        sv.setItem(item);
 
         vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
-
-        var offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
-        var url = '/primo-explore/fulldisplay?docid=' + item.pnx.control.recordid[0] + '&adaptor=' + item.adaptor + '&context=' + item.context + '&lang=' + vm.parentCtrl.$stateParams.lang + '&query=' + vm.parentCtrl.$stateParams.query + '&sortby=' + vm.parentCtrl.$stateParams.sortby + '&tab=' + vm.parentCtrl.$stateParams.tab + '&search_scope=' + vm.parentCtrl.$stateParams.search_scope + '&offset=' + offset + '&vid=' + vm.parentCtrl.$stateParams.vid + '&limit=' + this.searchInfo.pageSize + '&currentPage=' + this.searchInfo.currentPage + '&itemsPerPage=' + this.searchInfo.pageSize;
-        item.url = url;
 
         if (item.restrictedImage && logID === false) {
             // if image is restricted and user is not login, trigger click event on user login button through dom
@@ -450,9 +452,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
                 button[0].click();
             }, 500);
         } else {
-            //$window.location.href = url;
-            console.log('*** I am here ***');
-            console.log(url);
+            // modal dialog pop up here
             $mdDialog.show({
                 title: 'Full View Details',
                 target: $event,
@@ -560,8 +560,16 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         serviceObj.page = pageInfo;
     };
 
+    // replace & . It cause error in firefox;
+    serviceObj.removeInvalidString = function (str) {
+        var pattern = /[\&]/;
+        return str.replace(pattern, '');
+    };
+
     //parse xml
     serviceObj.parseXml = function (str) {
+
+        str = serviceObj.removeInvalidString(str);
         return xmlToJSON.parseString(str);
     };
 
@@ -571,14 +579,29 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         for (var i = 0; i < data.length; i++) {
             var obj = data[i];
             obj.restrictedImage = false;
+
             if (obj.pnx.addata.mis1.length > 0) {
                 var xml = obj.pnx.addata.mis1[0];
                 var jsonData = serviceObj.parseXml(xml);
+                console.log('*** index = ' + i);
+                console.log(jsonData);
+
                 if (jsonData.work) {
+                    // it has a single image
                     obj.mis1Data = jsonData.work[0];
                     if (jsonData.work[0].surrogate) {
                         if (jsonData.work[0].surrogate[0].image) {
                             obj.restrictedImage = jsonData.work[0].surrogate[0].image[0]._attr.restrictedImage._value;
+                        }
+                    } else if (jsonData.work[0].image[0]) {
+                        obj.restrictedImage = jsonData.work[0].image[0]._attr.restrictedImage._value;
+                    }
+                } else if (jsonData.group) {
+                    // it has multiple images
+                    obj.mis1Data = jsonData.group[0].subwork;
+                    for (var k = 0; k < obj.mis1Data.length; k++) {
+                        if (obj.mis1Data[k].image[0]._attr.restrictedImage._value) {
+                            obj.restrictedImage = obj.mis1Data[k].image[0]._attr.restrictedImage._value;
                         }
                     }
                 }
@@ -604,8 +627,82 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         return serviceObj.logID;
     };
 
+    // getter and setter for item data for view full detail page
+    serviceObj.item = {};
+    serviceObj.setItem = function (item) {
+        serviceObj.item = item;
+    };
+
+    serviceObj.getItem = function () {
+        return serviceObj.item;
+    };
+
     return serviceObj;
 }]);
+
+/**
+ * Created by samsan on 5/17/17.
+ * This component is to insert images into online section
+ */
+angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce', 'angularLoad', 'prmSearchService', function ($sce, angularLoad, prmSearchService) {
+
+    var vm = this;
+    var sv = prmSearchService;
+    vm.item = sv.getItem();
+
+    vm.$onChanges = function () {
+        // hide more section to avoid display twice
+        var link2 = document.getElementById('getit_link2');
+        link2.style.display = 'none';
+    };
+}]);
+
+angular.module('viewCustom').component('prmViewOnlineAfter', {
+    bindings: { parentCtrl: '=' },
+    controller: 'prmViewOnlineAfterController',
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-view-online-after.html'
+});
+
+/**
+ * Created by samsan on 5/23/17.
+ * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
+ */
+
+angular.module('viewCustom').component('responsiveImage', {
+    template: '<img src="/primo-explore/custom/HVD_IMAGES/img/ajax-loader.gif" class="{{$ctrl.imgClass}}" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>',
+    bindings: {
+        src: '<',
+        imgtitle: '<',
+        restricted: '<'
+    },
+    controller: ['$element', function ($element) {
+        var vm = this;
+        vm.imgClass = '';
+        vm.hideLockIcon = true;
+        // check if image is not empty and it has width and height and greater than 150, then add css class
+        vm.$onChanges = function () {
+            if (vm.src) {
+                var img = $element[0].firstChild;
+                // use default image if it is a broken link image
+                var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                if (pattern.test(vm.src)) {
+                    img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                } else {
+                    img.src = vm.src;
+                }
+                img.onload = vm.callback;
+                console.log(vm.imgtitle);
+            }
+        };
+        vm.callback = function () {
+            var image = $element[0].firstChild;
+            if (image.width > 500) {
+                vm.imgClass = 'responsiveImage';
+            }
+            vm.hideLockIcon = false;
+        };
+    }]
+});
 
 /**
  * Created by samsan on 5/23/17.
@@ -619,7 +716,7 @@ angular.module('viewCustom').component('thumbnail', {
         title: '<',
         restricted: '<'
     },
-    controller: function controller($element) {
+    controller: ['$element', function ($element) {
         var vm = this;
         vm.imgClass = '';
         vm.hideLockIcon = true;
@@ -644,7 +741,7 @@ angular.module('viewCustom').component('thumbnail', {
             }
             vm.hideLockIcon = false;
         };
-    }
+    }]
 });
 
 /* Copyright 2015 William Summers, MetaTribal LLC
