@@ -17,7 +17,7 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['$sce
     }
     // hide online
     console.log(vm.item.delivery.GetIt1[0].links[0].isLinktoOnline);
-    vm.item.delivery.GetIt1[0].links[0].isLinktoOnline = false;
+    //vm.item.delivery.GetIt1[0].links[0].isLinktoOnline=false;
 
     console.log('*** vm.item of dialog ***');
     console.log(vm.item);
@@ -242,6 +242,8 @@ angular.module('viewCustom').controller('prmSearchBarAfterController', ['angular
     var sv = prmSearchService;
     // get page object
     var pageObj = sv.getPage();
+    // remove local storage
+    sv.removePageInfo();
 
     vm.$onChanges = function () {
         // number items per page to display from search box, updated the limit size in http request
@@ -250,9 +252,6 @@ angular.module('viewCustom').controller('prmSearchBarAfterController', ['angular
         pageObj.totalItems = 0;
         pageObj.totalPages = 0;
         sv.setPage(pageObj);
-
-        console.log('*** parentCtrl of search bar ***');
-        console.log(vm.parentCtrl);
     };
 }]);
 
@@ -339,10 +338,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         sv.getAjax(url, params, 'get').then(function (data) {
             var mydata = data.data;
             vm.items = sv.convertData(mydata.docs);
-
-            console.log('*** vm.items in search function ***');
-            console.log(vm.items);
-
             // stop the ajax loader progress bar
             vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
             vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = false;
@@ -458,7 +453,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
                 target: $event,
                 clickOutsideToClose: true,
                 escapeToClose: true,
-                ok: 'Close',
                 bindToController: true,
                 templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
                 controller: 'customFullViewDialogController',
@@ -481,6 +475,18 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     this.openDialog2 = function (e, item) {
         if (e.which === 13) {
             this.openDialog(e, item);
+        }
+    };
+    // close modal dialog of view full display
+    this.closeDialog = function () {
+        vm.modalDialogFlag = false;
+        $mdDialog.hide();
+    };
+
+    this.closeDialog2 = function (e) {
+        if (e.which === 13) {
+            vm.modalDialogFlag = false;
+            $mdDialog.hide();
         }
     };
 }]);
@@ -560,6 +566,13 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         serviceObj.page = pageInfo;
     };
 
+    // clear local storage
+    serviceObj.removePageInfo = function () {
+        if ($window.localStorage.getItem('pageInfo')) {
+            $window.localStorage.removeItem('pageInfo');
+        }
+    };
+
     // replace & . It cause error in firefox;
     serviceObj.removeInvalidString = function (str) {
         var pattern = /[\&]/;
@@ -568,7 +581,6 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
 
     //parse xml
     serviceObj.parseXml = function (str) {
-
         str = serviceObj.removeInvalidString(str);
         return xmlToJSON.parseString(str);
     };
@@ -583,9 +595,6 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
             if (obj.pnx.addata.mis1.length > 0) {
                 var xml = obj.pnx.addata.mis1[0];
                 var jsonData = serviceObj.parseXml(xml);
-                console.log('*** index = ' + i);
-                console.log(jsonData);
-
                 if (jsonData.work) {
                     // it has a single image
                     obj.mis1Data = jsonData.work[0];
@@ -593,7 +602,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                         if (jsonData.work[0].surrogate[0].image) {
                             obj.restrictedImage = jsonData.work[0].surrogate[0].image[0]._attr.restrictedImage._value;
                         }
-                    } else if (jsonData.work[0].image[0]) {
+                    } else if (jsonData.work[0].image) {
                         obj.restrictedImage = jsonData.work[0].image[0]._attr.restrictedImage._value;
                     }
                 } else if (jsonData.group) {
@@ -669,7 +678,7 @@ angular.module('viewCustom').component('prmViewOnlineAfter', {
  */
 
 angular.module('viewCustom').component('responsiveImage', {
-    template: '<img src="/primo-explore/custom/HVD_IMAGES/img/ajax-loader.gif" class="{{$ctrl.imgClass}}" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>',
+    template: '<img [ngSrc]="$ctrl.src" [ngClass]="$ctrl.imgClass" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>',
     bindings: {
         src: '<',
         imgtitle: '<',
@@ -691,13 +700,13 @@ angular.module('viewCustom').component('responsiveImage', {
                     img.src = vm.src;
                 }
                 img.onload = vm.callback;
-                console.log(vm.imgtitle);
             }
         };
         vm.callback = function () {
             var image = $element[0].firstChild;
-            if (image.width > 500) {
+            if (image.width > 600) {
                 vm.imgClass = 'responsiveImage';
+                image.className = vm.imgClass;
             }
             vm.hideLockIcon = false;
         };
@@ -710,15 +719,15 @@ angular.module('viewCustom').component('responsiveImage', {
  */
 
 angular.module('viewCustom').component('thumbnail', {
-    template: '<img src="/primo-explore/custom/HVD_IMAGES/img/ajax-loader.gif" class="{{$ctrl.imgClass}}" alt="{{$ctrl.title}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>',
+    template: '<img [ngSrc]="$ctrl.src"  [ng-class]="$ctrl.imgclass" alt="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>',
     bindings: {
         src: '<',
-        title: '<',
+        imgtitle: '<',
         restricted: '<'
     },
     controller: ['$element', function ($element) {
         var vm = this;
-        vm.imgClass = '';
+        vm.imgclass = 'responsivePhoto';
         vm.hideLockIcon = true;
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
@@ -737,8 +746,12 @@ angular.module('viewCustom').component('thumbnail', {
         vm.callback = function () {
             var image = $element[0].firstChild;
             if (image.height > 150) {
-                vm.imgClass = 'responsivePhoto';
+                vm.imgclass = 'responsivePhoto';
+                image.className = vm.imgclass;
+            } else {
+                vm.imgclass = '';
             }
+
             vm.hideLockIcon = false;
         };
     }]

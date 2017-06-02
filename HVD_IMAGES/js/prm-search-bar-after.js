@@ -9,7 +9,8 @@ angular.module('viewCustom')
         let sv=prmSearchService;
         // get page object
         let pageObj=sv.getPage();
-
+        // remove local storage
+        sv.removePageInfo();
 
         vm.$onChanges=function() {
             // number items per page to display from search box, updated the limit size in http request
@@ -19,8 +20,6 @@ angular.module('viewCustom')
             pageObj.totalPages = 0;
             sv.setPage(pageObj);
 
-            console.log('*** parentCtrl of search bar ***');
-            console.log(vm.parentCtrl);
         }
 
     }]);

@@ -37,6 +37,13 @@ angular.module('viewCustom')
         serviceObj.page=pageInfo;
     };
 
+    // clear local storage
+    serviceObj.removePageInfo=function () {
+      if($window.localStorage.getItem('pageInfo')) {
+          $window.localStorage.removeItem('pageInfo');
+      }
+    };
+
     // replace & . It cause error in firefox;
     serviceObj.removeInvalidString=function (str) {
         var pattern=/[\&]/;
@@ -45,7 +52,6 @@ angular.module('viewCustom')
 
     //parse xml
     serviceObj.parseXml=function (str) {
-
         str=serviceObj.removeInvalidString(str);
         return xmlToJSON.parseString(str);
     };
@@ -60,9 +66,6 @@ angular.module('viewCustom')
            if(obj.pnx.addata.mis1.length > 0) {
                var xml = obj.pnx.addata.mis1[0];
                var jsonData = serviceObj.parseXml(xml);
-               console.log('*** index = '+i);
-               console.log(jsonData);
-
                if (jsonData.work) {
                    // it has a single image
                    obj.mis1Data = jsonData.work[0];
@@ -70,7 +73,7 @@ angular.module('viewCustom')
                        if(jsonData.work[0].surrogate[0].image) {
                            obj.restrictedImage = jsonData.work[0].surrogate[0].image[0]._attr.restrictedImage._value;
                        }
-                   } else if(jsonData.work[0].image[0]) {
+                   } else if(jsonData.work[0].image) {
                        obj.restrictedImage = jsonData.work[0].image[0]._attr.restrictedImage._value;
                    }
 

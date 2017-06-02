@@ -12,7 +12,7 @@ angular.module('viewCustom')
         }
         // hide online
         console.log(vm.item.delivery.GetIt1[0].links[0].isLinktoOnline);
-        vm.item.delivery.GetIt1[0].links[0].isLinktoOnline=false;
+        //vm.item.delivery.GetIt1[0].links[0].isLinktoOnline=false;
 
         console.log('*** vm.item of dialog ***');
         console.log(vm.item);

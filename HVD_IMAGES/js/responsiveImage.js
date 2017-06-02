@@ -5,7 +5,7 @@
 
 angular.module('viewCustom')
     .component('responsiveImage', {
-        template:`<img src="/primo-explore/custom/HVD_IMAGES/img/ajax-loader.gif" class="{{$ctrl.imgClass}}" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>`,
+        template:`<img [ngSrc]="$ctrl.src" [ngClass]="$ctrl.imgClass" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>`,
         bindings: {
           src:'<',
           imgtitle: '<',
@@ -27,13 +27,13 @@ angular.module('viewCustom')
                         img.src = vm.src;
                     }
                     img.onload=vm.callback;
-                    console.log(vm.imgtitle);
                 }
             };
             vm.callback=function () {
                 var image=$element[0].firstChild;
-                if(image.width > 500){
+                if(image.width > 600){
                     vm.imgClass='responsiveImage';
+                    image.className=vm.imgClass;
                 }
                 vm.hideLockIcon=false;
             }

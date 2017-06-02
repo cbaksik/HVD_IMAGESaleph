@@ -5,15 +5,15 @@
 
 angular.module('viewCustom')
     .component('thumbnail', {
-        template:`<img src="/primo-explore/custom/HVD_IMAGES/img/ajax-loader.gif" class="{{$ctrl.imgClass}}" alt="{{$ctrl.title}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>`,
+        template:`<img [ngSrc]="$ctrl.src"  [ng-class]="$ctrl.imgclass" alt="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>`,
         bindings: {
           src:'<',
-          title: '<',
-          restricted:'<'
+          imgtitle: '<',
+          restricted:'<',
         },
         controller:['$element',function ($element) {
             var vm=this;
-            vm.imgClass='';
+            vm.imgclass='responsivePhoto';
             vm.hideLockIcon=true;
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
@@ -32,8 +32,12 @@ angular.module('viewCustom')
             vm.callback=function () {
                 var image=$element[0].firstChild;
                 if(image.height > 150){
-                    vm.imgClass='responsivePhoto';
+                    vm.imgclass='responsivePhoto';
+                    image.className=vm.imgclass;
+                } else {
+                    vm.imgclass='';
                 }
+
                 vm.hideLockIcon=false;
             }
 

@@ -672,14 +672,14 @@ div.hollis-logo a:hover {
 
 .hvInline {list-style: none; margin-left:-45px; margin-top: -20px;}
 
-.hvInline > li { display: inline-table; text-align: left; cursor: pointer;
+.hvInline > li { display: inline-table; text-align: left; cursor: pointer; display: -moz-inline-stack;
   margin-bottom:5px; margin-right:10px; width: auto; height:180px; vertical-align: top; padding:5px;}
 
  .badge {color: #ffffff; padding-left:5px; padding-right:5px; position: relative; bottom:-2px; font-size:80%;
-  display:inline-block; background:#666666; border-top-right-radius:3px; border-top-left-radius: 3px;}
+  display:inline-block; background:#666666; border-top-right-radius:3px; border-top-left-radius: 3px; z-index: 1;}
 
 .nobadge {color: #000000; padding:2px;
-  display:inline-block; }
+  display:inline-block; z-index:1; }
 
 
 .hvbox {
@@ -755,7 +755,7 @@ ul.pagination > li > .disabled  {
 
 
 .hvtooltip {
-  z-index: 100000;
+  z-index: 1000;
   background:#ffffff;
   color:#000000 !important;
   position: absolute;
@@ -788,17 +788,37 @@ cl-paging > button.md-icon-button {
   width:100px;
   height:100px;
   fill:#FFF;
-  stroke:#ccc;
-  stroke-width: 2;
-  position: fixed;
-  left:30px;
-  top:50%;
+  stroke:#FFF;
+  stroke-width: 2px;
+}
 
+.bigCloseIcon:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+  transition:0.4s;
+  transition-timing-function: ease-out;
+}
+
+.bigCloseIcon focus{
+  cursor: pointer;
+  transform: scale(1.05);
+  transition:0.4s;
+  transition-timing-function: ease-out;
 }
 
 .fullscreen {  height: 100vh; width: auto;}
 
 .responsiveImage {
-  width:500px;
+  width:600px;
   height: auto;
+}
+
+.horizontal-line {border-bottom:1px solid #c3c3c3; height:1px; width:auto;}
+.closeButton {
+  display: block;
+  position: fixed;
+  left:30px;
+  top:50%;
+  cursor: pointer;
+  z-index: 100000000;
 }

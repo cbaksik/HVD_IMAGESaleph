@@ -1,10 +1,12 @@
-<md-icon ng-if="$ctrl.modalDialogFlag" md-svg-icon="primo-ui:close" aria-label="Close icon" class="bigCloseIcon"></md-icon>
-
+<md-button class="md-raised md-button md-warn closeButton" ng-if="$ctrl.modalDialogFlag" ng-click="$ctrl.closeDialog()" ng-keypress="$ctrl.closeDialog2($event)">
+    <md-icon md-svg-icon="primo-ui:close" aria-label="Close icon" class="bigCloseIcon" tabindex="0"></md-icon>
+</md-button>
 <md-content layout-padding ng-cloak class="hvPanel" ng-if="$ctrl.searchInProgress===false">
     <div layout="row" layout-align="center center">
         <label flex ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
              {{$ctrl.searchInfo.totalItems|number}} results
         </label>
+        <div class="horizontal-line"></div>
     </div>
     <div class="hvfullsize">
      <ul class="hvInline">
@@ -14,7 +16,7 @@
              <label role="multiple images" ng-if="item.pnx.display.lds20[0] > 1" class="badge" aria-label="{{item.pnx.display.lds28[0]|countFilter}}}">{{item.pnx.display.lds28[0]|countFilter}}</label>
              <div ng-if="item.pnx.display.lds20[0] < 2" class="nobadge">&nbsp;</div>
              <div class="photo" ng-if="item.pnx.links.thumbnail">
-                 <thumbnail src="item.pnx.links.thumbnail[0]" title="item.pnx.display.title[0]" restricted="item.restrictedImage"></thumbnail>
+                 <thumbnail src="item.pnx.links.thumbnail[0]" imgtitle="item.pnx.display.title[0]" restricted="item.restrictedImage"></thumbnail>
              </div>
              <div class="nophoto" ng-if="!item.pnx.links.thumbnail"  aria-label="{{item.pnx.display.title[0]}}">
                  {{item.pnx.display.lds28[0]|countFilter}}

@@ -79,10 +79,6 @@ angular.module('viewCustom')
            .then(function (data) {
                 let mydata = data.data;
                 vm.items=sv.convertData( mydata.docs);
-
-                console.log('*** vm.items in search function ***');
-                console.log(vm.items);
-
                 // stop the ajax loader progress bar
                 vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=false;
                 vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=false;
@@ -200,7 +196,6 @@ angular.module('viewCustom')
                 target:$event,
                 clickOutsideToClose: true,
                 escapeToClose: true,
-                ok:'Close',
                 bindToController:true,
                 templateUrl:'/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
                 controller:'customFullViewDialogController',
@@ -225,7 +220,19 @@ angular.module('viewCustom')
         if(e.which===13){
             this.openDialog(e,item);
         }
-    }
+    };
+    // close modal dialog of view full display
+    this.closeDialog=function () {
+        vm.modalDialogFlag=false;
+        $mdDialog.hide();
+    };
+
+    this.closeDialog2=function(e) {
+        if(e.which===13) {
+            vm.modalDialogFlag = false;
+            $mdDialog.hide();
+        }
+    };
 
 }]);
 
