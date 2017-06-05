@@ -83,6 +83,8 @@ angular.module('viewCustom')
                 vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=false;
                 vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=false;
                 vm.searchInProgress=false;
+                console.log('*** ajax vm.items ***');
+                console.log(vm.items);
                },
             function (err) {
                console.log(err);
@@ -182,7 +184,7 @@ angular.module('viewCustom')
 
         if(item.restrictedImage && logID===false) {
             // if image is restricted and user is not login, trigger click event on user login button through dom
-            var doc=document.getElementsByClassName('user-menu-button')[1];
+            var doc=document.getElementsByClassName('user-menu-button')[0];
             $timeout(function (e) {
                 doc.click();
                 var prmTag=document.getElementsByTagName('prm-authentication')[1];
@@ -201,6 +203,7 @@ angular.module('viewCustom')
                 controller:'customFullViewDialogController',
                 controllerAs:'vm',
                 fullscreen:true,
+                multiple:true,
                 locals: {
                     items:item
                 },

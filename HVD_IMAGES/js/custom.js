@@ -7,20 +7,24 @@ angular.module('viewCustom', ['angularLoad', 'cl.paging']);
 /**
  * Created by samsan on 5/17/17.
  */
-angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', 'prmSearchService', 'items', function ($sce, angularLoad, prmSearchService, items) {
+angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', 'items', function ($sce, angularLoad, items) {
     // local variables
     var vm = this;
     vm.item = items;
-    // hide virtual browse shelf section on the page
-    if (vm.item.enrichment.virtualBrowseObject) {
-        vm.item.enrichment.virtualBrowseObject.isVirtualBrowseEnabled = false;
-    }
-    // hide online
-    console.log(vm.item.delivery.GetIt1[0].links[0].isLinktoOnline);
-    //vm.item.delivery.GetIt1[0].links[0].isLinktoOnline=false;
+}]);
 
-    console.log('*** vm.item of dialog ***');
-    console.log(vm.item);
+/**
+ * Created by samsan on 6/5/17.
+ */
+
+angular.module('viewCustom').controller('customViewImageDialogController', ['$sce', 'angularLoad', 'items', '$mdDialog', function ($sce, angularLoad, items, $mdDialog) {
+    // local variables
+    var vm = this;
+    vm.item = items;
+
+    vm.closeImage = function () {
+        $mdDialog.hide();
+    };
 }]);
 
 /**
@@ -213,16 +217,42 @@ angular.module('viewCustom').component('prmFacetAfter', {
 
 /**
  * Created by samsan on 5/17/17.
+ * This template is for direct access full view display link when a user send email to someone
  */
-angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'angularLoad', 'prmSearchService', function ($sce, angularLoad, prmSearchService) {
+angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$timeout', function ($sce, angularLoad, prmSearchService, $timeout) {
 
-    var vm = this;
     var sv = prmSearchService;
-    vm.item = sv.getItem();
+    var vm = this;
+    vm.item = vm.parentCtrl.item;
 
     vm.$onChanges = function () {
-        console.log('**** online item ***');
-        console.log(vm.item);
+        vm.item = vm.parentCtrl.item;
+        if (vm.item.pnx) {
+            var item = [];
+            item[0] = vm.item;
+            item = sv.convertData(item);
+            vm.item = item[0];
+            sv.setItem(vm.item);
+            var logID = sv.getLogInID();
+            if (vm.item.restrictedImage === true && logID === false) {
+                // if image is restricted and user is not login, trigger click event on user login button through dom
+                var doc = document.getElementsByClassName('user-menu-button')[0];
+                $timeout(function (e) {
+                    doc.click();
+                    var prmTag = document.getElementsByTagName('prm-authentication')[1];
+                    var button = prmTag.getElementsByTagName('button');
+                    button[0].click();
+                }, 500);
+            }
+        }
+        // remove virtual browse shelf and more link
+        for (var i = 0; i < vm.parentCtrl.services.length; i++) {
+            if (vm.parentCtrl.services[i].serviceName === 'virtualBrowse') {
+                vm.parentCtrl.services.splice(i);
+            } else if (vm.parentCtrl.services[i].scrollId === 'getit_link2') {
+                vm.parentCtrl.services.splice(i);
+            }
+        }
     };
 }]);
 
@@ -342,6 +372,8 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
             vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = false;
             vm.searchInProgress = false;
+            console.log('*** ajax vm.items ***');
+            console.log(vm.items);
         }, function (err) {
             console.log(err);
             vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
@@ -439,7 +471,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
         if (item.restrictedImage && logID === false) {
             // if image is restricted and user is not login, trigger click event on user login button through dom
-            var doc = document.getElementsByClassName('user-menu-button')[1];
+            var doc = document.getElementsByClassName('user-menu-button')[0];
             $timeout(function (e) {
                 doc.click();
                 var prmTag = document.getElementsByTagName('prm-authentication')[1];
@@ -458,6 +490,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
                 controller: 'customFullViewDialogController',
                 controllerAs: 'vm',
                 fullscreen: true,
+                multiple: true,
                 locals: {
                     items: item
                 },
@@ -653,16 +686,55 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
  * Created by samsan on 5/17/17.
  * This component is to insert images into online section
  */
-angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce', 'angularLoad', 'prmSearchService', function ($sce, angularLoad, prmSearchService) {
+angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$mdDialog', '$timeout', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout) {
 
     var vm = this;
     var sv = prmSearchService;
     vm.item = sv.getItem();
 
     vm.$onChanges = function () {
-        // hide more section to avoid display twice
-        var link2 = document.getElementById('getit_link2');
-        link2.style.display = 'none';
+        // get item data from service
+        vm.item = sv.getItem();
+
+        console.log('*** prm view online after controller ***');
+        console.log(vm.item);
+        console.log(vm.parentCtrl);
+    };
+
+    vm.gotoFullPhoto = function ($event, item) {
+        var logID = sv.getLogInID();
+        if (item._attr.restrictedImage === true && logID === false) {
+            // if image is restricted and user is not login, trigger click event on user login button through dom
+            var doc = document.getElementsByClassName('user-menu-button')[1];
+            $timeout(function (e) {
+                doc.click();
+                var prmTag = document.getElementsByTagName('prm-authentication')[1];
+                var button = prmTag.getElementsByTagName('button');
+                button[0].click();
+            }, 500);
+        } else {
+
+            // modal dialog pop up here
+            $mdDialog.show({
+                title: 'View Image Dialog',
+                target: $event,
+                clickOutsideToClose: true,
+                escapeToClose: true,
+                bindToController: true,
+                templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-view-image-dialog.html',
+                controller: 'customViewImageDialogController',
+                controllerAs: 'vm',
+                multiple: true,
+                preserveScope: true,
+                autoWrap: true,
+                skipHide: true,
+                locals: {
+                    items: item
+                },
+                onComplete: function onComplete(scope, element) {},
+                onRemoving: function onRemoving(element, removePromise) {}
+            });
+        }
     };
 }]);
 
