@@ -12,13 +12,9 @@ angular.module('viewCustom')
         vm.$onChanges=function() {
            // get item data from service
            vm.item=sv.getItem();
-
-           console.log('*** prm view online after controller ***');
-           console.log(vm.item);
-           console.log(vm.parentCtrl);
-
         };
 
+        // show the pop up image
         vm.gotoFullPhoto=function ($event, item) {
             var logID=sv.getLogInID();
             if(item._attr.restrictedImage===true && logID===false) {
@@ -48,12 +44,6 @@ angular.module('viewCustom')
                     skipHide : true,
                     locals: {
                         items: item
-                    },
-                    onComplete: function (scope, element) {
-
-                    },
-                    onRemoving: function (element, removePromise) {
-
                     }
                 });
             }

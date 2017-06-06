@@ -6,15 +6,20 @@ angular.module('viewCustom', ['angularLoad', 'cl.paging']);
 
 /**
  * Created by samsan on 5/17/17.
+ * A custom modal dialog when a user click on thumbnail on search result list page
  */
 angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', 'items', function ($sce, angularLoad, items) {
     // local variables
     var vm = this;
     vm.item = items;
+
+    console.log('**** vm.item ***');
+    console.log(vm.item);
 }]);
 
 /**
  * Created by samsan on 6/5/17.
+ * A modal dialog pop up the image when a user click on thumbnail image in view full detail page
  */
 
 angular.module('viewCustom').controller('customViewImageDialogController', ['$sce', 'angularLoad', 'items', '$mdDialog', function ($sce, angularLoad, items, $mdDialog) {
@@ -22,6 +27,10 @@ angular.module('viewCustom').controller('customViewImageDialogController', ['$sc
     var vm = this;
     vm.item = items;
 
+    console.log('*** dialog item ***');
+    console.log(vm.item);
+
+    // close modal dialog when a user click on x icon
     vm.closeImage = function () {
         $mdDialog.hide();
     };
@@ -228,10 +237,13 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
     vm.$onChanges = function () {
         vm.item = vm.parentCtrl.item;
         if (vm.item.pnx) {
-            var item = [];
-            item[0] = vm.item;
-            item = sv.convertData(item);
-            vm.item = item[0];
+            // when a user access full view detail page, it has no mis1Data so it need to convert xml to json data
+            if (!vm.item.mis1Data) {
+                var item = [];
+                item[0] = vm.item;
+                item = sv.convertData(item);
+                vm.item = item[0];
+            }
             sv.setItem(vm.item);
             var logID = sv.getLogInID();
             if (vm.item.restrictedImage === true && logID === false) {
@@ -291,6 +303,9 @@ angular.module('viewCustom').component('prmSearchBarAfter', {
     'template': '<div id="searchResultList"></div>'
 });
 
+/* Author: Sam San
+ This custom component is used for search result list which display all the images in thumbnail.
+ */
 angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$window', '$timeout', '$mdDialog', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog) {
     // local variables
     this.tooltip = { 'flag': [] };
@@ -462,6 +477,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         });
     };
 
+    // open modal dialog when click on thumbnail image
     this.openDialog = function ($event, item) {
         // get user login status, true for login, false for not login
         var logID = sv.getLogInID();
@@ -563,6 +579,7 @@ angular.module('viewCustom').component('prmSearchResultListAfter', {
 
 /**
  * Created by samsan on 5/12/17.
+ * This custom service use to inject to the controller.
  */
 
 angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$filter', function ($http, $window, $filter) {
@@ -624,26 +641,52 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         for (var i = 0; i < data.length; i++) {
             var obj = data[i];
             obj.restrictedImage = false;
-
             if (obj.pnx.addata.mis1.length > 0) {
                 var xml = obj.pnx.addata.mis1[0];
                 var jsonData = serviceObj.parseXml(xml);
+                console.log('*** convertData ***');
+                console.log(jsonData);
+
                 if (jsonData.work) {
                     // it has a single image
-                    obj.mis1Data = jsonData.work[0];
                     if (jsonData.work[0].surrogate) {
-                        if (jsonData.work[0].surrogate[0].image) {
-                            obj.restrictedImage = jsonData.work[0].surrogate[0].image[0]._attr.restrictedImage._value;
+                        obj.mis1Data = jsonData.work[0].surrogate;
+                        if (obj.mis1Data.length === 1) {
+                            if (obj.mis1Data[0].image) {
+                                obj.restrictedImage = obj.mis1Data[0].image[0]._attr.restrictedImage._value;
+                            }
+                        } else {
+                            for (var j = 0; j < obj.mis1Data.length; j++) {
+                                if (obj.mis1Data[j].image) {
+                                    if (obj.mis1Data[j].image[0]._attr.restrictedImage) {
+                                        obj.restrictedImage = true;
+                                    }
+                                }
+                            }
                         }
-                    } else if (jsonData.work[0].image) {
-                        obj.restrictedImage = jsonData.work[0].image[0]._attr.restrictedImage._value;
+                    } else if (jsonData.work.length == 1) {
+                        obj.mis1Data = jsonData.work;
+                        if (obj.mis1Data[0].image) {
+                            obj.restrictedImage = obj.mis1Data[0].image[0]._attr.restrictedImage._value;
+                        }
+                    } else {
+                        obj.mis1Data = jsonData.work;
+                        if (obj.mis1Data) {
+                            for (var c = 0; c < obj.mis1Data.length; c++) {
+                                if (obj.mis1Data[c].image) {
+                                    obj.restrictedImage = obj.mis1Data[c].image[0]._attr.restrictedImage;
+                                }
+                            }
+                        }
                     }
                 } else if (jsonData.group) {
                     // it has multiple images
                     obj.mis1Data = jsonData.group[0].subwork;
-                    for (var k = 0; k < obj.mis1Data.length; k++) {
-                        if (obj.mis1Data[k].image[0]._attr.restrictedImage._value) {
-                            obj.restrictedImage = obj.mis1Data[k].image[0]._attr.restrictedImage._value;
+                    if (obj.mis1Data) {
+                        for (var k = 0; k < obj.mis1Data.length; k++) {
+                            if (obj.mis1Data[k].image) {
+                                obj.restrictedImage = obj.mis1Data[k].image[0]._attr.restrictedImage._value;
+                            }
                         }
                     }
                 }
@@ -695,12 +738,9 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
     vm.$onChanges = function () {
         // get item data from service
         vm.item = sv.getItem();
-
-        console.log('*** prm view online after controller ***');
-        console.log(vm.item);
-        console.log(vm.parentCtrl);
     };
 
+    // show the pop up image
     vm.gotoFullPhoto = function ($event, item) {
         var logID = sv.getLogInID();
         if (item._attr.restrictedImage === true && logID === false) {
@@ -730,9 +770,7 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
                 skipHide: true,
                 locals: {
                     items: item
-                },
-                onComplete: function onComplete(scope, element) {},
-                onRemoving: function onRemoving(element, removePromise) {}
+                }
             });
         }
     };
@@ -746,11 +784,12 @@ angular.module('viewCustom').component('prmViewOnlineAfter', {
 
 /**
  * Created by samsan on 5/23/17.
- * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
+ * If image width is greater than 600pixel, it will resize base on responsive css.
+ * It use to show a single image on the page. If the image does not exist, it use icon_image.png
  */
 
 angular.module('viewCustom').component('responsiveImage', {
-    template: '<img [ngSrc]="$ctrl.src" [ngClass]="$ctrl.imgClass" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>',
+    template: '<img [ngSrc]="$ctrl.src" [ngClass]="$ctrl.imgClass" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/lock_small.png" alt="Lock"/></div>',
     bindings: {
         src: '<',
         imgtitle: '<',
@@ -791,7 +830,7 @@ angular.module('viewCustom').component('responsiveImage', {
  */
 
 angular.module('viewCustom').component('thumbnail', {
-    template: '<img [ngSrc]="$ctrl.src"  [ng-class]="$ctrl.imgclass" alt="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>',
+    template: '<img [ngSrc]="$ctrl.src"  [ng-class]="$ctrl.imgclass" alt="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/lock_small.png"  alt="Lock"/></div>',
     bindings: {
         src: '<',
         imgtitle: '<',

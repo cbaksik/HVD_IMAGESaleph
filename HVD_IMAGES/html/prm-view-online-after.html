@@ -1,19 +1,13 @@
 <ul  class="hvInline">
-    <li ng-if="$ctrl.item.mis1Data.length > 0" ng-repeat="item in $ctrl.item.mis1Data track by $index" tabindex="0" ng-click="$ctrl.gotoFullPhoto($event,item)">
+    <li ng-if="$ctrl.item.mis1Data.length === 1 && $ctrl.item.mis1Data[0].image.length === 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" tabindex="0">
+
+        <responsive-image src="item.image[0]._attr.href._value" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></responsive-image>
+
+    </li>
+    <li ng-if="$ctrl.item.mis1Data.length === 1 && $ctrl.item.mis1Data[0].image.length > 1" ng-repeat="item in $ctrl.item.mis1Data[0].image track by $index" tabindex="0" ng-click="$ctrl.gotoFullPhoto($event,item)">
+        <thumbnail src="item.thumbnail[0]._attr.href._value" imgtitle="$ctrl.item.mis1Data[0].title[0].textElement[0]._text" restricted="item._attr.restrictedImage._value"></thumbnail>
+    </li>
+    <li ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" tabindex="0" ng-click="$ctrl.gotoFullPhoto($event,item.image[0])">
         <thumbnail src="item.image[0].thumbnail[0]._attr.href._value" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></thumbnail>
-    </li>
-    <li ng-if="$ctrl.item.mis1Data.image.length === 1" ng-repeat="item in $ctrl.item.mis1Data.image track by $index" tabindex="0">
-
-        <responsive-image src="item._attr.href._value" imgtitle="$ctrl.item.mis1Data.title[0].textElement[0]._text" restricted="item._attr.restrictedImage._value"></responsive-image>
-
-    </li>
-    <li ng-if="$ctrl.item.mis1Data.surrogate[0].image.length === 1" ng-repeat="item in $ctrl.item.mis1Data.surrogate[0].image track by $index" tabindex="0">
-        <responsive-image src="item._attr.href._value" imgtitle="$ctrl.item.mis1Data.surrogate[0].title[0].textElement[0]._text" restricted="item._attr.restrictedImage._value"></responsive-image>
-    </li>
-    <li ng-if="$ctrl.item.mis1Data.surrogate[0].image.length > 1" ng-repeat="item in $ctrl.item.mis1Data.surrogate[0].image track by $index" tabindex="0" ng-click="$ctrl.gotoFullPhoto($event,item)">
-        <thumbnail src="item.thumbnail[0]._attr.href._value" imgtitle="$ctrl.item.mis1Data.surrogate[0].title[0].textElement[0]._text" restricted="item._attr.restrictedImage._value"></thumbnail>
-    </li>
-    <li ng-if="$ctrl.item.mis1Data.image.length > 1" ng-repeat="item in $ctrl.item.mis1Data.image track by $index" tabindex="0" ng-click="$ctrl.gotoFullPhoto($event,item)">
-        <thumbnail src="item.thumbnail[0]._attr.href._value" imgtitle="$ctrl.item.mis1Data.title[0].textElement[0]._text" restricted="item._attr.restrictedImage._value"></thumbnail>
     </li>
 </ul>

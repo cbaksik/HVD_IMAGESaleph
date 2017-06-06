@@ -1,11 +1,12 @@
 /**
  * Created by samsan on 5/23/17.
- * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
+ * If image width is greater than 600pixel, it will resize base on responsive css.
+ * It use to show a single image on the page. If the image does not exist, it use icon_image.png
  */
 
 angular.module('viewCustom')
     .component('responsiveImage', {
-        template:`<img [ngSrc]="$ctrl.src" [ngClass]="$ctrl.imgClass" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>`,
+        template:`<img [ngSrc]="$ctrl.src" [ngClass]="$ctrl.imgClass" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/lock_small.png" alt="Lock"/></div>`,
         bindings: {
           src:'<',
           imgtitle: '<',

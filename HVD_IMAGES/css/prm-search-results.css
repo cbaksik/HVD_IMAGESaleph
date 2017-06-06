@@ -89,7 +89,7 @@ ul.pagination > li > .disabled  {
 
 
 .hvtooltip {
-  z-index: 1000;
+  z-index: 1000000;
   background:#ffffff;
   color:#000000 !important;
   position: absolute;
@@ -107,7 +107,13 @@ ul.pagination > li > .disabled  {
   position: absolute;
   z-index:1;
   float: right;
-  margin-top:-35px;
+  margin-top:-32px;
+}
+
+.lockIcon > img {
+   height:32px;
+   width: auto;
+  z-index:1;
 }
 
 cl-paging > button.md-icon-button {

@@ -5,7 +5,7 @@
 
 angular.module('viewCustom')
     .component('thumbnail', {
-        template:`<img [ngSrc]="$ctrl.src"  [ng-class]="$ctrl.imgclass" alt="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/icon_lock.png" alt="Lock"/></div>`,
+        template:`<img [ngSrc]="$ctrl.src"  [ng-class]="$ctrl.imgclass" alt="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/lock_small.png"  alt="Lock"/></div>`,
         bindings: {
           src:'<',
           imgtitle: '<',

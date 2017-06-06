@@ -1,3 +1,6 @@
+/* Author: Sam San
+ This custom component is used for search result list which display all the images in thumbnail.
+ */
 angular.module('viewCustom')
     .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$timeout','$mdDialog', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog) {
     // local variables
@@ -175,6 +178,7 @@ angular.module('viewCustom')
     };
 
 
+    // open modal dialog when click on thumbnail image
     this.openDialog=function ($event,item) {
         // get user login status, true for login, false for not login
         let logID=sv.getLogInID();

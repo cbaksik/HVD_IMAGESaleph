@@ -1,5 +1,6 @@
 /**
  * Created by samsan on 5/12/17.
+ * This custom service use to inject to the controller.
  */
 
 angular.module('viewCustom')
@@ -62,27 +63,54 @@ angular.module('viewCustom')
        for(var i=0; i < data.length; i++){
            var obj=data[i];
            obj.restrictedImage=false;
-
            if(obj.pnx.addata.mis1.length > 0) {
                var xml = obj.pnx.addata.mis1[0];
                var jsonData = serviceObj.parseXml(xml);
+               console.log('*** convertData ***');
+               console.log(jsonData);
+
                if (jsonData.work) {
                    // it has a single image
-                   obj.mis1Data = jsonData.work[0];
                    if (jsonData.work[0].surrogate) {
-                       if(jsonData.work[0].surrogate[0].image) {
-                           obj.restrictedImage = jsonData.work[0].surrogate[0].image[0]._attr.restrictedImage._value;
+                       obj.mis1Data = jsonData.work[0].surrogate;
+                       if(obj.mis1Data.length === 1) {
+                           if(obj.mis1Data[0].image) {
+                               obj.restrictedImage = obj.mis1Data[0].image[0]._attr.restrictedImage._value;
+                           }
+                       } else {
+                           for(var j=0; j < obj.mis1Data.length; j++) {
+                               if(obj.mis1Data[j].image) {
+                                   if(obj.mis1Data[j].image[0]._attr.restrictedImage) {
+                                       obj.restrictedImage = true;
+                                   }
+                               }
+                           }
                        }
-                   } else if(jsonData.work[0].image) {
-                       obj.restrictedImage = jsonData.work[0].image[0]._attr.restrictedImage._value;
+
+                   } else if(jsonData.work.length==1) {
+                       obj.mis1Data = jsonData.work;
+                       if(obj.mis1Data[0].image) {
+                           obj.restrictedImage = obj.mis1Data[0].image[0]._attr.restrictedImage._value;
+                       }
+                   } else {
+                       obj.mis1Data = jsonData.work;
+                       if(obj.mis1Data) {
+                           for (var c = 0; c < obj.mis1Data.length; c++) {
+                               if (obj.mis1Data[c].image) {
+                                   obj.restrictedImage = obj.mis1Data[c].image[0]._attr.restrictedImage;
+                               }
+                           }
+                       }
                    }
 
                } else if(jsonData.group) {
                    // it has multiple images
                    obj.mis1Data = jsonData.group[0].subwork;
-                   for(var k=0; k < obj.mis1Data.length; k++){
-                       if(obj.mis1Data[k].image[0]._attr.restrictedImage._value) {
-                           obj.restrictedImage=obj.mis1Data[k].image[0]._attr.restrictedImage._value;
+                   if(obj.mis1Data) {
+                       for (var k = 0; k < obj.mis1Data.length; k++) {
+                           if (obj.mis1Data[k].image) {
+                               obj.restrictedImage = obj.mis1Data[k].image[0]._attr.restrictedImage._value;
+                           }
                        }
                    }
                }

@@ -12,10 +12,13 @@ angular.module('viewCustom')
         vm.$onChanges=function() {
            vm.item=vm.parentCtrl.item;
            if(vm.item.pnx) {
-               var item=[];
-               item[0]=vm.item;
-               item=sv.convertData(item);
-               vm.item=item[0];
+               // when a user access full view detail page, it has no mis1Data so it need to convert xml to json data
+               if(!vm.item.mis1Data) {
+                   var item = [];
+                   item[0] = vm.item;
+                   item = sv.convertData(item);
+                   vm.item = item[0];
+               }
                sv.setItem(vm.item);
                var logID=sv.getLogInID();
                if(vm.item.restrictedImage===true && logID===false) {
