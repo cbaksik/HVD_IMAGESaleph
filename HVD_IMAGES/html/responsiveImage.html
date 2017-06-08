@@ -1,0 +1,9 @@
+<md-card>
+    <img ng-src="{{vm.src}}" class="md-card-image {{vm.localScope.imgClass}}" alt="{{vm.imgtitle}}" title="{{vm.imgtitle}}"/>
+    <div ng-if="vm.localScope.hideLockIcon">
+        <div class="lockIcon" tabindex="-1">
+            <img src="/custom/HVD_IMAGES/img/lock_small.png" alt="Lock" aria-label="Restricted image"/>
+        </div>
+    </div>
+    <span ng-if="vm.localScope.loading"><img class="md-avatar" src="/custom/HVD_IMAGES/img/ajax-loader.gif"/></span>
+</md-card>

@@ -1,4 +1,4 @@
-<md-button class="md-raised md-icon-button md-warn closeButton" ng-if="$ctrl.modalDialogFlag" ng-click="$ctrl.closeDialog()" ng-keypress="$ctrl.closeDialog2($event)">
+<md-button hide-xs hide-sm class="md-raised md-icon-button md-warn closeButton" ng-if="$ctrl.modalDialogFlag" ng-click="$ctrl.closeDialog()" ng-keypress="$ctrl.closeDialog2($event)">
     <md-icon md-svg-icon="primo-ui:close" aria-label="Close icon" class="bigCloseIcon" tabindex="0"></md-icon>
 </md-button>
 <md-content layout-padding ng-cloak class="hvPanel" ng-if="$ctrl.searchInProgress===false">
@@ -10,7 +10,7 @@
     </div>
     <div class="hvfullsize">
      <ul class="hvInline">
-     <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index" ng-mouseEnter="$ctrl.showTooltip($index)" ng-focus="$ctrl.showTooltip($index)" ng-blur="$ctrl.hideTooltip()" ng-mouseLeave="$ctrl.hideTooltip()"  tabindex="0" aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}"
+     <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index"  tabindex="0" aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}"
          ng-click="$ctrl.openDialog($event,item)" ng-keypress="$ctrl.openDialog2($event,item)">
          <div class="hvbox">
              <label role="multiple images" ng-if="item.pnx.display.lds20[0] > 1" class="badge" aria-label="{{item.pnx.display.lds28[0]|countFilter}}}">{{item.pnx.display.lds28[0]|countFilter}}</label>
@@ -20,9 +20,6 @@
              </div>
              <div class="nophoto" ng-if="!item.pnx.links.thumbnail"  aria-label="{{item.pnx.display.title[0]}}">
                  {{item.pnx.display.lds28[0]|countFilter}}
-             </div>
-             <div ng-if="$ctrl.tooltip.flag[$index]" class="hvtooltip" aria-label="Tooltip">
-                 {{item.pnx.display.title[0]}}
              </div>
          </div>
 

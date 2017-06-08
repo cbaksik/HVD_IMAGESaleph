@@ -47,8 +47,8 @@ angular.module('viewCustom')
 
     // replace & . It cause error in firefox;
     serviceObj.removeInvalidString=function (str) {
-        var pattern=/[\&]/;
-        return str.replace(pattern,'');
+        var pattern=/[\&]/g;
+        return str.replace(pattern,'&amp;');
     };
 
     //parse xml

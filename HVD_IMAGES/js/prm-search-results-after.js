@@ -208,6 +208,7 @@ angular.module('viewCustom')
                 controllerAs:'vm',
                 fullscreen:true,
                 multiple:true,
+                openFrom:{left:0},
                 locals: {
                     items:item
                 },

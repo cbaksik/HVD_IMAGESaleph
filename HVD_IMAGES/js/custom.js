@@ -8,13 +8,17 @@ angular.module('viewCustom', ['angularLoad', 'cl.paging']);
  * Created by samsan on 5/17/17.
  * A custom modal dialog when a user click on thumbnail on search result list page
  */
-angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', 'items', function ($sce, angularLoad, items) {
+angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', 'items', '$mdDialog', function ($sce, angularLoad, items, $mdDialog) {
     // local variables
     var vm = this;
     vm.item = items;
 
     console.log('**** vm.item ***');
     console.log(vm.item);
+
+    vm.closeDialog = function () {
+        $mdDialog.hide();
+    };
 }]);
 
 /**
@@ -26,9 +30,6 @@ angular.module('viewCustom').controller('customViewImageDialogController', ['$sc
     // local variables
     var vm = this;
     vm.item = items;
-
-    console.log('*** dialog item ***');
-    console.log(vm.item);
 
     // close modal dialog when a user click on x icon
     vm.closeImage = function () {
@@ -275,6 +276,26 @@ angular.module('viewCustom').component('prmFullViewAfter', {
 });
 
 /**
+ * Created by samsan on 6/8/17.
+ */
+angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angularLoad', 'prmSearchService', function ($sce, angularLoad, prmSearchService) {
+
+    var vm = this;
+    var sv = prmSearchService;
+
+    vm.$onChanges = function () {
+        // override the logo on top left corner
+        vm.parentCtrl.iconLink = 'custom/HVD_IMAGES/img/library-logo-small.png';
+    };
+}]);
+
+angular.module('viewCustom').component('prmLogoAfter', {
+    bindings: { parentCtrl: '=' },
+    controller: 'prmLogoAfterController',
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-logo-after.html'
+});
+
+/**
  * Created by samsan on 5/22/17.
  * Access search box json data. Then change the number item per page. See prm-search-service.js file
  */
@@ -507,6 +528,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
                 controllerAs: 'vm',
                 fullscreen: true,
                 multiple: true,
+                openFrom: { left: 0 },
                 locals: {
                     items: item
                 },
@@ -625,8 +647,8 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
 
     // replace & . It cause error in firefox;
     serviceObj.removeInvalidString = function (str) {
-        var pattern = /[\&]/;
-        return str.replace(pattern, '');
+        var pattern = /[\&]/g;
+        return str.replace(pattern, '&amp;');
     };
 
     //parse xml
@@ -789,37 +811,47 @@ angular.module('viewCustom').component('prmViewOnlineAfter', {
  */
 
 angular.module('viewCustom').component('responsiveImage', {
-    template: '<img [ngSrc]="$ctrl.src" [ngClass]="$ctrl.imgClass" alt="{{$ctrl.imgtitle}}" title="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/lock_small.png" alt="Lock"/></div>',
+    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/responsiveImage.html',
     bindings: {
         src: '<',
         imgtitle: '<',
         restricted: '<'
     },
+    controllerAs: 'vm',
     controller: ['$element', function ($element) {
         var vm = this;
-        vm.imgClass = '';
-        vm.hideLockIcon = true;
+        // set up local scope variables
+        vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
+
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
+            vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
             if (vm.src) {
-                var img = $element[0].firstChild;
+                var img = $element[0].firstChild.children[0];
                 // use default image if it is a broken link image
                 var pattern = /^(onLoad\?)/; // the broken image start with onLoad
                 if (pattern.test(vm.src)) {
                     img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-                } else {
-                    img.src = vm.src;
                 }
                 img.onload = vm.callback;
             }
         };
         vm.callback = function () {
-            var image = $element[0].firstChild;
+            var image = $element[0].firstChild.children[0];
+            // resize the image if it is larger than 600 pixel
             if (image.width > 600) {
-                vm.imgClass = 'responsiveImage';
-                image.className = vm.imgClass;
+                vm.localScope.imgClass = 'responsiveImage';
+                image.className = 'md-card-image ' + vm.localScope.imgClass;
             }
-            vm.hideLockIcon = false;
+            // force to hide ajax loader icon
+            vm.localScope.loading = false;
+            var span = $element[0].firstChild.children[1];
+            span.hidden = true;
+
+            // force to show lock icon
+            if (vm.restricted) {
+                vm.localScope.hideLockIcon = true;
+            }
         };
     }]
 });
@@ -830,40 +862,42 @@ angular.module('viewCustom').component('responsiveImage', {
  */
 
 angular.module('viewCustom').component('thumbnail', {
-    template: '<img [ngSrc]="$ctrl.src"  [ng-class]="$ctrl.imgclass" alt="{{$ctrl.imgtitle}}"/><div ng-if="$ctrl.restricted" class="lockIcon"><img ng-hide="$ctrl.hideLockIcon" src="custom/HVD_IMAGES/img/lock_small.png"  alt="Lock"/></div>',
+    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/thumbnail.html',
     bindings: {
         src: '<',
         imgtitle: '<',
         restricted: '<'
     },
+    controllerAs: 'vm',
     controller: ['$element', function ($element) {
         var vm = this;
-        vm.imgclass = 'responsivePhoto';
-        vm.hideLockIcon = true;
+        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
+
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
             if (vm.src) {
-                var img = $element[0].firstChild;
+                var img = $element[0].firstChild.children[0].children[0];
                 // use default image if it is a broken link image
                 var pattern = /^(onLoad\?)/; // the broken image start with onLoad
                 if (pattern.test(vm.src)) {
                     img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-                } else {
-                    img.src = vm.src;
                 }
                 img.onload = vm.callback;
             }
         };
         vm.callback = function () {
-            var image = $element[0].firstChild;
+            var image = $element[0].firstChild.children[0].children[0];
+
             if (image.height > 150) {
-                vm.imgclass = 'responsivePhoto';
-                image.className = vm.imgclass;
-            } else {
-                vm.imgclass = '';
+                vm.localScope.imgclass = 'responsivePhoto';
+                image.className = 'md-card-image ' + vm.localScope.imgclass;
             }
 
-            vm.hideLockIcon = false;
+            // show lock up icon
+            if (vm.restricted) {
+                vm.localScope.hideLockIcon = true;
+            }
         };
     }]
 });

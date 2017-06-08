@@ -9,9 +9,6 @@ angular.module('viewCustom')
         let vm = this;
         vm.item = items;
 
-        console.log('*** dialog item ***');
-        console.log(vm.item);
-
         // close modal dialog when a user click on x icon
         vm.closeImage=function () {
             $mdDialog.hide();

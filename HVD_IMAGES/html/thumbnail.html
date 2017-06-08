@@ -1,0 +1,11 @@
+<md-card>
+    <a>
+        <img ng-src="{{vm.src}}" ng-mouseEnter="vm.showToolTip($event)" ng-mouseLeave="vm.hideToolTip()"  class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.imgtitle}}" aria-label="{{vm.imgtitle}}"/>
+        <md-tooltip md-direction="bottom" class="hvtooltip">{{vm.imgtitle}}</md-tooltip>
+    </a>
+    <div ng-if="vm.localScope.hideLockIcon">
+        <div class="lockIcon">
+            <img src="custom/HVD_IMAGES/img/lock_small.png" class="md-avatar" alt="Lock icon" aria-label="Lock icon"/>
+        </div>
+    </div>
+</md-card>
