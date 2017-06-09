@@ -66,9 +66,6 @@ angular.module('viewCustom')
            if(obj.pnx.addata.mis1.length > 0) {
                var xml = obj.pnx.addata.mis1[0];
                var jsonData = serviceObj.parseXml(xml);
-               console.log('*** convertData ***');
-               console.log(jsonData);
-
                if (jsonData.work) {
                    // it has a single image
                    if (jsonData.work[0].surrogate) {

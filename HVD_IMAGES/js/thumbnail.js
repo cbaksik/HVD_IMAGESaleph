@@ -12,7 +12,7 @@ angular.module('viewCustom')
           restricted:'<',
         },
         controllerAs:'vm',
-        controller:['$element',function ($element) {
+        controller:['$element','$timeout',function ($element,$timeout) {
             var vm=this;
             vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
 
@@ -42,6 +42,15 @@ angular.module('viewCustom')
                 if(vm.restricted) {
                     vm.localScope.hideLockIcon = true;
                 }
+            };
+            
+            vm.showToolTip=function (e) {
+
+
+            };
+
+            vm.hideToolTip=function (e) {
+
             };
 
 

@@ -1,9 +1,9 @@
 <div tabindex="-1">
     <md-dialog aria-label="Full Display" class="md-dialog-full prm-full-view-dialog  _md md-primoExplore-theme md-dialog-fullscreen _md-transition-out" role="dialog" tabindex="-1">
-        <md-button hide-gt-md class="md-raised md-icon-button md-warn"  ng-click="vm.closeDialog()">
+        <md-button class="md-raised hide-gt-sm md-icon-button md-warn closeButton2"  ng-click="vm.closeDialog()">
             <md-icon md-svg-icon="primo-ui:close" aria-label="Close icon" class="bigCloseIcon2" tabindex="0"></md-icon>
         </md-button>
-        <md-dialog-content layout="row" class="layout-row">
+        <md-dialog-content layout-sm="row" class="layout-row">
             <sticky-scroll flex="100" class="flex-100">
                 <prm-full-view id="fullView" ng-if="vm.item" [item]="vm.item" flex class="flex" tabindex="-1">
 

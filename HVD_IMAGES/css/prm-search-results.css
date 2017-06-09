@@ -22,7 +22,7 @@
 }
 
 
-.md-card-image:hover {
+a.thumbnail:hover {
   cursor: pointer;
   transform: scale(1.05);
   transition:0.4s;
@@ -31,7 +31,7 @@
 }
 
 
-.md-card-image:focus {
+a.thumbnail:focus {
   cursor: pointer;
   transform: scale(1.05);
   transition:0.4s;
@@ -121,6 +121,10 @@ md-tooltip ._md-content {
   white-space: normal !important;
 }
 
+.md-tooltip .md-origin-bottom {
+  margin-top: -200px !important;
+}
+
 .lockIcon {
   display:block;
   position: absolute;
@@ -170,7 +174,7 @@ cl-paging > button.md-icon-button {
   transition-timing-function: ease-out;
 }
 
-.bigCloseIcon focus{
+.bigCloseIcon:focus{
   cursor: pointer;
   transform: scale(1.05);
   transition:0.4s;
@@ -185,11 +189,22 @@ cl-paging > button.md-icon-button {
 }
 
 .horizontal-line {border-bottom:1px solid #c3c3c3; height:1px; width:auto;}
+
 .closeButton {
   display: block;
   position: fixed;
   left:30px;
   top:50%;
+  cursor: pointer;
+  z-index: 100000000;
+}
+
+
+.closeButton2 {
+  display: block;
+  position: fixed;
+  left:10px;
+  top:5px;
   cursor: pointer;
   z-index: 100000000;
 }
@@ -209,5 +224,7 @@ prm-topbar {
 
 .product-logo{
   padding-top:15px !important;
+  height: auto !important;
+  width: auto !important;
 }
 

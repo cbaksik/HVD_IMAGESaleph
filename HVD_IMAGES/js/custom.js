@@ -13,13 +13,37 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['$sce
     var vm = this;
     vm.item = items;
 
-    console.log('**** vm.item ***');
+    console.log('*** vm.item ***');
     console.log(vm.item);
 
     vm.closeDialog = function () {
         $mdDialog.hide();
     };
 }]);
+
+/**
+ * Created by samsan on 6/9/17.
+ */
+
+angular.module('viewCustom').controller('customSingleImageController', ['$sce', 'angularLoad', 'prmSearchService', '$timeout', function ($sce, angularLoad, prmSearchService, $timeout) {
+
+    var sv = prmSearchService;
+    var vm = this;
+    vm.item = vm.parentCtrl;
+
+    vm.$onChanges = function () {
+        vm.item = vm.parentCtrl;
+
+        console.log('*** vm ***');
+        console.log(vm);
+    };
+}]);
+
+angular.module('viewCustom').component('prmFullViewAfter2', {
+    bindings: { parentCtrl: '=' },
+    controller: 'customSingleImageController',
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-single-image.html'
+});
 
 /**
  * Created by samsan on 6/5/17.
@@ -30,6 +54,9 @@ angular.module('viewCustom').controller('customViewImageDialogController', ['$sc
     // local variables
     var vm = this;
     vm.item = items;
+
+    console.log('*** single image ***');
+    console.log(items);
 
     // close modal dialog when a user click on x icon
     vm.closeImage = function () {
@@ -277,11 +304,11 @@ angular.module('viewCustom').component('prmFullViewAfter', {
 
 /**
  * Created by samsan on 6/8/17.
+ * This component add customize logo and Hollis Images text
  */
-angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angularLoad', 'prmSearchService', function ($sce, angularLoad, prmSearchService) {
+angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angularLoad', function ($sce, angularLoad) {
 
     var vm = this;
-    var sv = prmSearchService;
 
     vm.$onChanges = function () {
         // override the logo on top left corner
@@ -666,9 +693,6 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
             if (obj.pnx.addata.mis1.length > 0) {
                 var xml = obj.pnx.addata.mis1[0];
                 var jsonData = serviceObj.parseXml(xml);
-                console.log('*** convertData ***');
-                console.log(jsonData);
-
                 if (jsonData.work) {
                     // it has a single image
                     if (jsonData.work[0].surrogate) {
@@ -869,7 +893,7 @@ angular.module('viewCustom').component('thumbnail', {
         restricted: '<'
     },
     controllerAs: 'vm',
-    controller: ['$element', function ($element) {
+    controller: ['$element', '$timeout', function ($element, $timeout) {
         var vm = this;
         vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
 
@@ -899,6 +923,10 @@ angular.module('viewCustom').component('thumbnail', {
                 vm.localScope.hideLockIcon = true;
             }
         };
+
+        vm.showToolTip = function (e) {};
+
+        vm.hideToolTip = function (e) {};
     }]
 });
 

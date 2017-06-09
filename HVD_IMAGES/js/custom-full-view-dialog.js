@@ -8,7 +8,7 @@ angular.module('viewCustom')
         let vm = this;
         vm.item = items;
 
-        console.log('**** vm.item ***');
+        console.log('*** vm.item ***');
         console.log(vm.item);
 
         vm.closeDialog=function() {
