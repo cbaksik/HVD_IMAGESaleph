@@ -145,6 +145,25 @@ angular.module('viewCustom')
         return serviceObj.item;
     };
 
+    // getter and setter for single image data
+    serviceObj.data={};
+    serviceObj.setData=function (data) {
+      serviceObj.data=data;
+    };
+
+    serviceObj.getData=function () {
+        return serviceObj.data;
+    };
+
+    // getter and setter for selected facet
+    serviceObj.facets=[];
+    serviceObj.setFacets=function (data) {
+       serviceObj.facets=data;
+    };
+    serviceObj.getFacets=function () {
+        return serviceObj.facets;
+    };
+
 
     return serviceObj;
 

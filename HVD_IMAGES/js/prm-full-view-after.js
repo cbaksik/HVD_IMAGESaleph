@@ -3,14 +3,46 @@
  * This template is for direct access full view display link when a user send email to someone
  */
 angular.module('viewCustom')
-    .controller('prmFullViewAfterController', [ '$sce', 'angularLoad','prmSearchService','$timeout', function ($sce, angularLoad, prmSearchService, $timeout) {
+    .controller('prmFullViewAfterController', [ '$sce', 'angularLoad','prmSearchService','$timeout','$location', function ($sce, angularLoad, prmSearchService, $timeout, $location) {
 
         let sv=prmSearchService;
         let vm = this;
         vm.item=vm.parentCtrl.item;
+        vm.params=$location.search();
+        vm.services=[];
+
+        vm.showFullViewPage=function () {
+            // remove virtual browse shelf and more link
+            for(var i=0; i < vm.parentCtrl.services.length; i++) {
+                if (vm.parentCtrl.services[i].serviceName === 'virtualBrowse') {
+                    vm.parentCtrl.services.splice(i);
+                } else if (vm.parentCtrl.services[i].scrollId === 'getit_link2') {
+                    vm.parentCtrl.services.splice(i);
+                }
+            }
+        };
+
+        vm.showSingImagePage=function () {
+            // remove virtual browse shelf and more link
+            var k=0;
+            for(var i=0; i < vm.parentCtrl.services.length; i++) {
+                if (vm.parentCtrl.services[i].serviceName === 'details') {
+                    vm.services[k]=vm.parentCtrl.services[i];
+                    k++;
+                } else if(vm.parentCtrl.services[i].scrollId==='getit_link1_0') {
+                    vm.services[k]=vm.parentCtrl.services[i];
+                    k++;
+                }
+            }
+
+            for(var i=0; i < vm.parentCtrl.services.length; i++) {
+                vm.parentCtrl.services.splice(i);
+            };
+            sv.setData(vm);
+
+        };
 
         vm.$onChanges=function() {
-           vm.item=vm.parentCtrl.item;
            if(vm.item.pnx) {
                // when a user access full view detail page, it has no mis1Data so it need to convert xml to json data
                if(!vm.item.mis1Data) {
@@ -18,6 +50,9 @@ angular.module('viewCustom')
                    item[0] = vm.item;
                    item = sv.convertData(item);
                    vm.item = item[0];
+
+                   console.log('**** vm.item on change ****');
+                   console.log(vm.item);
                }
                sv.setItem(vm.item);
                var logID=sv.getLogInID();
@@ -32,15 +67,18 @@ angular.module('viewCustom')
                    },500);
                }
            }
-           // remove virtual browse shelf and more link
-           for(var i=0; i < vm.parentCtrl.services.length; i++) {
-               if (vm.parentCtrl.services[i].serviceName === 'virtualBrowse') {
-                   vm.parentCtrl.services.splice(i);
-               } else if (vm.parentCtrl.services[i].scrollId === 'getit_link2') {
-                   vm.parentCtrl.services.splice(i);
-                }
-           }
 
+
+        };
+
+        vm.$onInit=function() {
+            vm.params=$location.search();
+            // remove virtual browse shelf and more link
+            if(vm.params.singleimage && vm.params.index) {
+                vm.showSingImagePage();
+            } else {
+                vm.showFullViewPage();
+            }
         }
 
 
@@ -49,7 +87,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmFullViewAfter', {
-        bindings: {parentCtrl: '='},
+        bindings: {parentCtrl: '<'},
         controller: 'prmFullViewAfterController',
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
     });

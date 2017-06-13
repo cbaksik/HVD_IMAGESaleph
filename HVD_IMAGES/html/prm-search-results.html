@@ -37,7 +37,7 @@
             {{$ctrl.pageCounter.min|number}} - {{$ctrl.pageCounter.max|number}} of {{$ctrl.searchInfo.totalItems|number}}
         </label>
         <div flex="80" ng-if="$ctrl.searchInfo.totalItems > $ctrl.searchInfo.pageSize" layout-align="center start">
-            <cl-paging flex cl-pages="$ctrl.searchInfo.totalPages" cl-steps="6" cl-page-changed="$ctrl.pageChanged($ctrl.searchInfo.currentPage)" cl-align="start start" cl-current-page="$ctrl.searchInfo.currentPage"></cl-paging>
+            <cl-paging flex cl-pages="$ctrl.searchInfo.totalPages" cl-steps="6" cl-page-changed="$ctrl.pageChanged($ctrl.currentPage)" cl-align="start start" cl-current-page="$ctrl.currentPage"></cl-paging>
         </div>
     </div>
     <!-- end pagination -->

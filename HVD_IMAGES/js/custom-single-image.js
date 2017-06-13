@@ -7,13 +7,14 @@ angular.module('viewCustom')
 
         let sv=prmSearchService;
         let vm = this;
-        vm.item=vm.parentCtrl;
 
         vm.$onChanges=function() {
-            vm.item=vm.parentCtrl;
+            vm=sv.getData();
 
-            console.log('*** vm ***');
+            console.log('*** custom single Image ***');
             console.log(vm);
+
+            console.log(vm.params);
 
         }
 
@@ -22,8 +23,8 @@ angular.module('viewCustom')
 
 
 angular.module('viewCustom')
-    .component('prmFullViewAfter2', {
-        bindings: {parentCtrl: '='},
+    .component('customSingleImage', {
+        bindings: {item: '<',services:'<',params:'<'},
         controller: 'customSingleImageController',
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/custom-single-image.html'
     });

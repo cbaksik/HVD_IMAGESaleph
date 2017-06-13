@@ -29,18 +29,19 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
 
     var sv = prmSearchService;
     var vm = this;
-    vm.item = vm.parentCtrl;
 
     vm.$onChanges = function () {
-        vm.item = vm.parentCtrl;
+        vm = sv.getData();
 
-        console.log('*** vm ***');
+        console.log('*** custom single Image ***');
         console.log(vm);
+
+        console.log(vm.params);
     };
 }]);
 
-angular.module('viewCustom').component('prmFullViewAfter2', {
-    bindings: { parentCtrl: '=' },
+angular.module('viewCustom').component('customSingleImage', {
+    bindings: { item: '<', services: '<', params: '<' },
     controller: 'customSingleImageController',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-single-image.html'
 });
@@ -216,6 +217,32 @@ angular.module('viewCustom').component('prmAuthenticationAfter', {
 });
 
 /**
+ * Created by samsan on 6/13/17.
+ */
+
+angular.module('viewCustom').controller('prmBreadcrumbsAfterController', ['angularLoad', 'prmSearchService', function (angularLoad, prmSearchService) {
+    var vm = this;
+    // initialize custom service search
+    var sv = prmSearchService;
+    // get page object
+
+
+    vm.$onChanges = function () {
+        // capture user select facets
+        sv.setFacets(vm.parentCtrl.selectedFacets);
+        // reset the current page to beginning when a user select new facets
+        var pageObj = sv.getPage();
+        pageObj.currentPage = 1;
+        sv.setPage(pageObj);
+    };
+}]);
+
+angular.module('viewCustom').component('prmBreadcrumbsAfter', {
+    bindings: { parentCtrl: '<' },
+    controller: 'prmBreadcrumbsAfterController'
+});
+
+/**
  * Created by samsan on 5/30/17.
  */
 
@@ -227,22 +254,12 @@ angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad
     var pageObj = sv.getPage();
 
     vm.$onChanges = function () {
-
-        var prmTag = document.getElementsByTagName('prm-facet-exact');
-
-        for (var i = 0; i < prmTag.length; i++) {
-            var tag = prmTag[i];
-            var strong = tag.getElementsByTagName('strong')[0];
-            if (strong) {
-                strong.onclick = function (e) {
-                    console.log('*** click event ***');
-                    console.log(e);
-                    // reset the current page of pagination
-                    pageObj.currentPage = 1;
-                    vm.parentCtrl.currentPage = 1;
-                    sv.setPage(pageObj);
-                };
-            }
+        // if there is no facet, remove it from service
+        if (!vm.parentCtrl.$stateParams.facet) {
+            // reset facet if it is empty
+            pageObj.currentPage = 1;
+            sv.setPage(pageObj);
+            sv.setFacets([]);
         }
     };
 }]);
@@ -256,14 +273,45 @@ angular.module('viewCustom').component('prmFacetAfter', {
  * Created by samsan on 5/17/17.
  * This template is for direct access full view display link when a user send email to someone
  */
-angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$timeout', function ($sce, angularLoad, prmSearchService, $timeout) {
+angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$timeout', '$location', function ($sce, angularLoad, prmSearchService, $timeout, $location) {
 
     var sv = prmSearchService;
     var vm = this;
     vm.item = vm.parentCtrl.item;
+    vm.params = $location.search();
+    vm.services = [];
+
+    vm.showFullViewPage = function () {
+        // remove virtual browse shelf and more link
+        for (var i = 0; i < vm.parentCtrl.services.length; i++) {
+            if (vm.parentCtrl.services[i].serviceName === 'virtualBrowse') {
+                vm.parentCtrl.services.splice(i);
+            } else if (vm.parentCtrl.services[i].scrollId === 'getit_link2') {
+                vm.parentCtrl.services.splice(i);
+            }
+        }
+    };
+
+    vm.showSingImagePage = function () {
+        // remove virtual browse shelf and more link
+        var k = 0;
+        for (var i = 0; i < vm.parentCtrl.services.length; i++) {
+            if (vm.parentCtrl.services[i].serviceName === 'details') {
+                vm.services[k] = vm.parentCtrl.services[i];
+                k++;
+            } else if (vm.parentCtrl.services[i].scrollId === 'getit_link1_0') {
+                vm.services[k] = vm.parentCtrl.services[i];
+                k++;
+            }
+        }
+
+        for (var i = 0; i < vm.parentCtrl.services.length; i++) {
+            vm.parentCtrl.services.splice(i);
+        };
+        sv.setData(vm);
+    };
 
     vm.$onChanges = function () {
-        vm.item = vm.parentCtrl.item;
         if (vm.item.pnx) {
             // when a user access full view detail page, it has no mis1Data so it need to convert xml to json data
             if (!vm.item.mis1Data) {
@@ -271,6 +319,9 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
                 item[0] = vm.item;
                 item = sv.convertData(item);
                 vm.item = item[0];
+
+                console.log('**** vm.item on change ****');
+                console.log(vm.item);
             }
             sv.setItem(vm.item);
             var logID = sv.getLogInID();
@@ -285,19 +336,21 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
                 }, 500);
             }
         }
+    };
+
+    vm.$onInit = function () {
+        vm.params = $location.search();
         // remove virtual browse shelf and more link
-        for (var i = 0; i < vm.parentCtrl.services.length; i++) {
-            if (vm.parentCtrl.services[i].serviceName === 'virtualBrowse') {
-                vm.parentCtrl.services.splice(i);
-            } else if (vm.parentCtrl.services[i].scrollId === 'getit_link2') {
-                vm.parentCtrl.services.splice(i);
-            }
+        if (vm.params.singleimage && vm.params.index) {
+            vm.showSingImagePage();
+        } else {
+            vm.showFullViewPage();
         }
     };
 }]);
 
 angular.module('viewCustom').component('prmFullViewAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmFullViewAfterController',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
 });
@@ -336,8 +389,6 @@ angular.module('viewCustom').controller('prmSearchBarAfterController', ['angular
     sv.removePageInfo();
 
     vm.$onChanges = function () {
-        // number items per page to display from search box, updated the limit size in http request
-        vm.parentCtrl.searchService.searchStateService.resultsBulkSize = pageObj.pageSize;
         pageObj.currentPage = 1;
         pageObj.totalItems = 0;
         pageObj.totalPages = 0;
@@ -351,6 +402,26 @@ angular.module('viewCustom').component('prmSearchBarAfter', {
     'template': '<div id="searchResultList"></div>'
 });
 
+// override the limit=10 when a user refresh page at search result list
+angular.module('viewCustom').config(['$httpProvider', function ($httpProvider) {
+
+    $httpProvider.interceptors.push(function () {
+        return {
+            'request': function request(config) {
+                if (config.params) {
+                    if (config.params.limit === 10 && config.params.offset === 0) {
+                        config.params.limit = 50;
+                    }
+                }
+                return config;
+            },
+
+            'response': function response(_response) {
+                return _response;
+            }
+        };
+    });
+}]);
 /* Author: Sam San
  This custom component is used for search result list which display all the images in thumbnail.
  */
@@ -374,8 +445,9 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     var vm = this;
     vm.searchInProgress = true;
     vm.modalDialogFlag = false;
+    vm.currentPage = 1;
+    vm.flag = false;
     // set search result set per page, default 50 items per page
-    vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
 
     // set up page counter
     vm.pageCounter = { 'min': 0, 'max': 0 };
@@ -393,37 +465,41 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     };
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
-    this.search = function () {
+    vm.ajaxSearch = function () {
+        var facets = sv.getFacets();
+        var facetsParam = '';
         this.searchInfo = sv.getPage();
         var limit = this.searchInfo.pageSize;
-        var remainder = this.searchInfo.totalItems - (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
+        var remainder = parseInt(this.searchInfo.totalItems) - parseInt(this.searchInfo.currentPage - 1) * parseInt(this.searchInfo.pageSize);
+
         if (remainder < this.searchInfo.pageSize) {
             limit = remainder;
         }
+
         var params = { 'addfields': [], 'offset': 0, 'limit': 10, 'lang': 'en_US', 'inst': 'HVD', 'getMore': 0, 'pcAvailability': true, 'q': '', 'rtaLinks': true,
-            'sortby': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '' };
+            'sort': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '' };
         params.limit = limit;
         params.q = vm.parentCtrl.$stateParams.query;
         params.lang = vm.parentCtrl.$stateParams.lang;
         params.vid = vm.parentCtrl.$stateParams.vid;
-        params.sortby = vm.parentCtrl.$stateParams.sortby;
-        params.currentPage = this.searchInfo.currentPage;
+        params.sort = vm.parentCtrl.$stateParams.sortby;
         params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
-        params.bulkSize = this.searchInfo.pageSize;
-        params.to = this.searchInfo.pageSize * this.searchInfo.currentPage;
-        params.facet = vm.parentCtrl.$stateParams.facet;
-        params.newSearch = true;
-        params.searchInProgress = true;
+
+        for (var i = 0; i < facets.length; i++) {
+            facetsParam += 'facet_' + facets[i].name + ',' + facets[i].displayedType + ',' + facets[i].value + '|,|';
+        }
+        if (facetsParam.length > 5) {
+            facetsParam = facetsParam.substring(0, facetsParam.length - 3);
+        }
+        params.qInclude = facetsParam;
+
         //params.addfields='vertitle,title,collection,creator,contributor,subject,ispartof,description,relation,publisher,creationdate,format,language,identifier,citation,source';
 
-        vm.parentCtrl.currentPage = params.currentPage;
-        vm.parentCtrl.$stateParams.offset = params.offset;
 
         // start ajax loader progress bar
         vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = true;
         vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = true;
         vm.parentCtrl.searchService.searchStateService.searchObject.offset = params.offset;
-        vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
 
         // get the current search rest url
         var url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
@@ -447,74 +523,40 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
     // when a user click on next page or prev page, it call this function.
     this.pageChanged = function (currentPage) {
-        this.searchInfo.currentPage = currentPage;
-        sv.setPage(this.searchInfo); // keep track a user click on each current page
-        // ajax call function
-        this.search();
-        // calculate the min and max of items
-        this.findPageCounter();
+        // prevent calling ajax twice during refresh the page or click on facets
+        if (!vm.flag) {
+            this.searchInfo.currentPage = currentPage;
+            sv.setPage(this.searchInfo); // keep track a user click on each current page
+            // ajax call function
+            vm.ajaxSearch();
+            // calculate the min and max of items
+            this.findPageCounter();
+        }
+        vm.flag = false;
     };
 
     vm.items = [];
-    // this trigger when the page refresh or access for the first time
-    if (vm.parentCtrl.searchResults) {
-        // convert xml data into json data so it know which image is a restricted image
-        vm.items = sv.convertData(vm.parentCtrl.searchResults);
-        // set up pagination
-        this.searchInfo.totalItems = vm.parentCtrl.totalItems;
-        this.searchInfo.totalPages = parseInt(this.searchInfo.totalItems / this.searchInfo.pageSize);
-        if (this.searchInfo.totalPages * this.searchInfo.pageSize < this.totalItems) {
-            this.searchInfo.totalPages++;
-        }
-        // calculate pagination
-        this.findPageCounter();
-        // store search term so it can pass into ajax call when a user click on next page or prev page
-        this.searchInfo.query = vm.parentCtrl.$stateParams.query;
-        this.searchInfo.searchString = vm.parentCtrl.searchString;
-        sv.setPage(this.searchInfo);
-        vm.searchInProgress = vm.parentCtrl.searchInProgress;
-    }
 
     vm.$onInit = function () {
         var _this = this;
 
         this.searchInfo = sv.getPage(); // get page info object
-        vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
-        vm.parentCtrl.PAGE_SIZE = this.searchInfo.pageSize;
-
-        // if a user enter new search term, it reset the pagination to beginning
-        vm.parentCtrl.$scope.$watch(function () {
-            return vm.parentCtrl.searchString;
-        }, function (newVal, oldVal) {
-            if (vm.parentCtrl.searchString !== _this.searchInfo.searchString) {
-                _this.searchInfo.totalItems = 0;
-                _this.searchInfo.currentPage = 1;
-                _this.searchInfo.totalPages = 0;
-                sv.setPage(_this.searchInfo);
-            }
-        });
-
-        // watch the search result when a user is not refresh the page
+        // watch for new data change when a user search
         vm.parentCtrl.$scope.$watch(function () {
             return vm.parentCtrl.searchResults;
         }, function (newVal, oldVal) {
+            vm.currentPage = 1;
+            vm.flag = true;
+            // convert xml data into json data so it knows which image is a restricted image
+            vm.items = sv.convertData(vm.parentCtrl.searchResults);
+
             // set up pagination
+            _this.searchInfo.currentPage = 1;
             _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
-            _this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / vm.parentCtrl.searchService.searchStateService.resultsBulkSize);
-            if (vm.parentCtrl.searchService.searchStateService.resultsBulkSize * _this.searchInfo.totalPages < _this.searchInfo.totalItems) {
+            _this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / _this.searchInfo.pageSize);
+            if (_this.searchInfo.pageSize * _this.searchInfo.totalPages < _this.searchInfo.totalItems) {
                 _this.searchInfo.totalPages++;
             }
-            // convert xml data into json data so it knows which image is a restricted image
-            vm.items = sv.convertData(newVal);
-
-            console.log('*** vm.parentCtrl ***');
-            console.log(vm.parentCtrl);
-
-            console.log('*** newVal ***');
-            console.log(newVal);
-
-            console.log('*** oldVal ***');
-            console.log(oldVal);
 
             _this.findPageCounter();
 
@@ -621,7 +663,7 @@ angular.module('viewCustom').filter('countFilter', function () {
 /*http://dc03kg0084eu.hosted.exlibrisgroup.com:8991/pds*/
 
 angular.module('viewCustom').component('prmSearchResultListAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmSearchResultListAfterController',
     templateUrl: '/primo-explore/custom/HVD_IMAGES/html/prm-search-results.html'
 });
@@ -766,6 +808,25 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
 
     serviceObj.getItem = function () {
         return serviceObj.item;
+    };
+
+    // getter and setter for single image data
+    serviceObj.data = {};
+    serviceObj.setData = function (data) {
+        serviceObj.data = data;
+    };
+
+    serviceObj.getData = function () {
+        return serviceObj.data;
+    };
+
+    // getter and setter for selected facet
+    serviceObj.facets = [];
+    serviceObj.setFacets = function (data) {
+        serviceObj.facets = data;
+    };
+    serviceObj.getFacets = function () {
+        return serviceObj.facets;
     };
 
     return serviceObj;

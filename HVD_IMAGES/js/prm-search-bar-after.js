@@ -13,14 +13,12 @@ angular.module('viewCustom')
         sv.removePageInfo();
 
         vm.$onChanges=function() {
-            // number items per page to display from search box, updated the limit size in http request
-            vm.parentCtrl.searchService.searchStateService.resultsBulkSize = pageObj.pageSize;
             pageObj.currentPage = 1;
             pageObj.totalItems = 0;
             pageObj.totalPages = 0;
             sv.setPage(pageObj);
 
-        }
+        };
 
     }]);
 
@@ -34,3 +32,26 @@ angular.module('viewCustom')
     });
 
 
+// override the limit=10 when a user refresh page at search result list
+angular.module('viewCustom').config(['$httpProvider',function ($httpProvider) {
+
+    $httpProvider.interceptors.push(function() {
+        return {
+            'request': function (config) {
+                if(config.params) {
+                    if(config.params.limit===10 && config.params.offset===0) {
+                        config.params.limit = 50;
+                    }
+                }
+                return config;
+            },
+
+            'response': function (response) {
+                return response;
+            }
+        };
+
+    });
+
+
+}]);

@@ -22,8 +22,9 @@ angular.module('viewCustom')
     let vm = this;
     vm.searchInProgress=true;
     vm.modalDialogFlag=false;
+    vm.currentPage=1;
+    vm.flag=false;
     // set search result set per page, default 50 items per page
-    vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
 
     // set up page counter
     vm.pageCounter = {'min':0,'max':0};
@@ -43,37 +44,41 @@ angular.module('viewCustom')
 
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
-    this.search=function () {
+    vm.ajaxSearch=function () {
+       var facets = sv.getFacets();
+       var facetsParam='';
        this.searchInfo=sv.getPage();
        var limit=this.searchInfo.pageSize;
-       var remainder = this.searchInfo.totalItems - ((this.searchInfo.currentPage - 1) * this.searchInfo.pageSize);
+       var remainder = parseInt(this.searchInfo.totalItems) - (parseInt(this.searchInfo.currentPage - 1) * parseInt(this.searchInfo.pageSize));
+
        if(remainder < this.searchInfo.pageSize) {
            limit=remainder;
        }
+
        var params={'addfields':[],'offset':0,'limit':10,'lang':'en_US','inst':'HVD','getMore':0,'pcAvailability':true,'q':'','rtaLinks':true,
-       'sortby':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':''};
+       'sort':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':''};
        params.limit=limit;
        params.q=vm.parentCtrl.$stateParams.query;
        params.lang=vm.parentCtrl.$stateParams.lang;
        params.vid=vm.parentCtrl.$stateParams.vid;
-       params.sortby=vm.parentCtrl.$stateParams.sortby;
-       params.currentPage = this.searchInfo.currentPage;
+       params.sort=vm.parentCtrl.$stateParams.sortby;
        params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
-       params.bulkSize = this.searchInfo.pageSize;
-       params.to = this.searchInfo.pageSize * this.searchInfo.currentPage;
-       params.facet = vm.parentCtrl.$stateParams.facet;
-       params.newSearch = true;
-       params.searchInProgress = true;
+
+       for(var i=0; i < facets.length; i++){
+           facetsParam+='facet_'+facets[i].name+','+facets[i].displayedType+','+facets[i].value+'|,|';
+       }
+       if(facetsParam.length > 5) {
+           facetsParam=facetsParam.substring(0,facetsParam.length - 3);
+       }
+       params.qInclude=facetsParam;
+
        //params.addfields='vertitle,title,collection,creator,contributor,subject,ispartof,description,relation,publisher,creationdate,format,language,identifier,citation,source';
-        
-       vm.parentCtrl.currentPage = params.currentPage;
-       vm.parentCtrl.$stateParams.offset = params.offset;
+
 
        // start ajax loader progress bar
        vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=true;
        vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=true;
        vm.parentCtrl.searchService.searchStateService.searchObject.offset=params.offset;
-       vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
 
        // get the current search rest url
        let url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
@@ -100,71 +105,36 @@ angular.module('viewCustom')
 
     // when a user click on next page or prev page, it call this function.
     this.pageChanged=function (currentPage) {
-        this.searchInfo.currentPage = currentPage;
-        sv.setPage(this.searchInfo); // keep track a user click on each current page
-        // ajax call function
-        this.search();
-        // calculate the min and max of items
-        this.findPageCounter();
+        // prevent calling ajax twice during refresh the page or click on facets
+        if(!vm.flag) {
+            this.searchInfo.currentPage = currentPage;
+            sv.setPage(this.searchInfo); // keep track a user click on each current page
+            // ajax call function
+            vm.ajaxSearch();
+            // calculate the min and max of items
+            this.findPageCounter();
+        }
+        vm.flag=false;
     };
 
     vm.items=[];
-    // this trigger when the page refresh or access for the first time
-    if(vm.parentCtrl.searchResults) {
-        // convert xml data into json data so it know which image is a restricted image
-        vm.items = sv.convertData(vm.parentCtrl.searchResults);
-        // set up pagination
-        this.searchInfo.totalItems = vm.parentCtrl.totalItems;
-        this.searchInfo.totalPages = parseInt(this.searchInfo.totalItems / this.searchInfo.pageSize);
-        if((this.searchInfo.totalPages * this.searchInfo.pageSize) < this.totalItems) {
-            this.searchInfo.totalPages++;
-        }
-        // calculate pagination
-        this.findPageCounter();
-        // store search term so it can pass into ajax call when a user click on next page or prev page
-        this.searchInfo.query = vm.parentCtrl.$stateParams.query;
-        this.searchInfo.searchString = vm.parentCtrl.searchString;
-        sv.setPage(this.searchInfo);
-        vm.searchInProgress=vm.parentCtrl.searchInProgress;
-    }
-
 
     vm.$onInit = function () {
         this.searchInfo = sv.getPage(); // get page info object
-        vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
-        vm.parentCtrl.PAGE_SIZE=this.searchInfo.pageSize;
+        // watch for new data change when a user search
+        vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults,(newVal, oldVal)=>{
+            vm.currentPage=1;
+            vm.flag=true;
+            // convert xml data into json data so it knows which image is a restricted image
+            vm.items = sv.convertData(vm.parentCtrl.searchResults);
 
-        // if a user enter new search term, it reset the pagination to beginning
-        vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchString,(newVal, oldVal)=>{
-            if(vm.parentCtrl.searchString !== this.searchInfo.searchString){
-                this.searchInfo.totalItems = 0;
-                this.searchInfo.currentPage = 1;
-                this.searchInfo.totalPages = 0;
-                sv.setPage(this.searchInfo);
-            }
-        });
-
-
-        // watch the search result when a user is not refresh the page
-        vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults, (newVal, oldVal)=>{
             // set up pagination
+            this.searchInfo.currentPage=1;
             this.searchInfo.totalItems = vm.parentCtrl.totalItems;
-            this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / vm.parentCtrl.searchService.searchStateService.resultsBulkSize);
-            if((vm.parentCtrl.searchService.searchStateService.resultsBulkSize * this.searchInfo.totalPages) < this.searchInfo.totalItems) {
+            this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / this.searchInfo.pageSize);
+            if((this.searchInfo.pageSize * this.searchInfo.totalPages) < this.searchInfo.totalItems) {
                 this.searchInfo.totalPages++;
             }
-            // convert xml data into json data so it knows which image is a restricted image
-            vm.items = sv.convertData(newVal);
-
-            console.log('*** vm.parentCtrl ***');
-            console.log(vm.parentCtrl);
-
-            console.log('*** newVal ***');
-            console.log(newVal);
-
-            console.log('*** oldVal ***');
-            console.log(oldVal);
-
 
             this.findPageCounter();
 
@@ -279,7 +249,7 @@ angular.module('viewCustom').filter('countFilter',function () {
 
 angular.module('viewCustom')
     .component('prmSearchResultListAfter', {
-    bindings: {parentCtrl: '='},
+    bindings: {parentCtrl: '<'},
     controller: 'prmSearchResultListAfterController',
     templateUrl: '/primo-explore/custom/HVD_IMAGES/html/prm-search-results.html'
 });
