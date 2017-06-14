@@ -43,6 +43,9 @@ angular.module('viewCustom')
         };
 
         vm.$onChanges=function() {
+           console.log('*** trigger full view after ***');
+           console.log(vm);
+
            if(vm.item.pnx) {
                // when a user access full view detail page, it has no mis1Data so it need to convert xml to json data
                if(!vm.item.mis1Data) {
@@ -54,7 +57,20 @@ angular.module('viewCustom')
                    console.log('**** vm.item on change ****');
                    console.log(vm.item);
                }
-               sv.setItem(vm.item);
+
+               // set data to build full display page
+               var itemData={'item':'','searchData':''};
+               itemData.item=vm.item;
+               if(vm.parentCtrl.searchService.cheetah.searchData) {
+                   // this data is available from over layer slide page
+                   itemData.searchData = vm.parentCtrl.searchService.cheetah.searchData;
+               } else {
+                   // this data is available only from fulldisplay url
+                   itemData.searchData = vm.params;
+                   itemData.searchData.scope=vm.params.search_scope;
+               }
+               sv.setItem(itemData);
+
                var logID=sv.getLogInID();
                if(vm.item.restrictedImage===true && logID===false) {
                    // if image is restricted and user is not login, trigger click event on user login button through dom

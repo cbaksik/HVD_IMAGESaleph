@@ -57,6 +57,10 @@ angular.module('viewCustom')
 
        var params={'addfields':[],'offset':0,'limit':10,'lang':'en_US','inst':'HVD','getMore':0,'pcAvailability':true,'q':'','rtaLinks':true,
        'sort':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':''};
+       params.addfields=vm.parentCtrl.searchService.cheetah.searchData.addfields;
+       params.qExclude=vm.parentCtrl.searchService.cheetah.searchData.qExclude;
+       params.getMore=vm.parentCtrl.searchService.cheetah.searchData.getMore;
+       params.pcAvailability=vm.parentCtrl.searchService.cheetah.searchData.pcAvailability;
        params.limit=limit;
        params.q=vm.parentCtrl.$stateParams.query;
        params.lang=vm.parentCtrl.$stateParams.lang;
@@ -71,8 +75,6 @@ angular.module('viewCustom')
            facetsParam=facetsParam.substring(0,facetsParam.length - 3);
        }
        params.qInclude=facetsParam;
-
-       //params.addfields='vertitle,title,collection,creator,contributor,subject,ispartof,description,relation,publisher,creationdate,format,language,identifier,citation,source';
 
 
        // start ajax loader progress bar
@@ -91,8 +93,6 @@ angular.module('viewCustom')
                 vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=false;
                 vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=false;
                 vm.searchInProgress=false;
-                console.log('*** ajax vm.items ***');
-                console.log(vm.items);
                },
             function (err) {
                console.log(err);
@@ -143,6 +143,7 @@ angular.module('viewCustom')
             sv.setPage(this.searchInfo);
             vm.searchInProgress=vm.parentCtrl.searchInProgress;
 
+
         });
 
     };
@@ -152,8 +153,6 @@ angular.module('viewCustom')
     this.openDialog=function ($event,item) {
         // get user login status, true for login, false for not login
         let logID=sv.getLogInID();
-        sv.setItem(item);
-
         vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
 
         if(item.restrictedImage && logID===false) {
@@ -166,7 +165,14 @@ angular.module('viewCustom')
                 button[0].click();
             },500);
         } else {
-           // modal dialog pop up here
+
+            // set data to build full display page
+            var itemData={'item':'','searchData':''};
+            itemData.item=item;
+            itemData.searchData=vm.parentCtrl.searchService.cheetah.searchData;
+            sv.setItem(itemData);
+
+            // modal dialog pop up here
             $mdDialog.show({
                 title:'Full View Details',
                 target:$event,
@@ -180,7 +186,7 @@ angular.module('viewCustom')
                 multiple:true,
                 openFrom:{left:0},
                 locals: {
-                    items:item
+                    items:itemData
                 },
                 onComplete:function (scope, element) {
                     vm.modalDialogFlag=true;

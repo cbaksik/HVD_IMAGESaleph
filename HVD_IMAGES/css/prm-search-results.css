@@ -109,6 +109,7 @@ md-card {
   margin-top:0px !important;
   margin-bottom:0px !important;
   padding-bottom:0px !important;
+  background: transparent !important;
 }
 
 md-tooltip ._md-content {

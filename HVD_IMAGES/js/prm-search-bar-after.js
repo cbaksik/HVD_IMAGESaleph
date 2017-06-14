@@ -17,7 +17,6 @@ angular.module('viewCustom')
             pageObj.totalItems = 0;
             pageObj.totalPages = 0;
             sv.setPage(pageObj);
-
         };
 
     }]);

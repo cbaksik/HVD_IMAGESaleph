@@ -21,3 +21,13 @@
     transition-timing-function: ease-out;
 }
 
+.breadcrumbs {
+    list-style: none;
+    margin-left:0px;
+}
+
+.breadcrumbs > li {
+    display: inline-block;
+    margin-right:20px;
+}
+

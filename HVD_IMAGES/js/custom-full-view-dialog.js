@@ -3,13 +3,18 @@
  * A custom modal dialog when a user click on thumbnail on search result list page
  */
 angular.module('viewCustom')
-    .controller('customFullViewDialogController', [ '$sce', 'angularLoad','items','$mdDialog', function ($sce, angularLoad, items, $mdDialog) {
+    .controller('customFullViewDialogController', [ '$sce', 'angularLoad','items','$mdDialog','prmSearchService', function ($sce, angularLoad, items, $mdDialog,prmSearchService) {
         // local variables
         let vm = this;
-        vm.item = items;
+        let sv=prmSearchService;
+        vm.item = items.item;
+        vm.searchData = items.searchData;
 
-        console.log('*** vm.item ***');
+        sv.setItem(items);
+
+        console.log('*** vm custom full view dialog controller ***');
         console.log(vm.item);
+        console.log(vm.searchData);
 
         vm.closeDialog=function() {
             $mdDialog.hide();

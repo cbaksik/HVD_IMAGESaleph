@@ -3,19 +3,24 @@
  * This component is to insert images into online section
  */
 angular.module('viewCustom')
-    .controller('prmViewOnlineAfterController', [ '$sce', 'angularLoad','prmSearchService','$mdDialog','$timeout', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout) {
+    .controller('prmViewOnlineAfterController', [ '$sce', 'angularLoad','prmSearchService','$mdDialog','$timeout','$window', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout,$window) {
 
         let vm = this;
         let sv=prmSearchService;
-        vm.item=sv.getItem();
+        let itemData=sv.getItem();
+        vm.item=itemData.item;
+        vm.searchData=itemData.searchData;
 
         vm.$onChanges=function() {
            // get item data from service
-           vm.item=sv.getItem();
+           itemData=sv.getItem();
+           vm.item=itemData.item;
+           vm.searchData=itemData.searchData;
+
         };
 
         // show the pop up image
-        vm.gotoFullPhoto=function ($event, item) {
+        vm.gotoFullPhoto=function ($event, item, index) {
             var logID=sv.getLogInID();
             if(item._attr.restrictedImage===true && logID===false) {
                 // if image is restricted and user is not login, trigger click event on user login button through dom
@@ -28,24 +33,17 @@ angular.module('viewCustom')
                 },500);
             } else {
 
-                // modal dialog pop up here
-                $mdDialog.show({
-                    title: 'View Image Dialog',
-                    target: $event,
-                    clickOutsideToClose: true,
-                    escapeToClose: true,
-                    bindToController: true,
-                    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-view-image-dialog.html',
-                    controller: 'customViewImageDialogController',
-                    controllerAs: 'vm',
-                    multiple:true,
-                    preserveScope : true,
-                    autoWrap : true,
-                    skipHide : true,
-                    locals: {
-                        items: item
-                    }
-                });
+                // go to full display page
+                console.log('*** vm.item ***');
+                console.log(vm.item);
+
+                console.log('**** vm.searchData ***');
+                console.log(vm.searchData);
+
+                var url='/primo-explore/fulldisplay?docid='+vm.item.pnx.control.recordid[0]+'&vid='+vm.searchData.vid+'&context='+vm.item.context+'&adaptor='+vm.item.adaptor+'&lang='+vm.searchData.lang;
+                url+='&search_scope='+vm.searchData.scope+'&singleimage=true&index='+index;
+                $window.location.href=url;
+
             }
         }
 

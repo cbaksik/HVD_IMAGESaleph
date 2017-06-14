@@ -685,6 +685,16 @@ div.hollis-logo a:hover {
     transition-timing-function: ease-out;
 }
 
+.breadcrumbs {
+    list-style: none;
+    margin-left:0px;
+}
+
+.breadcrumbs > li {
+    display: inline-block;
+    margin-right:20px;
+}
+
 
 
 .hvfullsize {
@@ -797,6 +807,7 @@ md-card {
   margin-top:0px !important;
   margin-bottom:0px !important;
   padding-bottom:0px !important;
+  background: transparent !important;
 }
 
 md-tooltip ._md-content {

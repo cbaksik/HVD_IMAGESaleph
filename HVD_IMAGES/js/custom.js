@@ -8,13 +8,18 @@ angular.module('viewCustom', ['angularLoad', 'cl.paging']);
  * Created by samsan on 5/17/17.
  * A custom modal dialog when a user click on thumbnail on search result list page
  */
-angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', 'items', '$mdDialog', function ($sce, angularLoad, items, $mdDialog) {
+angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', 'items', '$mdDialog', 'prmSearchService', function ($sce, angularLoad, items, $mdDialog, prmSearchService) {
     // local variables
     var vm = this;
-    vm.item = items;
+    var sv = prmSearchService;
+    vm.item = items.item;
+    vm.searchData = items.searchData;
 
-    console.log('*** vm.item ***');
+    sv.setItem(items);
+
+    console.log('*** vm custom full view dialog controller ***');
     console.log(vm.item);
+    console.log(vm.searchData);
 
     vm.closeDialog = function () {
         $mdDialog.hide();
@@ -25,24 +30,39 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['$sce
  * Created by samsan on 6/9/17.
  */
 
-angular.module('viewCustom').controller('customSingleImageController', ['$sce', 'angularLoad', 'prmSearchService', '$timeout', function ($sce, angularLoad, prmSearchService, $timeout) {
+angular.module('viewCustom').controller('customSingleImageController', ['$sce', 'angularLoad', '$window', function ($sce, angularLoad, $window) {
 
-    var sv = prmSearchService;
     var vm = this;
+    vm.photo = {};
+    var index = vm.params.index;
+    vm.breadcrumbs = { 'title': 'Home', 'url': '' };
+
+    if (vm.item.mis1Data.length === 1) {
+        vm.photo = vm.item.mis1Data[0].image[index];
+    }
+
+    console.log('*** custom single Image  ***');
+    console.log(vm);
 
     vm.$onChanges = function () {
-        vm = sv.getData();
+        if (vm.params.index && vm.params.singleimage) {
+            var doc = document.getElementById('fullView');
+            var div = doc.getElementsByClassName('full-view-inner-container');
+            div[0].style.display = 'none';
+            vm.breadcrumbs.url = '/primo-explore/fulldisplay?docid=' + vm.params.docid + '&context=' + vm.params.context + '&lang=' + vm.params.lang + '&vid=' + vm.params.vid + '&adaptor=' + vm.params.adaptor + '&search_scope=' + vm.params.scope;
+            vm.breadcrumbs.title = vm.item.pnx.display.title[0];
+        }
+    };
 
-        console.log('*** custom single Image ***');
-        console.log(vm);
-
-        console.log(vm.params);
+    vm.goBack = function () {
+        $window.location.href = vm.breadcrumbs.url;
     };
 }]);
 
 angular.module('viewCustom').component('customSingleImage', {
     bindings: { item: '<', services: '<', params: '<' },
     controller: 'customSingleImageController',
+    controllerAs: 'vm',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-single-image.html'
 });
 
@@ -312,6 +332,9 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
     };
 
     vm.$onChanges = function () {
+        console.log('*** trigger full view after ***');
+        console.log(vm);
+
         if (vm.item.pnx) {
             // when a user access full view detail page, it has no mis1Data so it need to convert xml to json data
             if (!vm.item.mis1Data) {
@@ -323,7 +346,20 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
                 console.log('**** vm.item on change ****');
                 console.log(vm.item);
             }
-            sv.setItem(vm.item);
+
+            // set data to build full display page
+            var itemData = { 'item': '', 'searchData': '' };
+            itemData.item = vm.item;
+            if (vm.parentCtrl.searchService.cheetah.searchData) {
+                // this data is available from over layer slide page
+                itemData.searchData = vm.parentCtrl.searchService.cheetah.searchData;
+            } else {
+                // this data is available only from fulldisplay url
+                itemData.searchData = vm.params;
+                itemData.searchData.scope = vm.params.search_scope;
+            }
+            sv.setItem(itemData);
+
             var logID = sv.getLogInID();
             if (vm.item.restrictedImage === true && logID === false) {
                 // if image is restricted and user is not login, trigger click event on user login button through dom
@@ -478,6 +514,10 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
         var params = { 'addfields': [], 'offset': 0, 'limit': 10, 'lang': 'en_US', 'inst': 'HVD', 'getMore': 0, 'pcAvailability': true, 'q': '', 'rtaLinks': true,
             'sort': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '' };
+        params.addfields = vm.parentCtrl.searchService.cheetah.searchData.addfields;
+        params.qExclude = vm.parentCtrl.searchService.cheetah.searchData.qExclude;
+        params.getMore = vm.parentCtrl.searchService.cheetah.searchData.getMore;
+        params.pcAvailability = vm.parentCtrl.searchService.cheetah.searchData.pcAvailability;
         params.limit = limit;
         params.q = vm.parentCtrl.$stateParams.query;
         params.lang = vm.parentCtrl.$stateParams.lang;
@@ -492,9 +532,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             facetsParam = facetsParam.substring(0, facetsParam.length - 3);
         }
         params.qInclude = facetsParam;
-
-        //params.addfields='vertitle,title,collection,creator,contributor,subject,ispartof,description,relation,publisher,creationdate,format,language,identifier,citation,source';
-
 
         // start ajax loader progress bar
         vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = true;
@@ -511,8 +548,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
             vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = false;
             vm.searchInProgress = false;
-            console.log('*** ajax vm.items ***');
-            console.log(vm.items);
         }, function (err) {
             console.log(err);
             vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
@@ -571,8 +606,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     this.openDialog = function ($event, item) {
         // get user login status, true for login, false for not login
         var logID = sv.getLogInID();
-        sv.setItem(item);
-
         vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
 
         if (item.restrictedImage && logID === false) {
@@ -585,6 +618,13 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
                 button[0].click();
             }, 500);
         } else {
+
+            // set data to build full display page
+            var itemData = { 'item': '', 'searchData': '' };
+            itemData.item = item;
+            itemData.searchData = vm.parentCtrl.searchService.cheetah.searchData;
+            sv.setItem(itemData);
+
             // modal dialog pop up here
             $mdDialog.show({
                 title: 'Full View Details',
@@ -599,7 +639,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
                 multiple: true,
                 openFrom: { left: 0 },
                 locals: {
-                    items: item
+                    items: itemData
                 },
                 onComplete: function onComplete(scope, element) {
                     vm.modalDialogFlag = true;
@@ -836,19 +876,23 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
  * Created by samsan on 5/17/17.
  * This component is to insert images into online section
  */
-angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$mdDialog', '$timeout', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout) {
+angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$mdDialog', '$timeout', '$window', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout, $window) {
 
     var vm = this;
     var sv = prmSearchService;
-    vm.item = sv.getItem();
+    var itemData = sv.getItem();
+    vm.item = itemData.item;
+    vm.searchData = itemData.searchData;
 
     vm.$onChanges = function () {
         // get item data from service
-        vm.item = sv.getItem();
+        itemData = sv.getItem();
+        vm.item = itemData.item;
+        vm.searchData = itemData.searchData;
     };
 
     // show the pop up image
-    vm.gotoFullPhoto = function ($event, item) {
+    vm.gotoFullPhoto = function ($event, item, index) {
         var logID = sv.getLogInID();
         if (item._attr.restrictedImage === true && logID === false) {
             // if image is restricted and user is not login, trigger click event on user login button through dom
@@ -861,24 +905,16 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
             }, 500);
         } else {
 
-            // modal dialog pop up here
-            $mdDialog.show({
-                title: 'View Image Dialog',
-                target: $event,
-                clickOutsideToClose: true,
-                escapeToClose: true,
-                bindToController: true,
-                templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-view-image-dialog.html',
-                controller: 'customViewImageDialogController',
-                controllerAs: 'vm',
-                multiple: true,
-                preserveScope: true,
-                autoWrap: true,
-                skipHide: true,
-                locals: {
-                    items: item
-                }
-            });
+            // go to full display page
+            console.log('*** vm.item ***');
+            console.log(vm.item);
+
+            console.log('**** vm.searchData ***');
+            console.log(vm.searchData);
+
+            var url = '/primo-explore/fulldisplay?docid=' + vm.item.pnx.control.recordid[0] + '&vid=' + vm.searchData.vid + '&context=' + vm.item.context + '&adaptor=' + vm.item.adaptor + '&lang=' + vm.searchData.lang;
+            url += '&search_scope=' + vm.searchData.scope + '&singleimage=true&index=' + index;
+            $window.location.href = url;
         }
     };
 }]);
