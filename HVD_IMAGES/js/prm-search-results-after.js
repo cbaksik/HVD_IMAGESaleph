@@ -123,6 +123,10 @@ angular.module('viewCustom')
         this.searchInfo = sv.getPage(); // get page info object
         // watch for new data change when a user search
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults,(newVal, oldVal)=>{
+
+            console.log('*** prm search result after ***');
+            console.log(vm);
+
             vm.currentPage=1;
             vm.flag=true;
             // convert xml data into json data so it knows which image is a restricted image
@@ -170,6 +174,7 @@ angular.module('viewCustom')
             var itemData={'item':'','searchData':''};
             itemData.item=item;
             itemData.searchData=vm.parentCtrl.searchService.cheetah.searchData;
+            itemData.searchData.searchString=vm.parentCtrl.searchString;
             sv.setItem(itemData);
 
             // modal dialog pop up here
@@ -211,12 +216,14 @@ angular.module('viewCustom')
         $mdDialog.hide();
     };
 
+    /*
     this.closeDialog2=function(e) {
         if(e.which===13) {
             vm.modalDialogFlag = false;
             $mdDialog.hide();
         }
     };
+    */
 
 }]);
 

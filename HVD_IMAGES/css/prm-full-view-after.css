@@ -21,13 +21,21 @@
     transition-timing-function: ease-out;
 }
 
-.breadcrumbs {
-    list-style: none;
-    margin-left:0px;
+.nopadding {
+    padding-left:0px !important;
+    padding-right:0px !important;
+    margin-left:0px !important;
+    width:auto !important;
+    min-width: auto !important;
 }
 
-.breadcrumbs > li {
-    display: inline-block;
-    margin-right:20px;
+.nopadding:hover {
+    background: transparent !important;
+    cursor: none !important;
 }
 
+.truncateText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

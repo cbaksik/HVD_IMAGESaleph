@@ -685,16 +685,24 @@ div.hollis-logo a:hover {
     transition-timing-function: ease-out;
 }
 
-.breadcrumbs {
-    list-style: none;
-    margin-left:0px;
+.nopadding {
+    padding-left:0px !important;
+    padding-right:0px !important;
+    margin-left:0px !important;
+    width:auto !important;
+    min-width: auto !important;
 }
 
-.breadcrumbs > li {
-    display: inline-block;
-    margin-right:20px;
+.nopadding:hover {
+    background: transparent !important;
+    cursor: none !important;
 }
 
+.truncateText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 
 .hvfullsize {
@@ -846,11 +854,11 @@ cl-paging > button.md-icon-button {
 }
 
 .bigCloseIcon {
-  width:30px;
-  height:30px;
-  fill:#FFF;
-  stroke:#FFF;
-  stroke-width: 2px;
+  width:40px !important;
+  height:40px !important;
+  fill:#FFF !important;
+  stroke:#FFF !important;
+  stroke-width: 2px !important;
 }
 
 .bigCloseIcon2 {
@@ -896,8 +904,12 @@ cl-paging > button.md-icon-button {
   top:50%;
   cursor: pointer;
   z-index: 100000000;
+  color: #ffffff;
 }
 
+.closeButton:hover {
+  color: #ffffff;
+}
 
 .closeButton2 {
   display: block;
@@ -906,6 +918,11 @@ cl-paging > button.md-icon-button {
   top:5px;
   cursor: pointer;
   z-index: 100000000;
+  color: #ff0000;
+}
+
+.closeButton2:hover {
+  color: #ff0000;
 }
 
 .hvLogo {

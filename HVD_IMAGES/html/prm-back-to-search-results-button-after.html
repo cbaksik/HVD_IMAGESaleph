@@ -1,0 +1,15 @@
+<md-toolbar class="default-toolbar zero-padding _md md-primoExplore-theme">
+    <div class="md-toolbar-tools zero-padding layout-row">
+        <button class="back-button has-text md-button md-primoExplore-theme md-ink-ripple" (click)="goToSearch()">
+            <prm-icon icon-type="svg" svg-icon-set="primo-ui" icon-definition="back-to-search">
+            </prm-icon>
+            <span>Back to results list</span>
+        </button>
+
+        <button class="back-button has-text md-button md-primoExplore-theme md-ink-ripple" (click)="goToImages()">
+            <prm-icon icon-type="svg" svg-icon-set="primo-ui" md-svg-icon="primo-ui:chevron-left"  icon-definition="chevron-left"></prm-icon>
+            <span>{{vm.photo.pnx.display.title[0]}}</span>
+        </button>
+
+    </div>
+</md-toolbar>

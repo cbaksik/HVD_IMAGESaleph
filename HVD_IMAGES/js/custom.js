@@ -28,32 +28,52 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['$sce
 
 /**
  * Created by samsan on 6/9/17.
+ * This component is for a single image full display when a user click on thumbnail from a full display page
  */
 
-angular.module('viewCustom').controller('customSingleImageController', ['$sce', 'angularLoad', '$window', function ($sce, angularLoad, $window) {
+angular.module('viewCustom').controller('customSingleImageController', ['$sce', 'angularLoad', '$window', '$mdMedia', 'prmSearchService', function ($sce, angularLoad, $window, $mdMedia, prmSearchService) {
 
     var vm = this;
+    var sv = prmSearchService;
     vm.photo = {};
+    vm.flexsize = 70;
     var index = vm.params.index;
     vm.breadcrumbs = { 'title': 'Home', 'url': '' };
 
-    if (vm.item.mis1Data.length === 1) {
-        vm.photo = vm.item.mis1Data[0].image[index];
-    }
-
-    console.log('*** custom single Image  ***');
+    console.log('***** custom single Image *******');
     console.log(vm);
 
     vm.$onChanges = function () {
+
+        // if the smaller screen size, make the flex size to 100.
+        if ($mdMedia('sm')) {
+            vm.flexsize = 100;
+        } else if ($mdMedia('xs')) {
+            vm.flexsize = 100;
+        }
+
+        // if there is index and singleimage in parameter, then execute this statement.
         if (vm.params.index && vm.params.singleimage) {
+            // the xml has different format nodes
+            if (vm.item.mis1Data) {
+                if (vm.item.mis1Data.length === 1) {
+                    vm.photo = vm.item.mis1Data[0].image[index];
+                } else if (vm.item.mis1Data.length > 1) {
+                    vm.photo = vm.item.mis1Data[index].image[0];
+                }
+                sv.setPhoto(vm.item);
+            }
+            // hide previous page
             var doc = document.getElementById('fullView');
             var div = doc.getElementsByClassName('full-view-inner-container');
             div[0].style.display = 'none';
             vm.breadcrumbs.url = '/primo-explore/fulldisplay?docid=' + vm.params.docid + '&context=' + vm.params.context + '&lang=' + vm.params.lang + '&vid=' + vm.params.vid + '&adaptor=' + vm.params.adaptor + '&search_scope=' + vm.params.scope;
+            vm.breadcrumbs.url += '&searchString=' + vm.params.searchString + '&q=' + vm.params.query;
             vm.breadcrumbs.title = vm.item.pnx.display.title[0];
         }
     };
 
+    // when a user click on breadcrumbs navigator
     vm.goBack = function () {
         $window.location.href = vm.breadcrumbs.url;
     };
@@ -237,6 +257,33 @@ angular.module('viewCustom').component('prmAuthenticationAfter', {
 });
 
 /**
+ * Created by samsan on 6/15/17.
+ */
+
+angular.module('viewCustom').controller('prmBackToSearchResultsButtonAfterController', ['$sce', 'angularLoad', '$window', 'prmSearchService', function ($sce, angularLoad, $window, prmSearchService) {
+
+    var vm = this;
+    var sv = prmSearchService;
+
+    vm.$doCheck = function () {
+        vm.photo = sv.getPhoto();
+        console.log('**** prm back to search result after ***');
+        console.log(vm);
+    };
+
+    vm.goToSearch = function () {};
+
+    vm.goToImages = function () {};
+}]);
+
+angular.module('viewCustom').component('prmBackToSearchResultsButtonAfter', {
+    bindings: { parentCtrl: '=' },
+    controller: 'prmBackToSearchResultsButtonAfterController',
+    controllerAs: 'vm',
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-back-to-search-results-button-after.html'
+});
+
+/**
  * Created by samsan on 6/13/17.
  */
 
@@ -332,8 +379,18 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
     };
 
     vm.$onChanges = function () {
+
         console.log('*** trigger full view after ***');
         console.log(vm);
+
+        if (!vm.parentCtrl.searchService.query) {
+            vm.parentCtrl.searchService.query = 'any,contain,' + vm.params.searchString;
+            vm.parentCtrl.searchService.$stateParams.query = 'any,contains,' + vm.params.searchString;
+            vm.parentCtrl.mainSearchField = vm.params.searchString;
+        }
+
+        console.log('**** vm.parentCtrl ***');
+        console.log(vm.parentCtrl);
 
         if (vm.item.pnx) {
             // when a user access full view detail page, it has no mis1Data so it need to convert xml to json data
@@ -386,7 +443,7 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
 }]);
 
 angular.module('viewCustom').component('prmFullViewAfter', {
-    bindings: { parentCtrl: '<' },
+    bindings: { parentCtrl: '=' },
     controller: 'prmFullViewAfterController',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
 });
@@ -415,7 +472,7 @@ angular.module('viewCustom').component('prmLogoAfter', {
  * Created by samsan on 5/22/17.
  * Access search box json data. Then change the number item per page. See prm-search-service.js file
  */
-angular.module('viewCustom').controller('prmSearchBarAfterController', ['angularLoad', 'prmSearchService', function (angularLoad, prmSearchService) {
+angular.module('viewCustom').controller('prmSearchBarAfterController', ['angularLoad', 'prmSearchService', '$location', function (angularLoad, prmSearchService, $location) {
     var vm = this;
     // initialize custom service search
     var sv = prmSearchService;
@@ -429,6 +486,12 @@ angular.module('viewCustom').controller('prmSearchBarAfterController', ['angular
         pageObj.totalItems = 0;
         pageObj.totalPages = 0;
         sv.setPage(pageObj);
+
+        // show text in search box
+        if (!vm.parentCtrl.mainSearchField) {
+            var params = $location.search();
+            vm.parentCtrl.mainSearchField = params.searchString;
+        }
     };
 }]);
 
@@ -580,6 +643,10 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         vm.parentCtrl.$scope.$watch(function () {
             return vm.parentCtrl.searchResults;
         }, function (newVal, oldVal) {
+
+            console.log('*** prm search result after ***');
+            console.log(vm);
+
             vm.currentPage = 1;
             vm.flag = true;
             // convert xml data into json data so it knows which image is a restricted image
@@ -623,6 +690,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             var itemData = { 'item': '', 'searchData': '' };
             itemData.item = item;
             itemData.searchData = vm.parentCtrl.searchService.cheetah.searchData;
+            itemData.searchData.searchString = vm.parentCtrl.searchString;
             sv.setItem(itemData);
 
             // modal dialog pop up here
@@ -663,12 +731,14 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         $mdDialog.hide();
     };
 
-    this.closeDialog2 = function (e) {
-        if (e.which === 13) {
+    /*
+    this.closeDialog2=function(e) {
+        if(e.which===13) {
             vm.modalDialogFlag = false;
             $mdDialog.hide();
         }
     };
+    */
 }]);
 
 // custom filter to remove $$U infront of url in pnx.links
@@ -869,6 +939,15 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         return serviceObj.facets;
     };
 
+    // setter and getter for a single image
+    serviceObj.photo = {};
+    serviceObj.setPhoto = function (data) {
+        serviceObj.photo = data;
+    };
+    serviceObj.getPhoto = function () {
+        return serviceObj.photo;
+    };
+
     return serviceObj;
 }]);
 
@@ -907,12 +986,19 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
 
             // go to full display page
             console.log('*** vm.item ***');
-            console.log(vm.item);
+            console.log(vm);
 
             console.log('**** vm.searchData ***');
             console.log(vm.searchData);
 
-            var url = '/primo-explore/fulldisplay?docid=' + vm.item.pnx.control.recordid[0] + '&vid=' + vm.searchData.vid + '&context=' + vm.item.context + '&adaptor=' + vm.item.adaptor + '&lang=' + vm.searchData.lang;
+            var url = '/primo-explore/fulldisplay?docid=' + vm.item.pnx.control.recordid[0] + '&vid=' + vm.searchData.vid + '&context=' + vm.item.context + '&lang=' + vm.searchData.lang;
+            if (vm.item.adaptor) {
+                url += '&adaptor=' + vm.item.adaptor;
+            } else {
+                url += '&adaptor=' + vm.searchData.adaptor;
+            }
+            url += '&searchString=' + vm.searchData.searchString + '&sort=' + vm.searchData.sort;
+            url += '&q=' + vm.searchData.q;
             url += '&search_scope=' + vm.searchData.scope + '&singleimage=true&index=' + index;
             $window.location.href = url;
         }

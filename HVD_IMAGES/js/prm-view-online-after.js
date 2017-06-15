@@ -35,12 +35,19 @@ angular.module('viewCustom')
 
                 // go to full display page
                 console.log('*** vm.item ***');
-                console.log(vm.item);
+                console.log(vm);
 
                 console.log('**** vm.searchData ***');
                 console.log(vm.searchData);
 
-                var url='/primo-explore/fulldisplay?docid='+vm.item.pnx.control.recordid[0]+'&vid='+vm.searchData.vid+'&context='+vm.item.context+'&adaptor='+vm.item.adaptor+'&lang='+vm.searchData.lang;
+                var url='/primo-explore/fulldisplay?docid='+vm.item.pnx.control.recordid[0]+'&vid='+vm.searchData.vid+'&context='+vm.item.context+'&lang='+vm.searchData.lang;
+                if(vm.item.adaptor) {
+                    url+='&adaptor='+vm.item.adaptor;
+                } else {
+                    url+='&adaptor='+vm.searchData.adaptor;
+                }
+                url+='&searchString='+vm.searchData.searchString+'&sort='+vm.searchData.sort;
+                url += '&q=' + vm.searchData.q;
                 url+='&search_scope='+vm.searchData.scope+'&singleimage=true&index='+index;
                 $window.location.href=url;
 

@@ -148,11 +148,11 @@ cl-paging > button.md-icon-button {
 }
 
 .bigCloseIcon {
-  width:30px;
-  height:30px;
-  fill:#FFF;
-  stroke:#FFF;
-  stroke-width: 2px;
+  width:40px !important;
+  height:40px !important;
+  fill:#FFF !important;
+  stroke:#FFF !important;
+  stroke-width: 2px !important;
 }
 
 .bigCloseIcon2 {
@@ -198,8 +198,12 @@ cl-paging > button.md-icon-button {
   top:50%;
   cursor: pointer;
   z-index: 100000000;
+  color: #ffffff;
 }
 
+.closeButton:hover {
+  color: #ffffff;
+}
 
 .closeButton2 {
   display: block;
@@ -208,6 +212,11 @@ cl-paging > button.md-icon-button {
   top:5px;
   cursor: pointer;
   z-index: 100000000;
+  color: #ff0000;
+}
+
+.closeButton2:hover {
+  color: #ff0000;
 }
 
 .hvLogo {

@@ -1,17 +1,11 @@
 <div ng-if="vm.params.singleimage && vm.params.index" layout="row">
-   <div flex="60" class="full-view-inner-container">
+   <div flex="{{vm.flexsize}}" class="full-view-inner-container">
 
-     <div layout="row" layout-align="start start">
-         <div><md-button class="md-primary" ng-click="vm.goBack()">{{vm.breadcrumbs.title}}</md-button></div>
-         <div><md-icon md-svg-icon="android:keyboard_arrow_right"></md-icon></div>
-         <div><md-button class="md-default">Photo</md-button></div>
-     </div>
+       <responsive-image src="vm.photo._attr.href._value" imgtitle="vm.item.mis1Data[0].title[0].textElement[0]._text" restricted="vm.photo._attr.restrictedImage._value"></responsive-image>
 
-        <responsive-image src="vm.photo._attr.href._value" imgtitle="vm.item.mis1Data[0].title[0].textElement[0]._text" restricted="vm.photo._attr.restrictedImage._value"></responsive-image>
+       <prm-full-view-service-container [load-additional-services]="vm.services[1]" [item]="vm.item" [service]="vm.services[1]" [index]="1">
 
-        <prm-full-view-service-container [load-additional-services]="vm.services[1]" [item]="vm.item" [service]="vm.services[1]" [index]="1">
-
-        </prm-full-view-service-container>
+       </prm-full-view-service-container>
   
    </div>
 </div>

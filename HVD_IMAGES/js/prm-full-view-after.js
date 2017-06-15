@@ -43,8 +43,19 @@ angular.module('viewCustom')
         };
 
         vm.$onChanges=function() {
+
            console.log('*** trigger full view after ***');
            console.log(vm);
+
+           if(!vm.parentCtrl.searchService.query) {
+               vm.parentCtrl.searchService.query='any,contain,'+vm.params.searchString;
+               vm.parentCtrl.searchService.$stateParams.query='any,contains,'+vm.params.searchString;
+               vm.parentCtrl.mainSearchField=vm.params.searchString;
+           }
+
+           console.log('**** vm.parentCtrl ***');
+           console.log(vm.parentCtrl);
+
 
            if(vm.item.pnx) {
                // when a user access full view detail page, it has no mis1Data so it need to convert xml to json data
@@ -103,7 +114,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmFullViewAfter', {
-        bindings: {parentCtrl: '<'},
+        bindings: {parentCtrl: '='},
         controller: 'prmFullViewAfterController',
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
     });
