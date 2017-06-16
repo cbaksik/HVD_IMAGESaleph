@@ -44,17 +44,14 @@ angular.module('viewCustom')
 
         vm.$onChanges=function() {
 
-           console.log('*** trigger full view after ***');
+           console.log('*** prm-full-view-after ***');
            console.log(vm);
 
            if(!vm.parentCtrl.searchService.query) {
-               vm.parentCtrl.searchService.query='any,contain,'+vm.params.searchString;
-               vm.parentCtrl.searchService.$stateParams.query='any,contains,'+vm.params.searchString;
+               vm.parentCtrl.searchService.query=vm.params.query;
+               vm.parentCtrl.searchService.$stateParams.query=vm.params.query;
                vm.parentCtrl.mainSearchField=vm.params.searchString;
            }
-
-           console.log('**** vm.parentCtrl ***');
-           console.log(vm.parentCtrl);
 
 
            if(vm.item.pnx) {
@@ -64,9 +61,6 @@ angular.module('viewCustom')
                    item[0] = vm.item;
                    item = sv.convertData(item);
                    vm.item = item[0];
-
-                   console.log('**** vm.item on change ****');
-                   console.log(vm.item);
                }
 
                // set data to build full display page

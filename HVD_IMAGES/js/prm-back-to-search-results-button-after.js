@@ -3,23 +3,43 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmBackToSearchResultsButtonAfterController', [ '$sce', 'angularLoad','$window','prmSearchService', function ($sce, angularLoad,$window,prmSearchService) {
+    .controller('prmBackToSearchResultsButtonAfterController', [ '$sce', 'angularLoad','$window','prmSearchService','$location', function ($sce, angularLoad, $window, prmSearchService, $location) {
 
         let vm = this;
-        var sv=prmSearchService;
+        let sv=prmSearchService;
+        vm.params=$location.search();
 
+        console.log('*** prm back to search result button after ***');
+        console.log(vm);
+
+        // get items from custom single image component
         vm.$doCheck=function () {
             vm.photo=sv.getPhoto();
-            console.log('**** prm back to search result after ***');
-            console.log(vm);
         };
 
+        // go back to search result list
         vm.goToSearch=function () {
-
+            var url='/primo-explore/search?query='+vm.params.q+'&vid='+vm.parentCtrl.$stateParams.vid;
+            url+='&sortby='+vm.parentCtrl.$stateParams.sortby+'&lang='+vm.parentCtrl.$stateParams.lang;
+            url+='&tab='+vm.parentCtrl.$stateParams.tab+'&=search_scope='+vm.parentCtrl.$stateParams.search_scope;
+            url+='&searchString='+vm.params.searchString;
+            if(vm.params.facet) {
+                url+='&facet=' + vm.params.facet;
+            }
+            $window.location.href=url;
         };
 
+        // go back to full display page of thumbnail images
         vm.goToImages=function () {
-
+            var url='/primo-explore/fulldisplay?docid='+vm.parentCtrl.$stateParams.docid+'&q='+vm.params.q+'&vid='+vm.parentCtrl.$stateParams.vid;
+            url+='&sortby='+vm.parentCtrl.$stateParams.sortby+'&lang='+vm.parentCtrl.$stateParams.lang;
+            url+='&context='+vm.parentCtrl.$stateParams.context+'&adaptor='+vm.parentCtrl.$stateParams.adaptor;
+            url+='&tab='+vm.parentCtrl.$stateParams.tab+'&search_scope='+vm.parentCtrl.$stateParams.search_scope;
+            url+='&searchString='+vm.params.searchString;
+            if(vm.params.facet) {
+                url+='&facet=' + vm.params.facet;
+            }
+            $window.location.href=url;
         };
 
     }]);

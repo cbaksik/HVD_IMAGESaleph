@@ -7,6 +7,18 @@ angular.module('viewCustom')
     .service('prmSearchService',['$http','$window','$filter',function ($http, $window, $filter) {
     let serviceObj={};
 
+    serviceObj.getBrowserType=function () {
+        var userAgent=$window.navigator.userAgent;
+        var browsers = {chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer/i};
+        for(var key in browsers) {
+            if (browsers[key].test(userAgent)) {
+                return key;
+            }
+        };
+
+        return '';
+    };
+
     //http ajax service, pass in URL, parameters, method. The method can be get, post, put, delete
     serviceObj.getAjax=function (url,param,methodType) {
       return $http({
@@ -47,8 +59,8 @@ angular.module('viewCustom')
 
     // replace & . It cause error in firefox;
     serviceObj.removeInvalidString=function (str) {
-        var pattern=/[\&]/g;
-        return str.replace(pattern,'&amp;');
+        var pattern = /[\&]/g;
+        return str.replace(pattern, '&amp;');
     };
 
     //parse xml

@@ -38,10 +38,6 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
     vm.photo = {};
     vm.flexsize = 70;
     var index = vm.params.index;
-    vm.breadcrumbs = { 'title': 'Home', 'url': '' };
-
-    console.log('***** custom single Image *******');
-    console.log(vm);
 
     vm.$onChanges = function () {
 
@@ -61,15 +57,13 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
                 } else if (vm.item.mis1Data.length > 1) {
                     vm.photo = vm.item.mis1Data[index].image[0];
                 }
+                // pass this data to use in prm-back-to-search-result-button-after
                 sv.setPhoto(vm.item);
             }
             // hide previous page
             var doc = document.getElementById('fullView');
             var div = doc.getElementsByClassName('full-view-inner-container');
             div[0].style.display = 'none';
-            vm.breadcrumbs.url = '/primo-explore/fulldisplay?docid=' + vm.params.docid + '&context=' + vm.params.context + '&lang=' + vm.params.lang + '&vid=' + vm.params.vid + '&adaptor=' + vm.params.adaptor + '&search_scope=' + vm.params.scope;
-            vm.breadcrumbs.url += '&searchString=' + vm.params.searchString + '&q=' + vm.params.query;
-            vm.breadcrumbs.title = vm.item.pnx.display.title[0];
         }
     };
 
@@ -260,20 +254,44 @@ angular.module('viewCustom').component('prmAuthenticationAfter', {
  * Created by samsan on 6/15/17.
  */
 
-angular.module('viewCustom').controller('prmBackToSearchResultsButtonAfterController', ['$sce', 'angularLoad', '$window', 'prmSearchService', function ($sce, angularLoad, $window, prmSearchService) {
+angular.module('viewCustom').controller('prmBackToSearchResultsButtonAfterController', ['$sce', 'angularLoad', '$window', 'prmSearchService', '$location', function ($sce, angularLoad, $window, prmSearchService, $location) {
 
     var vm = this;
     var sv = prmSearchService;
+    vm.params = $location.search();
 
+    console.log('*** prm back to search result button after ***');
+    console.log(vm);
+
+    // get items from custom single image component
     vm.$doCheck = function () {
         vm.photo = sv.getPhoto();
-        console.log('**** prm back to search result after ***');
-        console.log(vm);
     };
 
-    vm.goToSearch = function () {};
+    // go back to search result list
+    vm.goToSearch = function () {
+        var url = '/primo-explore/search?query=' + vm.params.q + '&vid=' + vm.parentCtrl.$stateParams.vid;
+        url += '&sortby=' + vm.parentCtrl.$stateParams.sortby + '&lang=' + vm.parentCtrl.$stateParams.lang;
+        url += '&tab=' + vm.parentCtrl.$stateParams.tab + '&=search_scope=' + vm.parentCtrl.$stateParams.search_scope;
+        url += '&searchString=' + vm.params.searchString;
+        if (vm.params.facet) {
+            url += '&facet=' + vm.params.facet;
+        }
+        $window.location.href = url;
+    };
 
-    vm.goToImages = function () {};
+    // go back to full display page of thumbnail images
+    vm.goToImages = function () {
+        var url = '/primo-explore/fulldisplay?docid=' + vm.parentCtrl.$stateParams.docid + '&q=' + vm.params.q + '&vid=' + vm.parentCtrl.$stateParams.vid;
+        url += '&sortby=' + vm.parentCtrl.$stateParams.sortby + '&lang=' + vm.parentCtrl.$stateParams.lang;
+        url += '&context=' + vm.parentCtrl.$stateParams.context + '&adaptor=' + vm.parentCtrl.$stateParams.adaptor;
+        url += '&tab=' + vm.parentCtrl.$stateParams.tab + '&search_scope=' + vm.parentCtrl.$stateParams.search_scope;
+        url += '&searchString=' + vm.params.searchString;
+        if (vm.params.facet) {
+            url += '&facet=' + vm.params.facet;
+        }
+        $window.location.href = url;
+    };
 }]);
 
 angular.module('viewCustom').component('prmBackToSearchResultsButtonAfter', {
@@ -295,6 +313,9 @@ angular.module('viewCustom').controller('prmBreadcrumbsAfterController', ['angul
 
 
     vm.$onChanges = function () {
+        console.log('*** prm breadcrumbs after ***');
+        console.log(vm);
+
         // capture user select facets
         sv.setFacets(vm.parentCtrl.selectedFacets);
         // reset the current page to beginning when a user select new facets
@@ -313,14 +334,16 @@ angular.module('viewCustom').component('prmBreadcrumbsAfter', {
  * Created by samsan on 5/30/17.
  */
 
-angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad', 'prmSearchService', function (angularLoad, prmSearchService) {
+angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad', 'prmSearchService', '$location', function (angularLoad, prmSearchService, $location) {
     var vm = this;
-    // initialize custom service search
+    vm.params = $location.search();
     var sv = prmSearchService;
     // get page object
     var pageObj = sv.getPage();
 
     vm.$onChanges = function () {
+        console.log('*** prm facet after ****');
+        console.log(vm);
         // if there is no facet, remove it from service
         if (!vm.parentCtrl.$stateParams.facet) {
             // reset facet if it is empty
@@ -380,17 +403,14 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
 
     vm.$onChanges = function () {
 
-        console.log('*** trigger full view after ***');
+        console.log('*** prm-full-view-after ***');
         console.log(vm);
 
         if (!vm.parentCtrl.searchService.query) {
-            vm.parentCtrl.searchService.query = 'any,contain,' + vm.params.searchString;
-            vm.parentCtrl.searchService.$stateParams.query = 'any,contains,' + vm.params.searchString;
+            vm.parentCtrl.searchService.query = vm.params.query;
+            vm.parentCtrl.searchService.$stateParams.query = vm.params.query;
             vm.parentCtrl.mainSearchField = vm.params.searchString;
         }
-
-        console.log('**** vm.parentCtrl ***');
-        console.log(vm.parentCtrl);
 
         if (vm.item.pnx) {
             // when a user access full view detail page, it has no mis1Data so it need to convert xml to json data
@@ -399,9 +419,6 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
                 item[0] = vm.item;
                 item = sv.convertData(item);
                 vm.item = item[0];
-
-                console.log('**** vm.item on change ****');
-                console.log(vm.item);
             }
 
             // set data to build full display page
@@ -565,6 +582,10 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
     vm.ajaxSearch = function () {
+
+        console.log('*** vm ****');
+        console.log(vm);
+
         var facets = sv.getFacets();
         var facetsParam = '';
         this.searchInfo = sv.getPage();
@@ -576,7 +597,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         }
 
         var params = { 'addfields': [], 'offset': 0, 'limit': 10, 'lang': 'en_US', 'inst': 'HVD', 'getMore': 0, 'pcAvailability': true, 'q': '', 'rtaLinks': true,
-            'sort': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '' };
+            'sort': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '', 'searchString': '' };
         params.addfields = vm.parentCtrl.searchService.cheetah.searchData.addfields;
         params.qExclude = vm.parentCtrl.searchService.cheetah.searchData.qExclude;
         params.getMore = vm.parentCtrl.searchService.cheetah.searchData.getMore;
@@ -587,6 +608,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         params.vid = vm.parentCtrl.$stateParams.vid;
         params.sort = vm.parentCtrl.$stateParams.sortby;
         params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
+        params.searchString = vm.parentCtrl.searchString;
 
         for (var i = 0; i < facets.length; i++) {
             facetsParam += 'facet_' + facets[i].name + ',' + facets[i].displayedType + ',' + facets[i].value + '|,|';
@@ -603,6 +625,9 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
         // get the current search rest url
         var url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
+
+        console.log('*** params ***');
+        console.log(params);
 
         sv.getAjax(url, params, 'get').then(function (data) {
             var mydata = data.data;
@@ -643,10 +668,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         vm.parentCtrl.$scope.$watch(function () {
             return vm.parentCtrl.searchResults;
         }, function (newVal, oldVal) {
-
-            console.log('*** prm search result after ***');
-            console.log(vm);
-
             vm.currentPage = 1;
             vm.flag = true;
             // convert xml data into json data so it knows which image is a restricted image
@@ -785,6 +806,18 @@ angular.module('viewCustom').component('prmSearchResultListAfter', {
 
 angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$filter', function ($http, $window, $filter) {
     var serviceObj = {};
+
+    serviceObj.getBrowserType = function () {
+        var userAgent = $window.navigator.userAgent;
+        var browsers = { chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer/i };
+        for (var key in browsers) {
+            if (browsers[key].test(userAgent)) {
+                return key;
+            }
+        };
+
+        return '';
+    };
 
     //http ajax service, pass in URL, parameters, method. The method can be get, post, put, delete
     serviceObj.getAjax = function (url, param, methodType) {
@@ -955,19 +988,21 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
  * Created by samsan on 5/17/17.
  * This component is to insert images into online section
  */
-angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$mdDialog', '$timeout', '$window', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout, $window) {
+angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$mdDialog', '$timeout', '$window', '$location', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout, $window, $location) {
 
     var vm = this;
     var sv = prmSearchService;
     var itemData = sv.getItem();
     vm.item = itemData.item;
     vm.searchData = itemData.searchData;
+    vm.params = $location.search();
 
     vm.$onChanges = function () {
         // get item data from service
         itemData = sv.getItem();
         vm.item = itemData.item;
         vm.searchData = itemData.searchData;
+        vm.searchData.sortby = vm.params.sortby;
     };
 
     // show the pop up image
@@ -985,21 +1020,19 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
         } else {
 
             // go to full display page
-            console.log('*** vm.item ***');
-            console.log(vm);
-
-            console.log('**** vm.searchData ***');
-            console.log(vm.searchData);
-
             var url = '/primo-explore/fulldisplay?docid=' + vm.item.pnx.control.recordid[0] + '&vid=' + vm.searchData.vid + '&context=' + vm.item.context + '&lang=' + vm.searchData.lang;
             if (vm.item.adaptor) {
                 url += '&adaptor=' + vm.item.adaptor;
             } else {
                 url += '&adaptor=' + vm.searchData.adaptor;
             }
-            url += '&searchString=' + vm.searchData.searchString + '&sort=' + vm.searchData.sort;
-            url += '&q=' + vm.searchData.q;
+            url += '&searchString=' + vm.searchData.searchString + '&sortby=' + vm.searchData.sortby;
+            url += '&q=' + vm.searchData.q + '&tab=' + vm.searchData.tab;
             url += '&search_scope=' + vm.searchData.scope + '&singleimage=true&index=' + index;
+            if (vm.params.facet) {
+                url += '&facet=' + vm.params.facet;
+            }
+
             $window.location.href = url;
         }
     };

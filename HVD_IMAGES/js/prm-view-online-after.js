@@ -3,19 +3,21 @@
  * This component is to insert images into online section
  */
 angular.module('viewCustom')
-    .controller('prmViewOnlineAfterController', [ '$sce', 'angularLoad','prmSearchService','$mdDialog','$timeout','$window', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout,$window) {
+    .controller('prmViewOnlineAfterController', [ '$sce', 'angularLoad','prmSearchService','$mdDialog','$timeout','$window','$location', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout,$window,$location) {
 
         let vm = this;
         let sv=prmSearchService;
         let itemData=sv.getItem();
         vm.item=itemData.item;
         vm.searchData=itemData.searchData;
+        vm.params=$location.search();
 
         vm.$onChanges=function() {
            // get item data from service
            itemData=sv.getItem();
            vm.item=itemData.item;
            vm.searchData=itemData.searchData;
+           vm.searchData.sortby=vm.params.sortby;
 
         };
 
@@ -34,21 +36,19 @@ angular.module('viewCustom')
             } else {
 
                 // go to full display page
-                console.log('*** vm.item ***');
-                console.log(vm);
-
-                console.log('**** vm.searchData ***');
-                console.log(vm.searchData);
-
                 var url='/primo-explore/fulldisplay?docid='+vm.item.pnx.control.recordid[0]+'&vid='+vm.searchData.vid+'&context='+vm.item.context+'&lang='+vm.searchData.lang;
                 if(vm.item.adaptor) {
                     url+='&adaptor='+vm.item.adaptor;
                 } else {
                     url+='&adaptor='+vm.searchData.adaptor;
                 }
-                url+='&searchString='+vm.searchData.searchString+'&sort='+vm.searchData.sort;
-                url += '&q=' + vm.searchData.q;
+                url+='&searchString='+vm.searchData.searchString+'&sortby='+vm.searchData.sortby;
+                url += '&q=' + vm.searchData.q + '&tab='+vm.searchData.tab;
                 url+='&search_scope='+vm.searchData.scope+'&singleimage=true&index='+index;
+                if(vm.params.facet) {
+                    url+='&facet=' + vm.params.facet;
+                }
+
                 $window.location.href=url;
 
             }

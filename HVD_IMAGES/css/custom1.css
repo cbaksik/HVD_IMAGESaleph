@@ -698,12 +698,15 @@ div.hollis-logo a:hover {
     cursor: none !important;
 }
 
-.truncateText {
+.truncate {
     white-space: nowrap;
+    width: 300px;
     overflow: hidden;
     text-overflow: ellipsis;
+    display:inline-block;
+    vertical-align: middle;
+    text-align: left;
 }
-
 
 .hvfullsize {
   width: 100%;

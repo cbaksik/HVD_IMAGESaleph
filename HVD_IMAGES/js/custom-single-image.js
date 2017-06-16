@@ -11,10 +11,6 @@ angular.module('viewCustom')
         vm.photo={};
         vm.flexsize=70;
         let index=vm.params.index;
-        vm.breadcrumbs={'title':'Home','url':''};
-
-        console.log('***** custom single Image *******');
-        console.log(vm);
 
         vm.$onChanges=function() {
 
@@ -34,15 +30,13 @@ angular.module('viewCustom')
                     } else if(vm.item.mis1Data.length > 1) {
                         vm.photo = vm.item.mis1Data[index].image[0];
                     }
+                    // pass this data to use in prm-back-to-search-result-button-after
                     sv.setPhoto(vm.item);
                 }
                 // hide previous page
                 var doc = document.getElementById('fullView');
                 var div = doc.getElementsByClassName('full-view-inner-container');
                 div[0].style.display = 'none';
-                vm.breadcrumbs.url='/primo-explore/fulldisplay?docid='+vm.params.docid+'&context='+vm.params.context+'&lang='+vm.params.lang+'&vid='+vm.params.vid+'&adaptor='+vm.params.adaptor+'&search_scope='+vm.params.scope;
-                vm.breadcrumbs.url+='&searchString='+vm.params.searchString+'&q='+vm.params.query;
-                vm.breadcrumbs.title=vm.item.pnx.display.title[0];
             }
         };
 

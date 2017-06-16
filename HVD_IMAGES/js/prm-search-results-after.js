@@ -45,6 +45,10 @@ angular.module('viewCustom')
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
     vm.ajaxSearch=function () {
+
+       console.log('*** vm ****');
+       console.log(vm);
+
        var facets = sv.getFacets();
        var facetsParam='';
        this.searchInfo=sv.getPage();
@@ -56,7 +60,7 @@ angular.module('viewCustom')
        }
 
        var params={'addfields':[],'offset':0,'limit':10,'lang':'en_US','inst':'HVD','getMore':0,'pcAvailability':true,'q':'','rtaLinks':true,
-       'sort':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':''};
+       'sort':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':'','searchString':''};
        params.addfields=vm.parentCtrl.searchService.cheetah.searchData.addfields;
        params.qExclude=vm.parentCtrl.searchService.cheetah.searchData.qExclude;
        params.getMore=vm.parentCtrl.searchService.cheetah.searchData.getMore;
@@ -67,6 +71,7 @@ angular.module('viewCustom')
        params.vid=vm.parentCtrl.$stateParams.vid;
        params.sort=vm.parentCtrl.$stateParams.sortby;
        params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
+       params.searchString=vm.parentCtrl.searchString;
 
        for(var i=0; i < facets.length; i++){
            facetsParam+='facet_'+facets[i].name+','+facets[i].displayedType+','+facets[i].value+'|,|';
@@ -84,6 +89,9 @@ angular.module('viewCustom')
 
        // get the current search rest url
        let url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
+
+       console.log('*** params ***');
+       console.log(params);
 
        sv.getAjax(url,params,'get')
            .then(function (data) {
@@ -123,10 +131,6 @@ angular.module('viewCustom')
         this.searchInfo = sv.getPage(); // get page info object
         // watch for new data change when a user search
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults,(newVal, oldVal)=>{
-
-            console.log('*** prm search result after ***');
-            console.log(vm);
-
             vm.currentPage=1;
             vm.flag=true;
             // convert xml data into json data so it knows which image is a restricted image
