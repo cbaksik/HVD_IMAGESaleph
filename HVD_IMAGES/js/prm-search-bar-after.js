@@ -9,19 +9,21 @@ angular.module('viewCustom')
         let sv=prmSearchService;
         // get page object
         let pageObj=sv.getPage();
-        // remove local storage
         sv.removePageInfo();
 
         vm.$onChanges=function() {
             pageObj.currentPage = 1;
             pageObj.totalItems = 0;
             pageObj.totalPages = 0;
+            pageObj.userClick=false;
             sv.setPage(pageObj);
 
             // show text in search box
             if(!vm.parentCtrl.mainSearchField) {
                 var params=$location.search();
-                vm.parentCtrl.mainSearchField=params.searchString;
+                if(params.searchString) {
+                    vm.parentCtrl.mainSearchField = params.searchString;
+                }
             }
 
         };
@@ -45,9 +47,16 @@ angular.module('viewCustom').config(['$httpProvider',function ($httpProvider) {
         return {
             'request': function (config) {
                 if(config.params) {
-                    if(config.params.limit===10 && config.params.offset===0) {
+                    if(config.params.limit===10) {
                         config.params.limit = 50;
                     }
+
+                }
+                if(config.method==='POST' && config.url==='/primo_library/libweb/webservices/rest/v1/actions/email') {
+                    console.log(config.data.records[0].deeplink);
+                    config.data.records[0].deeplink=window.location.href;
+                    console.log('*** config.params ***');
+                    console.log(config);
                 }
                 return config;
             },

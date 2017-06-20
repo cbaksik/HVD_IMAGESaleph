@@ -12,9 +12,8 @@ angular.module('viewCustom')
 
         sv.setItem(items);
 
-        console.log('*** vm custom full view dialog controller ***');
-        console.log(vm.item);
-        console.log(vm.searchData);
+        console.log('**** vm custom full view dialog controller *****');
+        console.log(vm);
 
         vm.closeDialog=function() {
             $mdDialog.hide();

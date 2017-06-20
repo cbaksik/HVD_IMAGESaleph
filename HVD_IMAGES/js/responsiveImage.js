@@ -13,42 +13,65 @@ angular.module('viewCustom')
           restricted:'<'
         },
         controllerAs:'vm',
-        controller:['$element',function ($element) {
+        controller:['$element','$window','$location','prmSearchService','$timeout',function ($element,$window,$location,prmSearchService, $timeout) {
             var vm=this;
+            var sv=prmSearchService;
             // set up local scope variables
+            vm.showImage=true;
+            vm.params=$location.search();
             vm.localScope={'imgClass':'','loading':true,'hideLockIcon':false};
+            vm.isLoggedIn=sv.getLogInID();
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
-                vm.localScope={'imgClass':'','loading':true,'hideLockIcon':false};
-                if(vm.src) {
-                    var img=$element[0].firstChild.children[0];
-                    // use default image if it is a broken link image
-                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                    if(pattern.test(vm.src)) {
-                        img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-                    }
-                    img.onload=vm.callback;
+                vm.isLoggedIn=sv.getLogInID();
+                if(vm.restricted && !vm.isLoggedIn) {
+                    vm.showImage=false;
                 }
+                vm.localScope={'imgClass':'','loading':true,'hideLockIcon':false};
+                if(vm.src && vm.showImage) {
+                    $timeout(function () {
+                        var img=$element.find('img')[0];
+                        // use default image if it is a broken link image
+                        var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                        if(pattern.test(vm.src)) {
+                            img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                        }
+                        img.onload=vm.callback;
+                    },200);
+
+                }
+
+                vm.localScope.loading=false;
+
             };
             vm.callback=function () {
-                var image=$element[0].firstChild.children[0];
+                var image=$element.find('img')[0];
                 // resize the image if it is larger than 600 pixel
                 if(image.width > 600){
                     vm.localScope.imgClass='responsiveImage';
                     image.className='md-card-image '+vm.localScope.imgClass;
                 }
-                // force to hide ajax loader icon
-                vm.localScope.loading=false;
-                var span=$element[0].firstChild.children[1];
-                span.hidden=true;
-
+                
                 // force to show lock icon
                 if(vm.restricted) {
                     vm.localScope.hideLockIcon=true;
                 }
-                
-            }
+            };
+            // login
+            vm.signIn=function () {
+                var auth=sv.getAuth();
+                var params={'vid':'','targetURL':''};
+                params.vid=vm.params.vid;
+                params.targetURL=$window.location.href;
+                var url='/primo-explore/login?from-new-ui=1&authenticationProfile='+auth.authenticationMethods[0].profileName+'&search_scope=default_scope&tab=default_tab';
+                url+='&Institute='+auth.authenticationService.userSessionManagerService.userInstitution+'&vid='+params.vid;
+                if(vm.params.offset) {
+                    url+='&offset='+vm.params.offset;
+                }
+                url+='&targetURL='+encodeURIComponent(params.targetURL);
+                $window.location.href=url;
+            };
 
         }]
     });

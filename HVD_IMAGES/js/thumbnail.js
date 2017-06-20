@@ -20,37 +20,37 @@ angular.module('viewCustom')
             vm.$onChanges=function () {
                 vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
                 if(vm.src) {
-                    var img=$element[0].firstChild.children[0].children[0];
-                    // use default image if it is a broken link image
-                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                    if(pattern.test(vm.src)) {
-                        img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-                    }
-                    img.onload=vm.callback;
+                    $timeout(function () {
+                        var img=$element.find('img')[0];
+                        // use default image if it is a broken link image
+                        var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                        if(pattern.test(vm.src)) {
+                            img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                        }
+                        img.onload=vm.callback;
+                        // show lock up icon
+                        if(vm.restricted) {
+                            vm.localScope.hideLockIcon = true;
+                        }
+                    },200);
                 }
 
             };
             vm.callback=function () {
-                var image=$element[0].firstChild.children[0].children[0];
-
+                var image=$element.find('img')[0];
                 if(image.height > 150){
                     vm.localScope.imgclass='responsivePhoto';
                     image.className='md-card-image '+ vm.localScope.imgclass;
                 }
 
-                // show lock up icon
-                if(vm.restricted) {
-                    vm.localScope.hideLockIcon = true;
-                }
             };
             
             vm.showToolTip=function (e) {
-
-
+                vm.localScope.hideTooltip=true;
             };
 
             vm.hideToolTip=function (e) {
-
+                vm.localScope.hideTooltip=false;
             };
 
 

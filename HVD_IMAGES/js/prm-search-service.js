@@ -29,7 +29,7 @@ angular.module('viewCustom')
     };
 
     // default page info
-    serviceObj.page = {'pageSize':50,'totalItems':0,'currentPage':1,'query':'','searchString':'','totalPages':0};
+    serviceObj.page = {'pageSize':50,'totalItems':0,'currentPage':1,'query':'','searchString':'','totalPages':0,'userClick':false};
     // getter for page info
     serviceObj.getPage=function () {
        // localStorage page info exist, just use the old one
@@ -183,6 +183,15 @@ angular.module('viewCustom')
     };
     serviceObj.getPhoto=function () {
         return serviceObj.photo;
+    };
+
+    // get user profile for authentication to login
+    serviceObj.auth={};
+    serviceObj.setAuth=function (data) {
+        serviceObj.auth=data;
+    };
+    serviceObj.getAuth=function () {
+      return serviceObj.auth;
     };
 
 

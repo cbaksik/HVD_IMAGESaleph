@@ -708,6 +708,10 @@ div.hollis-logo a:hover {
     text-align: left;
 }
 
+.signInColor {
+    color: #5C92BD;
+}
+
 .hvfullsize {
   width: 100%;
 }
@@ -718,8 +722,8 @@ div.hollis-logo a:hover {
 .hvInline > li { display: inline-table; text-align: left; cursor: pointer; display: -moz-inline-stack;
   margin-bottom:5px; margin-right:10px; width: auto; height:180px; vertical-align: top; padding:5px;}
 
- .badge {color: #ffffff; padding-left:5px; padding-right:5px; margin-right:8px; position: relative; bottom:-2px; font-size:80%;
-  display:inline-block; background:#666666; border-top-right-radius:3px; border-top-left-radius: 3px; z-index: 1;}
+ .badge {color: #000; padding-left:5px; padding-right:5px; margin-right:8px; position: relative; bottom:-2px; font-size:80%;
+  display:inline-block; background:#efefef; border-top-right-radius:3px; border-top-left-radius: 3px; z-index: 1;}
 
 .nobadge {color: #000000; padding:2px;
   display:inline-block; z-index:1; }
@@ -731,18 +735,17 @@ div.hollis-logo a:hover {
 }
 
 
-a.thumbnail:hover {
+a.thumbnail > img:hover {
   cursor: pointer;
-  transform: scale(1.05);
+  transform: scale(1.04);
   transition:0.4s;
   transition-timing-function: ease-out;
-
 }
 
 
-a.thumbnail:focus {
+a.thumbnail > img:focus {
   cursor: pointer;
-  transform: scale(1.05);
+  transform: scale(1.04);
   transition:0.4s;
   transition-timing-function: ease-out;
 }
@@ -800,16 +803,16 @@ ul.pagination > li > .disabled  {
 
 
 .hvtooltip {
-  background:#ffffff !important;
-  color:#000000 !important;
-  padding:5px !important;
-  border:1px solid #c3c3c3 !important;
-  border-radius:5px !important;
-  text-align: left !important;
-  width:200px !important;
-  height: auto !important;
-  white-space: normal !important;
-  line-height:normal !important;
+  background:#ffffff;
+  color:#000000;
+  padding:5px;
+  border:1px solid #c3c3c3;
+  border-radius:5px;
+  text-align:left;
+  height: auto;
+  width:150px;
+  white-space: normal;
+  line-height:normal;
 }
 
 

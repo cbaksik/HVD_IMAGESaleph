@@ -26,6 +26,9 @@ angular.module('viewCustom')
             if(vm.params.facet) {
                 url+='&facet=' + vm.params.facet;
             }
+            if(vm.params.offset) {
+                url+='&offset='+vm.params.offset;
+            }
             $window.location.href=url;
         };
 
@@ -38,6 +41,9 @@ angular.module('viewCustom')
             url+='&searchString='+vm.params.searchString;
             if(vm.params.facet) {
                 url+='&facet=' + vm.params.facet;
+            }
+            if(vm.params.offset) {
+                url+='&offset='+vm.params.offset;
             }
             $window.location.href=url;
         };

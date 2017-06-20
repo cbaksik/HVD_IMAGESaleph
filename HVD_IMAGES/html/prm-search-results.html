@@ -20,8 +20,10 @@
              <div class="photo" ng-if="item.pnx.links.thumbnail">
                  <thumbnail src="item.pnx.links.thumbnail[0]" imgtitle="item.pnx.display.title[0]" restricted="item.restrictedImage"></thumbnail>
              </div>
-             <div class="nophoto" ng-if="!item.pnx.links.thumbnail"  aria-label="{{item.pnx.display.title[0]}}">
-                 {{item.pnx.display.lds28[0]|countFilter}}
+             <!-- show box that has no photo -->
+             <div class="nophoto" ng-if="!item.pnx.links.thumbnail"  aria-label="{{item.pnx.display.title[0]}}" tabindex="0">
+                 <div>{{item.pnx.display.lds28[0]|countFilter}}</div>
+                 <md-tooltip md-visible="vm.localScope.hideTooltip" md-direction="bottom" class="hvtooltip">{{item.pnx.display.title[0]}}</md-tooltip>
              </div>
          </div>
 

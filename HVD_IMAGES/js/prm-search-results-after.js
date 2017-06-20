@@ -81,7 +81,6 @@ angular.module('viewCustom')
        }
        params.qInclude=facetsParam;
 
-
        // start ajax loader progress bar
        vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=true;
        vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=true;
@@ -109,6 +108,7 @@ angular.module('viewCustom')
                vm.searchInProgress=false;
             }
            )
+
     };
 
     // when a user click on next page or prev page, it call this function.
@@ -116,6 +116,7 @@ angular.module('viewCustom')
         // prevent calling ajax twice during refresh the page or click on facets
         if(!vm.flag) {
             this.searchInfo.currentPage = currentPage;
+            this.searchInfo.userClick=true;
             sv.setPage(this.searchInfo); // keep track a user click on each current page
             // ajax call function
             vm.ajaxSearch();
@@ -131,13 +132,21 @@ angular.module('viewCustom')
         this.searchInfo = sv.getPage(); // get page info object
         // watch for new data change when a user search
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults,(newVal, oldVal)=>{
-            vm.currentPage=1;
+
+            console.log('*** prm search result after ***');
+            console.log(vm.parentCtrl);
+            if(vm.parentCtrl.$stateParams.offset > 0) {
+                vm.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / this.searchInfo.pageSize) + 1;
+                this.searchInfo.currentPage=parseInt(vm.parentCtrl.$stateParams.offset / this.searchInfo.pageSize) + 1;
+            } else {
+                vm.currentPage = 1;
+                this.searchInfo.currentPage = 1;
+            }
             vm.flag=true;
             // convert xml data into json data so it knows which image is a restricted image
             vm.items = sv.convertData(vm.parentCtrl.searchResults);
 
             // set up pagination
-            this.searchInfo.currentPage=1;
             this.searchInfo.totalItems = vm.parentCtrl.totalItems;
             this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / this.searchInfo.pageSize);
             if((this.searchInfo.pageSize * this.searchInfo.totalPages) < this.searchInfo.totalItems) {
@@ -163,49 +172,37 @@ angular.module('viewCustom')
         let logID=sv.getLogInID();
         vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
 
-        if(item.restrictedImage && logID===false) {
-            // if image is restricted and user is not login, trigger click event on user login button through dom
-            var doc=document.getElementsByClassName('user-menu-button')[0];
-            $timeout(function (e) {
-                doc.click();
-                var prmTag=document.getElementsByTagName('prm-authentication')[1];
-                var button = prmTag.getElementsByTagName('button');
-                button[0].click();
-            },500);
-        } else {
+        // set data to build full display page
+        var itemData={'item':'','searchData':''};
+        itemData.item=item;
+        itemData.searchData=vm.parentCtrl.searchService.cheetah.searchData;
+        itemData.searchData.searchString=vm.parentCtrl.searchString;
+        sv.setItem(itemData);
 
-            // set data to build full display page
-            var itemData={'item':'','searchData':''};
-            itemData.item=item;
-            itemData.searchData=vm.parentCtrl.searchService.cheetah.searchData;
-            itemData.searchData.searchString=vm.parentCtrl.searchString;
-            sv.setItem(itemData);
+        // modal dialog pop up here
+        $mdDialog.show({
+            title:'Full View Details',
+            target:$event,
+            clickOutsideToClose: true,
+            escapeToClose: true,
+            bindToController:true,
+            templateUrl:'/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
+            controller:'customFullViewDialogController',
+            controllerAs:'vm',
+            fullscreen:true,
+            multiple:true,
+            openFrom:{left:0},
+            locals: {
+                items:itemData
+            },
+            onComplete:function (scope, element) {
+                vm.modalDialogFlag=true;
+            },
+            onRemoving:function (element,removePromise) {
+                vm.modalDialogFlag=false;
+            }
+        });
 
-            // modal dialog pop up here
-            $mdDialog.show({
-                title:'Full View Details',
-                target:$event,
-                clickOutsideToClose: true,
-                escapeToClose: true,
-                bindToController:true,
-                templateUrl:'/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
-                controller:'customFullViewDialogController',
-                controllerAs:'vm',
-                fullscreen:true,
-                multiple:true,
-                openFrom:{left:0},
-                locals: {
-                    items:itemData
-                },
-                onComplete:function (scope, element) {
-                    vm.modalDialogFlag=true;
-                },
-                onRemoving:function (element,removePromise) {
-                    vm.modalDialogFlag=false;
-                }
-            });
-
-        }
     };
 
     // When a user press enter by using tab key
@@ -220,14 +217,6 @@ angular.module('viewCustom')
         $mdDialog.hide();
     };
 
-    /*
-    this.closeDialog2=function(e) {
-        if(e.which===13) {
-            vm.modalDialogFlag = false;
-            $mdDialog.hide();
-        }
-    };
-    */
 
 }]);
 

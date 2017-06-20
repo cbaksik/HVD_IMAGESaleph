@@ -76,17 +76,7 @@ angular.module('viewCustom')
                }
                sv.setItem(itemData);
 
-               var logID=sv.getLogInID();
-               if(vm.item.restrictedImage===true && logID===false) {
-                   // if image is restricted and user is not login, trigger click event on user login button through dom
-                   var doc=document.getElementsByClassName('user-menu-button')[0];
-                   $timeout(function (e) {
-                       doc.click();
-                       var prmTag=document.getElementsByTagName('prm-authentication')[1];
-                       var button = prmTag.getElementsByTagName('button');
-                       button[0].click();
-                   },500);
-               }
+
            }
 
 

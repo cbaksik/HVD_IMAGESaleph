@@ -18,40 +18,40 @@ angular.module('viewCustom')
            vm.item=itemData.item;
            vm.searchData=itemData.searchData;
            vm.searchData.sortby=vm.params.sortby;
+           vm.pageInfo=sv.getPage();
 
+           console.log('*** prm view online after ***');
+           console.log(vm);
         };
+
 
         // show the pop up image
         vm.gotoFullPhoto=function ($event, item, index) {
-            var logID=sv.getLogInID();
-            if(item._attr.restrictedImage===true && logID===false) {
-                // if image is restricted and user is not login, trigger click event on user login button through dom
-                var doc=document.getElementsByClassName('user-menu-button')[1];
-                $timeout(function (e) {
-                    doc.click();
-                    var prmTag=document.getElementsByTagName('prm-authentication')[1];
-                    var button = prmTag.getElementsByTagName('button');
-                    button[0].click();
-                },500);
+            // go to full display page
+            var url='/primo-explore/fulldisplay?docid='+vm.item.pnx.control.recordid[0]+'&vid='+vm.searchData.vid+'&context='+vm.item.context+'&lang='+vm.searchData.lang;
+            if(vm.item.adaptor) {
+                url+='&adaptor='+vm.item.adaptor;
             } else {
-
-                // go to full display page
-                var url='/primo-explore/fulldisplay?docid='+vm.item.pnx.control.recordid[0]+'&vid='+vm.searchData.vid+'&context='+vm.item.context+'&lang='+vm.searchData.lang;
-                if(vm.item.adaptor) {
-                    url+='&adaptor='+vm.item.adaptor;
-                } else {
-                    url+='&adaptor='+vm.searchData.adaptor;
-                }
-                url+='&searchString='+vm.searchData.searchString+'&sortby='+vm.searchData.sortby;
-                url += '&q=' + vm.searchData.q + '&tab='+vm.searchData.tab;
-                url+='&search_scope='+vm.searchData.scope+'&singleimage=true&index='+index;
-                if(vm.params.facet) {
-                    url+='&facet=' + vm.params.facet;
-                }
-
-                $window.location.href=url;
-
+                url+='&adaptor='+vm.searchData.adaptor;
             }
+            if(vm.searchData.searchString) {
+                url += '&searchString=' + vm.searchData.searchString;
+            } else {
+                url += '&searchString=';
+            }
+            url+='&sortby='+vm.searchData.sortby;
+            url += '&q=' + vm.searchData.q + '&tab='+vm.searchData.tab;
+            url+='&search_scope='+vm.searchData.scope+'&singleimage=true&index='+index;
+            if(vm.params.facet) {
+                url+='&facet=' + vm.params.facet;
+            }
+            var offset=vm.params.offset;
+            if(vm.pageInfo.userClick) {
+                offset=parseInt(vm.pageInfo.currentPage - 1) * vm.pageInfo.pageSize;
+            }
+
+            url += '&offset=' + offset;
+            $window.location.href=url;
         }
 
     }]);

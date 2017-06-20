@@ -1,9 +1,9 @@
 <md-card>
-    <a tabindex="0" class="thumbnail" ng-mouseEnter="vm.showToolTip($event)" ng-mouseLeave="vm.hideToolTip($event)">
-        <img ng-src="{{vm.src}}"  class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.imgtitle}}" aria-label="{{vm.imgtitle}}"/>
-        <md-tooltip md-direction="bottom" class="hvtooltip">{{vm.imgtitle}}</md-tooltip>
+    <a class="thumbnail">
+        <img ng-src="{{vm.src}}"  class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.imgtitle}}" aria-label="{{vm.imgtitle}}" tabindex="0" ng-focus="vm.showToolTip($event)" ng-blur="vm.hideToolTip($event)"/>
+        <md-tooltip md-visible="vm.localScope.hideTooltip" md-direction="bottom" class="hvtooltip">{{vm.imgtitle}}</md-tooltip>
     </a>
-    <div ng-if="vm.localScope.hideLockIcon">
+    <div ng-if="vm.localScope.hideLockIcon" tabindex="-1">
         <div class="lockIcon">
             <img src="custom/HVD_IMAGES/img/lock_small.png" class="md-avatar" alt="Lock icon" aria-label="Lock icon"/>
         </div>

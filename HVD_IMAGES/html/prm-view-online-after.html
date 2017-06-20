@@ -1,13 +1,17 @@
-<ul  class="hvInline">
-    <li ng-if="$ctrl.item.mis1Data.length === 1 && $ctrl.item.mis1Data[0].image.length === 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" tabindex="0">
+<div tabIndex="-1" ng-if="$ctrl.item.mis1Data.length === 1 && $ctrl.item.mis1Data[0].image.length === 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" tabindex="0">
+    <responsive-image src="item.image[0]._attr.href._value" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></responsive-image>
+</div>
 
-        <responsive-image src="item.image[0]._attr.href._value" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></responsive-image>
-
-    </li>
+<ul class="hvInline" ng-if="$ctrl.item.mis1Data[0].image.length > 1 || $ctrl.item.mis1Data.length > 1" tabindex="-1">
     <li ng-if="$ctrl.item.mis1Data.length === 1 && $ctrl.item.mis1Data[0].image.length > 1" ng-repeat="item in $ctrl.item.mis1Data[0].image track by $index" tabindex="0" ng-click="$ctrl.gotoFullPhoto($event,item,$index)">
-        <thumbnail src="item.thumbnail[0]._attr.href._value" imgtitle="$ctrl.item.mis1Data[0].title[0].textElement[0]._text" restricted="item._attr.restrictedImage._value"></thumbnail>
+        <thumbnail src="item.thumbnail[0]._attr.href._value + '?width=150&height=150'" imgtitle="$ctrl.item.mis1Data[0].title[0].textElement[0]._text" restricted="item._attr.restrictedImage._value"></thumbnail>
     </li>
     <li ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" tabindex="0" ng-click="$ctrl.gotoFullPhoto($event,item.image[0],$index)">
-        <thumbnail src="item.image[0].thumbnail[0]._attr.href._value" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></thumbnail>
+        <thumbnail src="item.image[0].thumbnail[0]._attr.href._value + '?width=150&height=150'" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></thumbnail>
     </li>
 </ul>
+
+
+
+
+

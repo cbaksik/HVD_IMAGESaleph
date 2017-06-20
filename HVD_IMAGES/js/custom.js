@@ -17,9 +17,8 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['$sce
 
     sv.setItem(items);
 
-    console.log('*** vm custom full view dialog controller ***');
-    console.log(vm.item);
-    console.log(vm.searchData);
+    console.log('**** vm custom full view dialog controller *****');
+    console.log(vm);
 
     vm.closeDialog = function () {
         $mdDialog.hide();
@@ -233,15 +232,12 @@ angular.module('viewCustom').controller('prmAuthenticationAfterController', ['an
     var vm = this;
     // initialize custom service search
     var sv = prmSearchService;
-
-    console.log('*** prm authentication after ***');
-    console.log(vm);
-
     // check if a user login
     vm.$onChanges = function () {
         // This flag is return true or false
         var loginID = vm.parentCtrl.isLoggedIn;
         sv.setLogInID(loginID);
+        sv.setAuth(vm.parentCtrl);
     };
 }]);
 
@@ -277,6 +273,9 @@ angular.module('viewCustom').controller('prmBackToSearchResultsButtonAfterContro
         if (vm.params.facet) {
             url += '&facet=' + vm.params.facet;
         }
+        if (vm.params.offset) {
+            url += '&offset=' + vm.params.offset;
+        }
         $window.location.href = url;
     };
 
@@ -289,6 +288,9 @@ angular.module('viewCustom').controller('prmBackToSearchResultsButtonAfterContro
         url += '&searchString=' + vm.params.searchString;
         if (vm.params.facet) {
             url += '&facet=' + vm.params.facet;
+        }
+        if (vm.params.offset) {
+            url += '&offset=' + vm.params.offset;
         }
         $window.location.href = url;
     };
@@ -433,18 +435,6 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
                 itemData.searchData.scope = vm.params.search_scope;
             }
             sv.setItem(itemData);
-
-            var logID = sv.getLogInID();
-            if (vm.item.restrictedImage === true && logID === false) {
-                // if image is restricted and user is not login, trigger click event on user login button through dom
-                var doc = document.getElementsByClassName('user-menu-button')[0];
-                $timeout(function (e) {
-                    doc.click();
-                    var prmTag = document.getElementsByTagName('prm-authentication')[1];
-                    var button = prmTag.getElementsByTagName('button');
-                    button[0].click();
-                }, 500);
-            }
         }
     };
 
@@ -495,19 +485,21 @@ angular.module('viewCustom').controller('prmSearchBarAfterController', ['angular
     var sv = prmSearchService;
     // get page object
     var pageObj = sv.getPage();
-    // remove local storage
     sv.removePageInfo();
 
     vm.$onChanges = function () {
         pageObj.currentPage = 1;
         pageObj.totalItems = 0;
         pageObj.totalPages = 0;
+        pageObj.userClick = false;
         sv.setPage(pageObj);
 
         // show text in search box
         if (!vm.parentCtrl.mainSearchField) {
             var params = $location.search();
-            vm.parentCtrl.mainSearchField = params.searchString;
+            if (params.searchString) {
+                vm.parentCtrl.mainSearchField = params.searchString;
+            }
         }
     };
 }]);
@@ -525,9 +517,15 @@ angular.module('viewCustom').config(['$httpProvider', function ($httpProvider) {
         return {
             'request': function request(config) {
                 if (config.params) {
-                    if (config.params.limit === 10 && config.params.offset === 0) {
+                    if (config.params.limit === 10) {
                         config.params.limit = 50;
                     }
+                }
+                if (config.method === 'POST' && config.url === '/primo_library/libweb/webservices/rest/v1/actions/email') {
+                    console.log(config.data.records[0].deeplink);
+                    config.data.records[0].deeplink = window.location.href;
+                    console.log('*** config.params ***');
+                    console.log(config);
                 }
                 return config;
             },
@@ -649,6 +647,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         // prevent calling ajax twice during refresh the page or click on facets
         if (!vm.flag) {
             this.searchInfo.currentPage = currentPage;
+            this.searchInfo.userClick = true;
             sv.setPage(this.searchInfo); // keep track a user click on each current page
             // ajax call function
             vm.ajaxSearch();
@@ -668,13 +667,21 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         vm.parentCtrl.$scope.$watch(function () {
             return vm.parentCtrl.searchResults;
         }, function (newVal, oldVal) {
-            vm.currentPage = 1;
+
+            console.log('*** prm search result after ***');
+            console.log(vm.parentCtrl);
+            if (vm.parentCtrl.$stateParams.offset > 0) {
+                vm.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / _this.searchInfo.pageSize) + 1;
+                _this.searchInfo.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / _this.searchInfo.pageSize) + 1;
+            } else {
+                vm.currentPage = 1;
+                _this.searchInfo.currentPage = 1;
+            }
             vm.flag = true;
             // convert xml data into json data so it knows which image is a restricted image
             vm.items = sv.convertData(vm.parentCtrl.searchResults);
 
             // set up pagination
-            _this.searchInfo.currentPage = 1;
             _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
             _this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / _this.searchInfo.pageSize);
             if (_this.searchInfo.pageSize * _this.searchInfo.totalPages < _this.searchInfo.totalItems) {
@@ -696,48 +703,36 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         var logID = sv.getLogInID();
         vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
 
-        if (item.restrictedImage && logID === false) {
-            // if image is restricted and user is not login, trigger click event on user login button through dom
-            var doc = document.getElementsByClassName('user-menu-button')[0];
-            $timeout(function (e) {
-                doc.click();
-                var prmTag = document.getElementsByTagName('prm-authentication')[1];
-                var button = prmTag.getElementsByTagName('button');
-                button[0].click();
-            }, 500);
-        } else {
+        // set data to build full display page
+        var itemData = { 'item': '', 'searchData': '' };
+        itemData.item = item;
+        itemData.searchData = vm.parentCtrl.searchService.cheetah.searchData;
+        itemData.searchData.searchString = vm.parentCtrl.searchString;
+        sv.setItem(itemData);
 
-            // set data to build full display page
-            var itemData = { 'item': '', 'searchData': '' };
-            itemData.item = item;
-            itemData.searchData = vm.parentCtrl.searchService.cheetah.searchData;
-            itemData.searchData.searchString = vm.parentCtrl.searchString;
-            sv.setItem(itemData);
-
-            // modal dialog pop up here
-            $mdDialog.show({
-                title: 'Full View Details',
-                target: $event,
-                clickOutsideToClose: true,
-                escapeToClose: true,
-                bindToController: true,
-                templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
-                controller: 'customFullViewDialogController',
-                controllerAs: 'vm',
-                fullscreen: true,
-                multiple: true,
-                openFrom: { left: 0 },
-                locals: {
-                    items: itemData
-                },
-                onComplete: function onComplete(scope, element) {
-                    vm.modalDialogFlag = true;
-                },
-                onRemoving: function onRemoving(element, removePromise) {
-                    vm.modalDialogFlag = false;
-                }
-            });
-        }
+        // modal dialog pop up here
+        $mdDialog.show({
+            title: 'Full View Details',
+            target: $event,
+            clickOutsideToClose: true,
+            escapeToClose: true,
+            bindToController: true,
+            templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
+            controller: 'customFullViewDialogController',
+            controllerAs: 'vm',
+            fullscreen: true,
+            multiple: true,
+            openFrom: { left: 0 },
+            locals: {
+                items: itemData
+            },
+            onComplete: function onComplete(scope, element) {
+                vm.modalDialogFlag = true;
+            },
+            onRemoving: function onRemoving(element, removePromise) {
+                vm.modalDialogFlag = false;
+            }
+        });
     };
 
     // When a user press enter by using tab key
@@ -751,15 +746,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         vm.modalDialogFlag = false;
         $mdDialog.hide();
     };
-
-    /*
-    this.closeDialog2=function(e) {
-        if(e.which===13) {
-            vm.modalDialogFlag = false;
-            $mdDialog.hide();
-        }
-    };
-    */
 }]);
 
 // custom filter to remove $$U infront of url in pnx.links
@@ -829,7 +815,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
     };
 
     // default page info
-    serviceObj.page = { 'pageSize': 50, 'totalItems': 0, 'currentPage': 1, 'query': '', 'searchString': '', 'totalPages': 0 };
+    serviceObj.page = { 'pageSize': 50, 'totalItems': 0, 'currentPage': 1, 'query': '', 'searchString': '', 'totalPages': 0, 'userClick': false };
     // getter for page info
     serviceObj.getPage = function () {
         // localStorage page info exist, just use the old one
@@ -981,8 +967,36 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         return serviceObj.photo;
     };
 
+    // get user profile for authentication to login
+    serviceObj.auth = {};
+    serviceObj.setAuth = function (data) {
+        serviceObj.auth = data;
+    };
+    serviceObj.getAuth = function () {
+        return serviceObj.auth;
+    };
+
     return serviceObj;
 }]);
+
+/**
+ * Created by samsan on 6/20/17.
+ */
+
+angular.module('viewCustom').controller('prmSendEmailAfterController', ['$sce', 'angularLoad', function ($sce, angularLoad) {
+
+    var vm = this;
+
+    vm.$onChanges = function () {
+        console.log('** prm send email after ***');
+        console.log(vm);
+    };
+}]);
+
+angular.module('viewCustom').component('prmSendEmailAfter', {
+    bindings: { parentCtrl: '=' },
+    controller: 'prmSendEmailAfterController'
+});
 
 /**
  * Created by samsan on 5/17/17.
@@ -1003,38 +1017,39 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
         vm.item = itemData.item;
         vm.searchData = itemData.searchData;
         vm.searchData.sortby = vm.params.sortby;
+        vm.pageInfo = sv.getPage();
+
+        console.log('*** prm view online after ***');
+        console.log(vm);
     };
 
     // show the pop up image
     vm.gotoFullPhoto = function ($event, item, index) {
-        var logID = sv.getLogInID();
-        if (item._attr.restrictedImage === true && logID === false) {
-            // if image is restricted and user is not login, trigger click event on user login button through dom
-            var doc = document.getElementsByClassName('user-menu-button')[1];
-            $timeout(function (e) {
-                doc.click();
-                var prmTag = document.getElementsByTagName('prm-authentication')[1];
-                var button = prmTag.getElementsByTagName('button');
-                button[0].click();
-            }, 500);
+        // go to full display page
+        var url = '/primo-explore/fulldisplay?docid=' + vm.item.pnx.control.recordid[0] + '&vid=' + vm.searchData.vid + '&context=' + vm.item.context + '&lang=' + vm.searchData.lang;
+        if (vm.item.adaptor) {
+            url += '&adaptor=' + vm.item.adaptor;
         } else {
-
-            // go to full display page
-            var url = '/primo-explore/fulldisplay?docid=' + vm.item.pnx.control.recordid[0] + '&vid=' + vm.searchData.vid + '&context=' + vm.item.context + '&lang=' + vm.searchData.lang;
-            if (vm.item.adaptor) {
-                url += '&adaptor=' + vm.item.adaptor;
-            } else {
-                url += '&adaptor=' + vm.searchData.adaptor;
-            }
-            url += '&searchString=' + vm.searchData.searchString + '&sortby=' + vm.searchData.sortby;
-            url += '&q=' + vm.searchData.q + '&tab=' + vm.searchData.tab;
-            url += '&search_scope=' + vm.searchData.scope + '&singleimage=true&index=' + index;
-            if (vm.params.facet) {
-                url += '&facet=' + vm.params.facet;
-            }
-
-            $window.location.href = url;
+            url += '&adaptor=' + vm.searchData.adaptor;
         }
+        if (vm.searchData.searchString) {
+            url += '&searchString=' + vm.searchData.searchString;
+        } else {
+            url += '&searchString=';
+        }
+        url += '&sortby=' + vm.searchData.sortby;
+        url += '&q=' + vm.searchData.q + '&tab=' + vm.searchData.tab;
+        url += '&search_scope=' + vm.searchData.scope + '&singleimage=true&index=' + index;
+        if (vm.params.facet) {
+            url += '&facet=' + vm.params.facet;
+        }
+        var offset = vm.params.offset;
+        if (vm.pageInfo.userClick) {
+            offset = parseInt(vm.pageInfo.currentPage - 1) * vm.pageInfo.pageSize;
+        }
+
+        url += '&offset=' + offset;
+        $window.location.href = url;
     };
 }]);
 
@@ -1058,40 +1073,62 @@ angular.module('viewCustom').component('responsiveImage', {
         restricted: '<'
     },
     controllerAs: 'vm',
-    controller: ['$element', function ($element) {
+    controller: ['$element', '$window', '$location', 'prmSearchService', '$timeout', function ($element, $window, $location, prmSearchService, $timeout) {
         var vm = this;
+        var sv = prmSearchService;
         // set up local scope variables
+        vm.showImage = true;
+        vm.params = $location.search();
         vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
+        vm.isLoggedIn = sv.getLogInID();
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-            vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
-            if (vm.src) {
-                var img = $element[0].firstChild.children[0];
-                // use default image if it is a broken link image
-                var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                if (pattern.test(vm.src)) {
-                    img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-                }
-                img.onload = vm.callback;
+            vm.isLoggedIn = sv.getLogInID();
+            if (vm.restricted && !vm.isLoggedIn) {
+                vm.showImage = false;
             }
+            vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
+            if (vm.src && vm.showImage) {
+                $timeout(function () {
+                    var img = $element.find('img')[0];
+                    // use default image if it is a broken link image
+                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                    if (pattern.test(vm.src)) {
+                        img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                    }
+                    img.onload = vm.callback;
+                }, 200);
+            }
+
+            vm.localScope.loading = false;
         };
         vm.callback = function () {
-            var image = $element[0].firstChild.children[0];
+            var image = $element.find('img')[0];
             // resize the image if it is larger than 600 pixel
             if (image.width > 600) {
                 vm.localScope.imgClass = 'responsiveImage';
                 image.className = 'md-card-image ' + vm.localScope.imgClass;
             }
-            // force to hide ajax loader icon
-            vm.localScope.loading = false;
-            var span = $element[0].firstChild.children[1];
-            span.hidden = true;
 
             // force to show lock icon
             if (vm.restricted) {
                 vm.localScope.hideLockIcon = true;
             }
+        };
+        // login
+        vm.signIn = function () {
+            var auth = sv.getAuth();
+            var params = { 'vid': '', 'targetURL': '' };
+            params.vid = vm.params.vid;
+            params.targetURL = $window.location.href;
+            var url = '/primo-explore/login?from-new-ui=1&authenticationProfile=' + auth.authenticationMethods[0].profileName + '&search_scope=default_scope&tab=default_tab';
+            url += '&Institute=' + auth.authenticationService.userSessionManagerService.userInstitution + '&vid=' + params.vid;
+            if (vm.params.offset) {
+                url += '&offset=' + vm.params.offset;
+            }
+            url += '&targetURL=' + encodeURIComponent(params.targetURL);
+            $window.location.href = url;
         };
     }]
 });
@@ -1117,32 +1154,36 @@ angular.module('viewCustom').component('thumbnail', {
         vm.$onChanges = function () {
             vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
             if (vm.src) {
-                var img = $element[0].firstChild.children[0].children[0];
-                // use default image if it is a broken link image
-                var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                if (pattern.test(vm.src)) {
-                    img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-                }
-                img.onload = vm.callback;
+                $timeout(function () {
+                    var img = $element.find('img')[0];
+                    // use default image if it is a broken link image
+                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                    if (pattern.test(vm.src)) {
+                        img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                    }
+                    img.onload = vm.callback;
+                    // show lock up icon
+                    if (vm.restricted) {
+                        vm.localScope.hideLockIcon = true;
+                    }
+                }, 200);
             }
         };
         vm.callback = function () {
-            var image = $element[0].firstChild.children[0].children[0];
-
+            var image = $element.find('img')[0];
             if (image.height > 150) {
                 vm.localScope.imgclass = 'responsivePhoto';
                 image.className = 'md-card-image ' + vm.localScope.imgclass;
             }
-
-            // show lock up icon
-            if (vm.restricted) {
-                vm.localScope.hideLockIcon = true;
-            }
         };
 
-        vm.showToolTip = function (e) {};
+        vm.showToolTip = function (e) {
+            vm.localScope.hideTooltip = true;
+        };
 
-        vm.hideToolTip = function (e) {};
+        vm.hideToolTip = function (e) {
+            vm.localScope.hideTooltip = false;
+        };
     }]
 });
 

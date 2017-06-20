@@ -7,16 +7,12 @@ angular.module('viewCustom')
         let vm=this;
         // initialize custom service search
         let sv=prmSearchService;
-
-
-        console.log('*** prm authentication after ***');
-        console.log(vm);
-
         // check if a user login
         vm.$onChanges=function(){
             // This flag is return true or false
             let loginID=vm.parentCtrl.isLoggedIn;
             sv.setLogInID(loginID);
+            sv.setAuth(vm.parentCtrl);
         };
 
     }]);
