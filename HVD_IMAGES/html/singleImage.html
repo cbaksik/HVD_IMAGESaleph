@@ -1,0 +1,27 @@
+<md-card ng-if="vm.showImage">
+    <!--
+    <img ng-src="{{vm.src}}" class="md-card-image {{vm.localScope.imgClass}}" alt="{{vm.imgtitle}}" title="{{vm.imgtitle}}"/>
+    -->
+
+    <iframe src="{{vm.imageUrl}}" class="iframeClass"></iframe>
+
+    <div ng-if="vm.localScope.hideLockIcon">
+        <div class="lockIcon" tabindex="-1">
+            <img src="/custom/HVD_IMAGES/img/lock_small.png" alt="Lock" aria-label="Restricted image"/>
+        </div>
+    </div>
+    <span ng-if="vm.localScope.loading"><img class="md-avatar" src="/custom/HVD_IMAGES/img/ajax-loader.gif"/></span>
+</md-card>
+
+
+<div ng-if="!vm.showImage" role="alert" layout-align="center center" class="layout-align-center-center">
+    <div layout="row" class="bar alert-bar layout-align-center-center layout-row">
+        <span class="bar-text">Please sign in to see larger image.</span>
+        <button ng-click="vm.signIn()" class="button-with-icon zero-margin md-button md-primoExplore-theme md-ink-ripple signInColor" type="button" aria-label="Sign in">
+            <prm-icon icon-type="svg" svg-icon-set="primo-ui" icon-definition="sign-in">
+                <md-icon md-svg-icon="primo-ui:sign-in" aria-label="icon-sign-in" class="md-primoExplore-theme"></md-icon>
+            </prm-icon>
+            <span class="signInColor">Sign in</span>
+        </button>
+    </div>
+</div>

@@ -1,7 +1,8 @@
 <div ng-if="vm.params.singleimage && vm.params.index" layout="row">
    <div flex="{{vm.flexsize}}" class="full-view-inner-container">
-
-       <responsive-image src="vm.photo._attr.href._value" imgtitle="vm.item.mis1Data[0].title[0].textElement[0]._text" restricted="vm.photo._attr.restrictedImage._value"></responsive-image>
+       <div layout="column" layout-align="center center">
+        <single-image src="vm.photo._attr.href._value" imgtitle="vm.item.mis1Data[0].title[0].textElement[0]._text" restricted="vm.photo._attr.restrictedImage._value"></single-image>
+       </div>
 
        <prm-full-view-service-container [load-additional-services]="vm.services[1]" [item]="vm.item" [service]="vm.services[1]" [index]="1">
 

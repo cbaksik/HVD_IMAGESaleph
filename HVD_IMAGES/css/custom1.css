@@ -711,6 +711,18 @@ div.hollis-logo a:hover {
 .signInColor {
     color: #5C92BD;
 }
+.btn-margin-bottom {
+    margin-bottom:30px;
+}
+
+.iframeClass {
+    width:800px;
+    height:650px;
+    border: none;
+    margin:0;
+    padding:0;
+    overflow: hidden;
+}
 
 .hvfullsize {
   width: 100%;

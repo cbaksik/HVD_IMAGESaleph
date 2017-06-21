@@ -9,7 +9,7 @@ angular.module('viewCustom')
         let vm = this;
         var sv=prmSearchService;
         vm.photo={};
-        vm.flexsize=70;
+        vm.flexsize=80;
         let index=vm.params.index;
 
         vm.$onChanges=function() {

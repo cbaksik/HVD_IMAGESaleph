@@ -45,10 +45,6 @@ angular.module('viewCustom')
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
     vm.ajaxSearch=function () {
-
-       console.log('*** vm ****');
-       console.log(vm);
-
        var facets = sv.getFacets();
        var facetsParam='';
        this.searchInfo=sv.getPage();
@@ -89,9 +85,6 @@ angular.module('viewCustom')
        // get the current search rest url
        let url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
 
-       console.log('*** params ***');
-       console.log(params);
-
        sv.getAjax(url,params,'get')
            .then(function (data) {
                 let mydata = data.data;
@@ -117,6 +110,9 @@ angular.module('viewCustom')
         if(!vm.flag) {
             this.searchInfo.currentPage = currentPage;
             this.searchInfo.userClick=true;
+            this.searchInfo.offset=parseInt(currentPage - 1) * this.searchInfo.pageSize;
+            this.searchInfo.searchString=vm.parentCtrl.searchString;
+            this.searchInfo.query=vm.parentCtrl.$stateParams.query;
             sv.setPage(this.searchInfo); // keep track a user click on each current page
             // ajax call function
             vm.ajaxSearch();

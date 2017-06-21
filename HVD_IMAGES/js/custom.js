@@ -35,7 +35,7 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
     var vm = this;
     var sv = prmSearchService;
     vm.photo = {};
-    vm.flexsize = 70;
+    vm.flexsize = 80;
     var index = vm.params.index;
 
     vm.$onChanges = function () {
@@ -516,16 +516,47 @@ angular.module('viewCustom').config(['$httpProvider', function ($httpProvider) {
     $httpProvider.interceptors.push(function () {
         return {
             'request': function request(config) {
+                // override the default page size limit
                 if (config.params) {
                     if (config.params.limit === 10) {
                         config.params.limit = 50;
                     }
                 }
                 if (config.method === 'POST' && config.url === '/primo_library/libweb/webservices/rest/v1/actions/email') {
-                    console.log(config.data.records[0].deeplink);
-                    config.data.records[0].deeplink = window.location.href;
-                    console.log('*** config.params ***');
-                    console.log(config);
+                    // override request parameters if a user click on pagination
+                    var pageObj = JSON.parse(window.localStorage.getItem('pageInfo'));
+
+                    // add parameters to email link
+                    var url = config.data.records[0].deeplink;
+                    var urlStr = new URL(window.location.href);
+                    var offset = 0;
+                    if (urlStr.searchParams.get('offset')) {
+                        offset = urlStr.searchParams.get('offset');
+                    }
+                    var searchString = '';
+                    if (urlStr.searchParams.get('searchString')) {
+                        searchString = urlStr.searchParams.get('searchString');
+                    } else if (pageObj.searchString) {
+                        searchString = pageObj.searchString;
+                    }
+                    var sortby = 'rank';
+                    if (urlStr.searchParams.get('sortby')) {
+                        sortby = urlStr.searchParams.get('sortby');
+                    }
+                    var q = '';
+                    if (urlStr.searchParams.get('q')) {
+                        q = urlStr.searchParams.get('q');
+                    } else if (pageObj.query) {
+                        q = pageObj.query;
+                    }
+
+                    if (pageObj.userClick) {
+                        offset = pageObj.offset;
+                        searchString = pageObj.searchString;
+                        q = pageObj.query;
+                    }
+                    url += '&sortby=' + sortby + '&offset=' + offset + '&searchString=' + searchString + '&q=' + q;
+                    config.data.records[0].deeplink = encodeURI(url);
                 }
                 return config;
             },
@@ -580,10 +611,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
     vm.ajaxSearch = function () {
-
-        console.log('*** vm ****');
-        console.log(vm);
-
         var facets = sv.getFacets();
         var facetsParam = '';
         this.searchInfo = sv.getPage();
@@ -624,9 +651,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         // get the current search rest url
         var url = vm.parentCtrl.briefResultService.restBaseURLs.pnxBaseURL;
 
-        console.log('*** params ***');
-        console.log(params);
-
         sv.getAjax(url, params, 'get').then(function (data) {
             var mydata = data.data;
             vm.items = sv.convertData(mydata.docs);
@@ -648,6 +672,9 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         if (!vm.flag) {
             this.searchInfo.currentPage = currentPage;
             this.searchInfo.userClick = true;
+            this.searchInfo.offset = parseInt(currentPage - 1) * this.searchInfo.pageSize;
+            this.searchInfo.searchString = vm.parentCtrl.searchString;
+            this.searchInfo.query = vm.parentCtrl.$stateParams.query;
             sv.setPage(this.searchInfo); // keep track a user click on each current page
             // ajax call function
             vm.ajaxSearch();
@@ -815,7 +842,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
     };
 
     // default page info
-    serviceObj.page = { 'pageSize': 50, 'totalItems': 0, 'currentPage': 1, 'query': '', 'searchString': '', 'totalPages': 0, 'userClick': false };
+    serviceObj.page = { 'pageSize': 50, 'totalItems': 0, 'currentPage': 1, 'query': '', 'searchString': '', 'totalPages': 0, 'offset': 0, 'userClick': false };
     // getter for page info
     serviceObj.getPage = function () {
         // localStorage page info exist, just use the old one
@@ -1135,6 +1162,88 @@ angular.module('viewCustom').component('responsiveImage', {
 
 /**
  * Created by samsan on 5/23/17.
+ * If image width is greater than 600pixel, it will resize base on responsive css.
+ * It use to show a single image on the page. If the image does not exist, it use icon_image.png
+ */
+
+angular.module('viewCustom').component('singleImage', {
+    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/singleImage.html',
+    bindings: {
+        src: '<',
+        imgtitle: '<',
+        restricted: '<'
+    },
+    controllerAs: 'vm',
+    controller: ['$element', '$window', '$location', 'prmSearchService', '$timeout', '$sce', function ($element, $window, $location, prmSearchService, $timeout, $sce) {
+        var vm = this;
+        var sv = prmSearchService;
+        // set up local scope variables
+        vm.imageUrl = '';
+        vm.showImage = true;
+        vm.params = $location.search();
+        vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
+        vm.isLoggedIn = sv.getLogInID();
+
+        // check if image is not empty and it has width and height and greater than 150, then add css class
+        vm.$onChanges = function () {
+            vm.isLoggedIn = sv.getLogInID();
+            if (vm.restricted && !vm.isLoggedIn) {
+                vm.showImage = false;
+            }
+            vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
+            if (vm.src && vm.showImage) {
+                $timeout(function () {
+                    vm.imageUrl = $sce.trustAsResourceUrl(vm.src + '?buttons=Y');
+                    console.log('**** image type ****');
+
+                    var img = $element.find('img')[0];
+
+                    console.log(img.type);
+                    console.log(img.size);
+
+                    // use default image if it is a broken link image
+                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                    if (pattern.test(vm.src)) {
+                        img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                    }
+                    img.onload = vm.callback;
+                }, 200);
+            }
+
+            vm.localScope.loading = false;
+        };
+        vm.callback = function () {
+            var image = $element.find('img')[0];
+            // resize the image if it is larger than 600 pixel
+            if (image.width > 600) {
+                vm.localScope.imgClass = 'responsiveImage';
+                image.className = 'md-card-image ' + vm.localScope.imgClass;
+            }
+
+            // force to show lock icon
+            if (vm.restricted) {
+                vm.localScope.hideLockIcon = true;
+            }
+        };
+        // login
+        vm.signIn = function () {
+            var auth = sv.getAuth();
+            var params = { 'vid': '', 'targetURL': '' };
+            params.vid = vm.params.vid;
+            params.targetURL = $window.location.href;
+            var url = '/primo-explore/login?from-new-ui=1&authenticationProfile=' + auth.authenticationMethods[0].profileName + '&search_scope=default_scope&tab=default_tab';
+            url += '&Institute=' + auth.authenticationService.userSessionManagerService.userInstitution + '&vid=' + params.vid;
+            if (vm.params.offset) {
+                url += '&offset=' + vm.params.offset;
+            }
+            url += '&targetURL=' + encodeURIComponent(params.targetURL);
+            $window.location.href = url;
+        };
+    }]
+});
+
+/**
+ * Created by samsan on 5/23/17.
  * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
  */
 
@@ -1162,11 +1271,7 @@ angular.module('viewCustom').component('thumbnail', {
                         img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                     }
                     img.onload = vm.callback;
-                    // show lock up icon
-                    if (vm.restricted) {
-                        vm.localScope.hideLockIcon = true;
-                    }
-                }, 200);
+                }, 100);
             }
         };
         vm.callback = function () {
@@ -1174,6 +1279,10 @@ angular.module('viewCustom').component('thumbnail', {
             if (image.height > 150) {
                 vm.localScope.imgclass = 'responsivePhoto';
                 image.className = 'md-card-image ' + vm.localScope.imgclass;
+            }
+            // show lock up icon
+            if (vm.restricted) {
+                vm.localScope.hideLockIcon = true;
             }
         };
 
