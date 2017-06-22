@@ -103,7 +103,7 @@ ul.pagination > li > .disabled  {
 }
 
 
-md-card {
+.hv-md-card {
   padding-top: 0px !important;
   margin-top:0px !important;
   margin-bottom:0px !important;

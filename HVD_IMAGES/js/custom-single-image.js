@@ -10,7 +10,47 @@ angular.module('viewCustom')
         var sv=prmSearchService;
         vm.photo={};
         vm.flexsize=80;
-        let index=vm.params.index;
+        vm.index=parseInt(vm.params.index);
+        vm.total=0;
+        vm.itemData={};
+        vm.imageNav=true;
+
+        vm.displayPhoto=function () {
+            vm.isLoggedIn=sv.getLogInID();
+            if(vm.params.index && vm.params.singleimage) {
+                // the xml has different format nodes
+                if (vm.item.mis1Data) {
+                    if (vm.item.mis1Data.length === 1) {
+                        vm.photo = vm.item.mis1Data[0].image[vm.index];
+                        vm.total = vm.item.mis1Data[0].image.length;
+                        vm.itemData = vm.item.mis1Data[0];
+                    } else if (vm.item.mis1Data.length > 1) {
+                        vm.photo = vm.item.mis1Data[vm.index].image[0];
+                        vm.total = vm.item.mis1Data.length;
+                        vm.itemData = vm.item.mis1Data[vm.index];
+                    }
+
+                    console.log('***** vm.item in custom single image *****');
+                    console.log(vm.item);
+                    console.log('*** vm.itemData ***');
+                    console.log(vm.itemData);
+                    console.log('** vm.photo **');
+                    console.log(vm.photo);
+
+                    // pass this data to use in prm-back-to-search-result-button-after
+                    sv.setPhoto(vm.item);
+                }
+
+                if(vm.item.restrictedImage && vm.isLoggedIn===false) {
+                    vm.imageNav=false;
+                }
+
+                // hide previous page
+                var doc = document.getElementById('fullView');
+                var div = doc.getElementsByClassName('full-view-inner-container');
+                div[0].style.display = 'none';
+            }
+        };
 
         vm.$onChanges=function() {
 
@@ -21,28 +61,34 @@ angular.module('viewCustom')
                 vm.flexsize=100;
             }
 
-            // if there is index and singleimage in parameter, then execute this statement.
-            if(vm.params.index && vm.params.singleimage) {
-                // the xml has different format nodes
-                if(vm.item.mis1Data) {
-                    if (vm.item.mis1Data.length === 1) {
-                        vm.photo = vm.item.mis1Data[0].image[index];
-                    } else if(vm.item.mis1Data.length > 1) {
-                        vm.photo = vm.item.mis1Data[index].image[0];
-                    }
-                    // pass this data to use in prm-back-to-search-result-button-after
-                    sv.setPhoto(vm.item);
-                }
-                // hide previous page
-                var doc = document.getElementById('fullView');
-                var div = doc.getElementsByClassName('full-view-inner-container');
-                div[0].style.display = 'none';
-            }
+            vm.displayPhoto();
+
         };
 
         // when a user click on breadcrumbs navigator
         vm.goBack=function () {
           $window.location.href=vm.breadcrumbs.url;
+        };
+
+        // next photo
+        vm.nextPhoto=function () {
+            vm.index++;
+            if(vm.index < vm.total && vm.index >=0) {
+                vm.displayPhoto();
+            } else {
+                vm.index=0;
+                vm.displayPhoto();
+            }
+        };
+        // prev photo
+        vm.prevPhoto=function () {
+            vm.index--;
+            if(vm.index >= 0 && vm.index < vm.total) {
+                vm.displayPhoto();
+            } else {
+                vm.index=vm.total - 1;
+                vm.displayPhoto();
+            }
         };
 
     }]);

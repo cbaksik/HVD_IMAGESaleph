@@ -80,7 +80,7 @@ angular.module('viewCustom').config(['$httpProvider',function ($httpProvider) {
                      } else if(pageObj.query) {
                          q=pageObj.query;
                      }
-
+                    // override the url parameter
                     if(pageObj.userClick) {
                         offset=pageObj.offset;
                         searchString=pageObj.searchString;

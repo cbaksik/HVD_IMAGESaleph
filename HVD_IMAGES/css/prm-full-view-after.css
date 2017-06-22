@@ -59,3 +59,19 @@
     padding:0;
     overflow: hidden;
 }
+
+.imageNav {
+    margin-top: 20px;
+    margin-bottom: 0px;
+}
+
+.space {
+    margin-bottom:10px;
+}
+.spaceRight {margin-right:10px;}
+
+.box {
+    border:1px solid #efefef;
+    border-radius:5px;
+    padding:30px;
+}

@@ -6,7 +6,7 @@
             <span>Back to results list</span>
         </button>
 
-        <button ng-if="vm.params.singleimage" class="back-button has-text md-button md-primoExplore-theme md-ink-ripple" (click)="vm.goToImages()" aria-label="{{vm.photo.pnx.display.title[0]}}">
+        <button ng-if="vm.params.singleimage && vm.photo.pnx.display.title[0]" class="back-button has-text md-button md-primoExplore-theme md-ink-ripple" (click)="vm.goToImages()" aria-label="{{vm.photo.pnx.display.title[0]}}">
             <prm-icon icon-type="svg" svg-icon-set="primo-ui" md-svg-icon="primo-ui:chevron-left"  icon-definition="chevron-left"></prm-icon>
             <div class="truncate">{{vm.photo.pnx.display.title[0]}}</div>
         </button>

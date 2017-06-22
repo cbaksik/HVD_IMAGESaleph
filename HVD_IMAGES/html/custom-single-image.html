@@ -4,9 +4,132 @@
         <single-image src="vm.photo._attr.href._value" imgtitle="vm.item.mis1Data[0].title[0].textElement[0]._text" restricted="vm.photo._attr.restrictedImage._value"></single-image>
        </div>
 
+       <section layout="row" layout-align="center center" class="imageNav" layout-wrap ng-if="vm.total > 1 && vm.imageNav">
+           <md-button class="md-fab md-raised md-primary" (click)="vm.prevPhoto()" tabindex="0" aria-label="Previous photo button">
+               <md-icon md-svg-icon="primo-ui:chevron-left" aria-label="chevron-left-icon"></md-icon>
+           </md-button>
+           <label class="label">
+                {{vm.index + 1}} of {{vm.total}} images
+           </label>
+           <md-button class="md-fab md-raised md-primary" (click)="vm.nextPhoto()" tabindex="0" aria-label="Next photo button">
+               <md-icon md-svg-icon="primo-ui:chevron-right" aria-label="chevron-right-icon"></md-icon>
+           </md-button>
+       </section>
+
        <prm-full-view-service-container [load-additional-services]="vm.services[1]" [item]="vm.item" [service]="vm.services[1]" [index]="1">
 
        </prm-full-view-service-container>
+
+        <hr/>
+
+       <!-- display image info -->
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Component ID</label>
+           </div>
+           <div flex class="flex">
+               <span ng-if="vm.photo._attr.componentID._value && !vm.itemData._attr.componentID._value">{{vm.photo._attr.componentID._value}}</span>
+               <span ng-if="vm.itemData._attr.componentID._value">{{vm.itemData._attr.componentID._value}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="titles in vm.itemData.title track by $index">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Title</label>
+           </div>
+           <div flex class="flex">
+               <span id="caption" ng-repeat="t in titles.textElement track by $index">{{t._text}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="w in vm.itemData.workType track by $index">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Work Type</label>
+           </div>
+           <div flex class="flex">{{w._text}}</div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="creators in vm.itemData.creator track by $index">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Creator</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="c in creators.namedates track by $index">{{c._text}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.itemData.dimensions">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Dimension</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="d in vm.itemData.dimensions track by $index" class="spaceRight">{{d._text}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.itemData.structuredDate">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Date</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="d in vm.itemData.structuredDate track by $index" class="spaceRight">{{d.beginDate[0]._text}}-{{d.endDate[0]._text}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.itemData.materials">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Materials/Techniques</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="material in vm.itemData.materials track by $index" class="spaceRight">{{material._text}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="associate in vm.itemData.associatedName track by $index">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Associated Name</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="n in associate.nameElement track by $index" class="spaceRight">{{n._text}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.itemData.notes">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Note</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="n in vm.itemData.notes track by $index" class="spaceRight">{{n._text}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="class in vm.itemData.classification track by $index">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Classification</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="c in class.number track by $index" class="spaceRight">{{c._text}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.itemData.copyright">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Copyright</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="c in vm.itemData.copyright track by $index" class="spaceRight">{{c._text}}</span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="repo in vm.itemData.repository track by $index">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Repository</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="n in repo.repositoryName track by $index" class="spaceRight">{{n._text}}</span>
+               <span ng-repeat="n in repo.number track by $index" class="spaceRight">{{n._text}}</span>
+           </div>
+       </div>
+
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.itemData.useRestrictions">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Restriction</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="c in vm.itemData.useRestrictions track by $index" class="spaceRight">{{c._text}}</span>
+           </div>
+       </div>
+
+       <!-- end display image info -->
   
    </div>
 </div>

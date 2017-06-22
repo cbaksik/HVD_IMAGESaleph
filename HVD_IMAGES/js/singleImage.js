@@ -33,40 +33,14 @@ angular.module('viewCustom')
                 if(vm.src && vm.showImage) {
                     $timeout(function () {
                         vm.imageUrl=$sce.trustAsResourceUrl(vm.src+'?buttons=Y');
-                        console.log('**** image type ****');
-
-                        var img=$element.find('img')[0];
-
-                        console.log(img.type);
-                        console.log(img.size);
-
-                        // use default image if it is a broken link image
-                        var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                        if(pattern.test(vm.src)) {
-                            img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-                        }
-                        img.onload=vm.callback;
-
-                    },200);
+                    },2);
 
                 }
 
                 vm.localScope.loading=false;
 
             };
-            vm.callback=function () {
-                var image=$element.find('img')[0];
-                // resize the image if it is larger than 600 pixel
-                if(image.width > 600){
-                    vm.localScope.imgClass='responsiveImage';
-                    image.className='md-card-image '+vm.localScope.imgClass;
-                }
-                
-                // force to show lock icon
-                if(vm.restricted) {
-                    vm.localScope.hideLockIcon=true;
-                }
-            };
+
             // login
             vm.signIn=function () {
                 var auth=sv.getAuth();

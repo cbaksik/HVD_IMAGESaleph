@@ -43,10 +43,6 @@ angular.module('viewCustom')
         };
 
         vm.$onChanges=function() {
-
-           console.log('*** prm-full-view-after ***');
-           console.log(vm);
-
            if(!vm.parentCtrl.searchService.query) {
                vm.parentCtrl.searchService.query=vm.params.query;
                vm.parentCtrl.searchService.$stateParams.query=vm.params.query;

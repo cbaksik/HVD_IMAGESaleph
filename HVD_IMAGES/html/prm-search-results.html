@@ -8,7 +8,6 @@
         <label flex ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
              {{$ctrl.searchInfo.totalItems|number}} results
         </label>
-        <div class="horizontal-line"></div>
     </div>
     <div class="hvfullsize">
      <ul class="hvInline">
@@ -29,10 +28,8 @@
 
      </li>
      </ul>
-     <!-- NO result show this message -->
-     <h3 ng-if="$ctrl.items.length===0">
-        No search result is found
-     </h3>
+        <!-- NO result show this message -->
+        <no-results-found itemlength="$ctrl.items.length"></no-results-found>
     </div>
 
     <!-- pagination start here -->

@@ -1,4 +1,4 @@
-<md-card>
+<md-card class="hv-md-card">
     <a class="thumbnail">
         <img ng-src="{{vm.src}}"  class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.imgtitle}}" aria-label="{{vm.imgtitle}}" tabindex="0" ng-focus="vm.showToolTip($event)" ng-blur="vm.hideToolTip($event)"/>
         <md-tooltip md-visible="vm.localScope.hideTooltip" md-direction="bottom" class="hvtooltip">{{vm.imgtitle}}</md-tooltip>

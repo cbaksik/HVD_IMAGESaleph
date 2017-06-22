@@ -17,9 +17,6 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['$sce
 
     sv.setItem(items);
 
-    console.log('**** vm custom full view dialog controller *****');
-    console.log(vm);
-
     vm.closeDialog = function () {
         $mdDialog.hide();
     };
@@ -36,7 +33,47 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
     var sv = prmSearchService;
     vm.photo = {};
     vm.flexsize = 80;
-    var index = vm.params.index;
+    vm.index = parseInt(vm.params.index);
+    vm.total = 0;
+    vm.itemData = {};
+    vm.imageNav = true;
+
+    vm.displayPhoto = function () {
+        vm.isLoggedIn = sv.getLogInID();
+        if (vm.params.index && vm.params.singleimage) {
+            // the xml has different format nodes
+            if (vm.item.mis1Data) {
+                if (vm.item.mis1Data.length === 1) {
+                    vm.photo = vm.item.mis1Data[0].image[vm.index];
+                    vm.total = vm.item.mis1Data[0].image.length;
+                    vm.itemData = vm.item.mis1Data[0];
+                } else if (vm.item.mis1Data.length > 1) {
+                    vm.photo = vm.item.mis1Data[vm.index].image[0];
+                    vm.total = vm.item.mis1Data.length;
+                    vm.itemData = vm.item.mis1Data[vm.index];
+                }
+
+                console.log('***** vm.item in custom single image *****');
+                console.log(vm.item);
+                console.log('*** vm.itemData ***');
+                console.log(vm.itemData);
+                console.log('** vm.photo **');
+                console.log(vm.photo);
+
+                // pass this data to use in prm-back-to-search-result-button-after
+                sv.setPhoto(vm.item);
+            }
+
+            if (vm.item.restrictedImage && vm.isLoggedIn === false) {
+                vm.imageNav = false;
+            }
+
+            // hide previous page
+            var doc = document.getElementById('fullView');
+            var div = doc.getElementsByClassName('full-view-inner-container');
+            div[0].style.display = 'none';
+        }
+    };
 
     vm.$onChanges = function () {
 
@@ -47,28 +84,33 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
             vm.flexsize = 100;
         }
 
-        // if there is index and singleimage in parameter, then execute this statement.
-        if (vm.params.index && vm.params.singleimage) {
-            // the xml has different format nodes
-            if (vm.item.mis1Data) {
-                if (vm.item.mis1Data.length === 1) {
-                    vm.photo = vm.item.mis1Data[0].image[index];
-                } else if (vm.item.mis1Data.length > 1) {
-                    vm.photo = vm.item.mis1Data[index].image[0];
-                }
-                // pass this data to use in prm-back-to-search-result-button-after
-                sv.setPhoto(vm.item);
-            }
-            // hide previous page
-            var doc = document.getElementById('fullView');
-            var div = doc.getElementsByClassName('full-view-inner-container');
-            div[0].style.display = 'none';
-        }
+        vm.displayPhoto();
     };
 
     // when a user click on breadcrumbs navigator
     vm.goBack = function () {
         $window.location.href = vm.breadcrumbs.url;
+    };
+
+    // next photo
+    vm.nextPhoto = function () {
+        vm.index++;
+        if (vm.index < vm.total && vm.index >= 0) {
+            vm.displayPhoto();
+        } else {
+            vm.index = 0;
+            vm.displayPhoto();
+        }
+    };
+    // prev photo
+    vm.prevPhoto = function () {
+        vm.index--;
+        if (vm.index >= 0 && vm.index < vm.total) {
+            vm.displayPhoto();
+        } else {
+            vm.index = vm.total - 1;
+            vm.displayPhoto();
+        }
     };
 }]);
 
@@ -224,6 +266,29 @@ angular.module('viewCustom').controller('customViewImageDialogController', ['$sc
         };
     };
 })();
+/**
+ * Created by samsan on 6/22/17.
+ */
+
+angular.module('viewCustom').component('noResultsFound', {
+    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/no-results-found.html',
+    bindings: {
+        itemlength: '<'
+    },
+    controllerAs: 'vm',
+    controller: ['$element', function ($element) {
+        var vm = this;
+        vm.localScope = { 'showFlag': false };
+
+        vm.$onChanges = function () {
+            if (vm.itemlength === 0) {
+                vm.localScope.showFlag = true;
+            }
+            console.log('** noResultsFound = ' + vm.localScope.showFlag);
+        };
+    }]
+});
+
 /**
  * Created by samsan on 5/25/17.
  */
@@ -404,10 +469,6 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
     };
 
     vm.$onChanges = function () {
-
-        console.log('*** prm-full-view-after ***');
-        console.log(vm);
-
         if (!vm.parentCtrl.searchService.query) {
             vm.parentCtrl.searchService.query = vm.params.query;
             vm.parentCtrl.searchService.$stateParams.query = vm.params.query;
@@ -549,7 +610,7 @@ angular.module('viewCustom').config(['$httpProvider', function ($httpProvider) {
                     } else if (pageObj.query) {
                         q = pageObj.query;
                     }
-
+                    // override the url parameter
                     if (pageObj.userClick) {
                         offset = pageObj.offset;
                         searchString = pageObj.searchString;
@@ -1007,25 +1068,6 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
 }]);
 
 /**
- * Created by samsan on 6/20/17.
- */
-
-angular.module('viewCustom').controller('prmSendEmailAfterController', ['$sce', 'angularLoad', function ($sce, angularLoad) {
-
-    var vm = this;
-
-    vm.$onChanges = function () {
-        console.log('** prm send email after ***');
-        console.log(vm);
-    };
-}]);
-
-angular.module('viewCustom').component('prmSendEmailAfter', {
-    bindings: { parentCtrl: '=' },
-    controller: 'prmSendEmailAfterController'
-});
-
-/**
  * Created by samsan on 5/17/17.
  * This component is to insert images into online section
  */
@@ -1194,37 +1236,12 @@ angular.module('viewCustom').component('singleImage', {
             if (vm.src && vm.showImage) {
                 $timeout(function () {
                     vm.imageUrl = $sce.trustAsResourceUrl(vm.src + '?buttons=Y');
-                    console.log('**** image type ****');
-
-                    var img = $element.find('img')[0];
-
-                    console.log(img.type);
-                    console.log(img.size);
-
-                    // use default image if it is a broken link image
-                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                    if (pattern.test(vm.src)) {
-                        img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-                    }
-                    img.onload = vm.callback;
-                }, 200);
+                }, 2);
             }
 
             vm.localScope.loading = false;
         };
-        vm.callback = function () {
-            var image = $element.find('img')[0];
-            // resize the image if it is larger than 600 pixel
-            if (image.width > 600) {
-                vm.localScope.imgClass = 'responsiveImage';
-                image.className = 'md-card-image ' + vm.localScope.imgClass;
-            }
 
-            // force to show lock icon
-            if (vm.restricted) {
-                vm.localScope.hideLockIcon = true;
-            }
-        };
         // login
         vm.signIn = function () {
             var auth = sv.getAuth();
@@ -1271,7 +1288,11 @@ angular.module('viewCustom').component('thumbnail', {
                         img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                     }
                     img.onload = vm.callback;
-                }, 100);
+                    // show lock up icon
+                    if (vm.restricted) {
+                        vm.localScope.hideLockIcon = true;
+                    }
+                }, 200);
             }
         };
         vm.callback = function () {
@@ -1279,10 +1300,6 @@ angular.module('viewCustom').component('thumbnail', {
             if (image.height > 150) {
                 vm.localScope.imgclass = 'responsivePhoto';
                 image.className = 'md-card-image ' + vm.localScope.imgclass;
-            }
-            // show lock up icon
-            if (vm.restricted) {
-                vm.localScope.hideLockIcon = true;
             }
         };
 

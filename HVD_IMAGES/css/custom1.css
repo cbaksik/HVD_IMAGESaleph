@@ -724,6 +724,22 @@ div.hollis-logo a:hover {
     overflow: hidden;
 }
 
+.imageNav {
+    margin-top: 20px;
+    margin-bottom: 0px;
+}
+
+.space {
+    margin-bottom:10px;
+}
+.spaceRight {margin-right:10px;}
+
+.box {
+    border:1px solid #efefef;
+    border-radius:5px;
+    padding:30px;
+}
+
 .hvfullsize {
   width: 100%;
 }
@@ -828,7 +844,7 @@ ul.pagination > li > .disabled  {
 }
 
 
-md-card {
+.hv-md-card {
   padding-top: 0px !important;
   margin-top:0px !important;
   margin-bottom:0px !important;
