@@ -9,7 +9,7 @@ angular.module('viewCustom')
             itemlength:'<',
         },
         controllerAs:'vm',
-        controller:['$element',function ($element) {
+        controller:[function () {
             var vm=this;
             vm.localScope={'showFlag':false};
 
@@ -17,7 +17,6 @@ angular.module('viewCustom')
                 if(vm.itemlength===0) {
                     vm.localScope.showFlag=true;
                 }
-                console.log('** noResultsFound = ' + vm.localScope.showFlag);
             };
 
 

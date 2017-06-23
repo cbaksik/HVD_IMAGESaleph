@@ -220,10 +220,16 @@ cl-paging > button.md-icon-button {
 
 .hvLogo {
   font-family:Goudy Old Style,Georgia,serif;
-  font-size:16pt;
+  font-size:175%;
   white-space: nowrap;
-  margin-left: 20px;
   color:#FFFFFF;
+  text-decoration: none !important;
+}
+
+.hvLogo:hover {
+  text-decoration: none !important;
+  color:#ffffff;
+  cursor: pointer;
 }
 
 
@@ -232,7 +238,7 @@ prm-topbar {
 }
 
 .product-logo{
-  padding-top:15px !important;
+  display: none !important;
   height: auto !important;
   width: auto !important;
 }

@@ -11,8 +11,10 @@ angular.module('viewCustom')
         vm.item=itemData.item;
         vm.searchData=itemData.searchData;
         vm.params=$location.search();
+        vm.zoomButtonFlag=true;
 
         vm.$onChanges=function() {
+            vm.isLoggedIn=sv.getLogInID();
            // get item data from service
            itemData=sv.getItem();
            vm.item=itemData.item;
@@ -20,7 +22,13 @@ angular.module('viewCustom')
            vm.searchData.sortby=vm.params.sortby;
            vm.pageInfo=sv.getPage();
 
-           console.log('*** prm view online after ***');
+           if(vm.isLoggedIn===false && vm.item.mis1Data.length===1) {
+               if(vm.item.mis1Data[0].image && vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
+                   vm.zoomButtonFlag=false;
+               }
+           }
+
+           console.log('***** prm view online after ****');
            console.log(vm);
         };
 

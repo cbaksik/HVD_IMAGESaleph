@@ -30,13 +30,6 @@ angular.module('viewCustom')
                         vm.itemData = vm.item.mis1Data[vm.index];
                     }
 
-                    console.log('***** vm.item in custom single image *****');
-                    console.log(vm.item);
-                    console.log('*** vm.itemData ***');
-                    console.log(vm.itemData);
-                    console.log('** vm.photo **');
-                    console.log(vm.photo);
-
                     // pass this data to use in prm-back-to-search-result-button-after
                     sv.setPhoto(vm.item);
                 }

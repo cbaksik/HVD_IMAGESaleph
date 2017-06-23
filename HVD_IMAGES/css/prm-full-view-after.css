@@ -70,8 +70,21 @@
 }
 .spaceRight {margin-right:10px;}
 
+.spaceLeft {
+    margin-left:30px;
+}
+
 .box {
     border:1px solid #efefef;
     border-radius:5px;
     padding:30px;
+    box-shadow: 0px 1px 0px #ccc;
+}
+
+.nofoundList  > li {
+    margin-bottom:10px;
+}
+
+a.noline:hover {
+    text-decoration: none !important;
 }

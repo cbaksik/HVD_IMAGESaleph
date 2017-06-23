@@ -9,7 +9,8 @@ angular.module('viewCustom')
 
         vm.$onChanges=function() {
             // override the logo on top left corner
-            vm.parentCtrl.iconLink='custom/HVD_IMAGES/img/library-logo-small.png';
+            console.log('*** prm logo after ***');
+
         };
 
 

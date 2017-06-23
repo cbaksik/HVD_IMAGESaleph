@@ -53,13 +53,6 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
                     vm.itemData = vm.item.mis1Data[vm.index];
                 }
 
-                console.log('***** vm.item in custom single image *****');
-                console.log(vm.item);
-                console.log('*** vm.itemData ***');
-                console.log(vm.itemData);
-                console.log('** vm.photo **');
-                console.log(vm.photo);
-
                 // pass this data to use in prm-back-to-search-result-button-after
                 sv.setPhoto(vm.item);
             }
@@ -276,7 +269,7 @@ angular.module('viewCustom').component('noResultsFound', {
         itemlength: '<'
     },
     controllerAs: 'vm',
-    controller: ['$element', function ($element) {
+    controller: [function () {
         var vm = this;
         vm.localScope = { 'showFlag': false };
 
@@ -284,7 +277,6 @@ angular.module('viewCustom').component('noResultsFound', {
             if (vm.itemlength === 0) {
                 vm.localScope.showFlag = true;
             }
-            console.log('** noResultsFound = ' + vm.localScope.showFlag);
         };
     }]
 });
@@ -526,7 +518,7 @@ angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angu
 
     vm.$onChanges = function () {
         // override the logo on top left corner
-        vm.parentCtrl.iconLink = 'custom/HVD_IMAGES/img/library-logo-small.png';
+        console.log('*** prm logo after ***');
     };
 }]);
 
@@ -1079,8 +1071,10 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
     vm.item = itemData.item;
     vm.searchData = itemData.searchData;
     vm.params = $location.search();
+    vm.zoomButtonFlag = true;
 
     vm.$onChanges = function () {
+        vm.isLoggedIn = sv.getLogInID();
         // get item data from service
         itemData = sv.getItem();
         vm.item = itemData.item;
@@ -1088,7 +1082,13 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
         vm.searchData.sortby = vm.params.sortby;
         vm.pageInfo = sv.getPage();
 
-        console.log('*** prm view online after ***');
+        if (vm.isLoggedIn === false && vm.item.mis1Data.length === 1) {
+            if (vm.item.mis1Data[0].image && vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
+                vm.zoomButtonFlag = false;
+            }
+        }
+
+        console.log('***** prm view online after ****');
         console.log(vm);
     };
 
@@ -1234,9 +1234,12 @@ angular.module('viewCustom').component('singleImage', {
             }
             vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
             if (vm.src && vm.showImage) {
+                vm.imageUrl = $sce.trustAsResourceUrl(vm.src + '?buttons=Y');
                 $timeout(function () {
-                    vm.imageUrl = $sce.trustAsResourceUrl(vm.src + '?buttons=Y');
-                }, 2);
+                    var iframes = $element.find('iframe')[0];
+                    console.log('*** iframes ***');
+                    console.log(iframes);
+                }, 1000);
             }
 
             vm.localScope.loading = false;

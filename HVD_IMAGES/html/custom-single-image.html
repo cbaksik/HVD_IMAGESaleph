@@ -1,8 +1,8 @@
 <div ng-if="vm.params.singleimage && vm.params.index" layout="row">
    <div flex="{{vm.flexsize}}" class="full-view-inner-container">
-       <div layout="column" layout-align="center center">
-        <single-image src="vm.photo._attr.href._value" imgtitle="vm.item.mis1Data[0].title[0].textElement[0]._text" restricted="vm.photo._attr.restrictedImage._value"></single-image>
-       </div>
+
+       <single-image src="vm.photo._attr.href._value" imgtitle="vm.item.mis1Data[0].title[0].textElement[0]._text" restricted="vm.photo._attr.restrictedImage._value"></single-image>
+
 
        <section layout="row" layout-align="center center" class="imageNav" layout-wrap ng-if="vm.total > 1 && vm.imageNav">
            <md-button class="md-fab md-raised md-primary" (click)="vm.prevPhoto()" tabindex="0" aria-label="Previous photo button">
