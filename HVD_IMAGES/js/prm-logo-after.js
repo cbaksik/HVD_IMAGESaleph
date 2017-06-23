@@ -9,7 +9,6 @@ angular.module('viewCustom')
 
         vm.$onChanges=function() {
             // override the logo on top left corner
-            console.log('*** prm logo after ***');
 
         };
 

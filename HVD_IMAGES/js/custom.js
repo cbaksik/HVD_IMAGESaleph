@@ -518,7 +518,7 @@ angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angu
 
     vm.$onChanges = function () {
         // override the logo on top left corner
-        console.log('*** prm logo after ***');
+
     };
 }]);
 
