@@ -39,6 +39,10 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
     vm.imageNav = true;
 
     vm.displayPhoto = function () {
+
+        console.log('*** vm.item ***');
+        console.log(vm.item);
+
         vm.isLoggedIn = sv.getLogInID();
         if (vm.params.index && vm.params.singleimage) {
             // the xml has different format nodes
@@ -259,6 +263,65 @@ angular.module('viewCustom').controller('customViewImageDialogController', ['$sc
         };
     };
 })();
+/**
+ * Created by samsan on 5/23/17.
+ * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
+ */
+
+angular.module('viewCustom').component('multipleThumbnail', {
+    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/multipleThumbnail.html',
+    bindings: {
+        src: '<',
+        imgtitle: '<',
+        restricted: '<'
+    },
+    controllerAs: 'vm',
+    controller: ['$element', '$timeout', function ($element, $timeout) {
+        var vm = this;
+        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
+
+        // check if image is not empty and it has width and height and greater than 150, then add css class
+        vm.$onChanges = function () {
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
+            if (vm.src) {
+                $timeout(function () {
+                    var img = $element.find('img')[0];
+                    // use default image if it is a broken link image
+                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                    if (pattern.test(vm.src)) {
+                        img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                    }
+                    img.onload = vm.callback;
+                    // show lock up icon
+                    if (vm.restricted) {
+                        vm.localScope.hideLockIcon = true;
+                    }
+                }, 200);
+            }
+        };
+        vm.callback = function () {
+            var image = $element.find('img')[0];
+            if (image.height > 150) {
+                vm.localScope.imgclass = 'responsivePhoto';
+                image.className = 'md-card-image ' + vm.localScope.imgclass;
+            }
+        };
+
+        vm.showToolTip = function (e) {
+            vm.localScope.hideTooltip = true;
+        };
+
+        vm.hideToolTip = function (e) {
+            vm.localScope.hideTooltip = false;
+        };
+
+        $element.bind('contextmenu', function (e) {
+            e.preventDefault();
+            return false;
+        });
+    }]
+});
+
 /**
  * Created by samsan on 6/22/17.
  */
@@ -645,6 +708,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     vm.modalDialogFlag = false;
     vm.currentPage = 1;
     vm.flag = false;
+    vm.searchData = {};
     // set search result set per page, default 50 items per page
 
     // set up page counter
@@ -748,7 +812,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             return vm.parentCtrl.searchResults;
         }, function (newVal, oldVal) {
 
-            console.log('*** prm search result after ***');
+            console.log('** prm search result after ***');
             console.log(vm.parentCtrl);
             if (vm.parentCtrl.$stateParams.offset > 0) {
                 vm.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / _this.searchInfo.pageSize) + 1;
@@ -777,53 +841,17 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         });
     };
 
-    // open modal dialog when click on thumbnail image
-    this.openDialog = function ($event, item) {
-        // get user login status, true for login, false for not login
-        var logID = sv.getLogInID();
-        vm.parentCtrl.searchService.searchStateService.resultsBulkSize = this.searchInfo.pageSize;
-
-        // set data to build full display page
-        var itemData = { 'item': '', 'searchData': '' };
-        itemData.item = item;
-        itemData.searchData = vm.parentCtrl.searchService.cheetah.searchData;
-        itemData.searchData.searchString = vm.parentCtrl.searchString;
-        sv.setItem(itemData);
-
-        // modal dialog pop up here
-        $mdDialog.show({
-            title: 'Full View Details',
-            target: $event,
-            clickOutsideToClose: true,
-            escapeToClose: true,
-            bindToController: true,
-            templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
-            controller: 'customFullViewDialogController',
-            controllerAs: 'vm',
-            fullscreen: true,
-            multiple: true,
-            openFrom: { left: 0 },
-            locals: {
-                items: itemData
-            },
-            onComplete: function onComplete(scope, element) {
-                vm.modalDialogFlag = true;
-            },
-            onRemoving: function onRemoving(element, removePromise) {
-                vm.modalDialogFlag = false;
-            }
-        });
+    vm.$onChanges = function () {
+        vm.searchData = vm.parentCtrl.searchService.cheetah.searchData;
+        vm.searchData.searchString = vm.parentCtrl.searchString;
     };
 
-    // When a user press enter by using tab key
-    this.openDialog2 = function (e, item) {
-        if (e.which === 13) {
-            this.openDialog(e, item);
-        }
+    vm.$doCheck = function () {
+        vm.modalDialogFlag = sv.getDialogFlag();
     };
-    // close modal dialog of view full display
+
     this.closeDialog = function () {
-        vm.modalDialogFlag = false;
+        sv.setDialogFlag(false);
         $mdDialog.hide();
     };
 }]);
@@ -1056,6 +1084,21 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         return serviceObj.auth;
     };
 
+    serviceObj.modalDialogFlag = false;
+    serviceObj.setDialogFlag = function (flag) {
+        serviceObj.modalDialogFlag = flag;
+    };
+
+    serviceObj.getDialogFlag = function () {
+        return serviceObj.modalDialogFlag;
+    };
+
+    // replace http with https
+    serviceObj.getHttps = function (url) {
+        var pattern = /^(http)/i;
+        return url.replace(pattern, 'https');
+    };
+
     return serviceObj;
 }]);
 
@@ -1234,12 +1277,8 @@ angular.module('viewCustom').component('singleImage', {
             }
             vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
             if (vm.src && vm.showImage) {
-                vm.imageUrl = $sce.trustAsResourceUrl(vm.src + '?buttons=Y');
-                $timeout(function () {
-                    var iframes = $element.find('iframe')[0];
-                    console.log('*** iframes ***');
-                    console.log(iframes);
-                }, 1000);
+                var url = sv.getHttps(vm.src);
+                vm.imageUrl = $sce.trustAsResourceUrl(url + '?buttons=Y');
             }
 
             vm.localScope.loading = false;
@@ -1270,19 +1309,20 @@ angular.module('viewCustom').component('singleImage', {
 angular.module('viewCustom').component('thumbnail', {
     templateUrl: '/primo-explore/custom/HVD_IMAGES/html/thumbnail.html',
     bindings: {
-        src: '<',
-        imgtitle: '<',
-        restricted: '<'
+        dataitem: '<',
+        searchdata: '<'
     },
     controllerAs: 'vm',
-    controller: ['$element', '$timeout', function ($element, $timeout) {
+    controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', function ($element, $timeout, $window, $mdDialog, prmSearchService) {
         var vm = this;
-        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
+        var sv = prmSearchService;
+        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
+        vm.modalDialogFlag = false;
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
-            if (vm.src) {
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
+            if (vm.dataitem.pnx.links.thumbnail[0]) {
                 $timeout(function () {
                     var img = $element.find('img')[0];
                     // use default image if it is a broken link image
@@ -1292,12 +1332,17 @@ angular.module('viewCustom').component('thumbnail', {
                     }
                     img.onload = vm.callback;
                     // show lock up icon
-                    if (vm.restricted) {
+                    if (vm.dataitem.restrictedImage) {
                         vm.localScope.hideLockIcon = true;
                     }
                 }, 200);
             }
         };
+
+        vm.$doCheck = function () {
+            vm.modalDialogFlag = sv.getDialogFlag();
+        };
+
         vm.callback = function () {
             var image = $element.find('img')[0];
             if (image.height > 150) {
@@ -1312,6 +1357,63 @@ angular.module('viewCustom').component('thumbnail', {
 
         vm.hideToolTip = function (e) {
             vm.localScope.hideTooltip = false;
+        };
+
+        $element.bind('contextmenu', function (e) {
+            vm.localScope.contextFlag = true;
+            e.preventDefault();
+            return false;
+        });
+
+        vm.closePopUp = function (e) {
+            vm.localScope.contextFlag = false;
+        };
+
+        vm.openWindow = function () {
+            var url = '/primo-explore/fulldisplay?vid=HVD_IMAGES&docid=' + vm.dataitem.pnx.control.recordid[0];
+            $window.open(url, '_blank');
+            vm.localScope.contextFlag = false;
+        };
+
+        // open modal dialog when click on thumbnail image
+        vm.openDialog = function ($event) {
+            // set data to build full display page
+            var itemData = { 'item': '', 'searchData': '' };
+            itemData.item = vm.dataitem;
+            itemData.searchData = vm.searchdata;
+            sv.setItem(itemData);
+
+            // modal dialog pop up here
+            $mdDialog.show({
+                title: 'Full View Details',
+                target: $event,
+                clickOutsideToClose: true,
+                focusOnOpen: true,
+                escapeToClose: true,
+                bindToController: true,
+                templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
+                controller: 'customFullViewDialogController',
+                controllerAs: 'vm',
+                fullscreen: true,
+                multiple: false,
+                openFrom: { left: 0 },
+                locals: {
+                    items: itemData
+                },
+                onComplete: function onComplete(scope, element) {
+                    sv.setDialogFlag(true);
+                },
+                onRemoving: function onRemoving(element, removePromise) {
+                    sv.setDialogFlag(false);
+                }
+            });
+        };
+
+        // When a user press enter by using tab key
+        vm.openDialog2 = function (e) {
+            if (e.which === 13 || e.which === 1) {
+                vm.openDialog(e);
+            }
         };
     }]
 });

@@ -16,6 +16,10 @@ angular.module('viewCustom')
         vm.imageNav=true;
 
         vm.displayPhoto=function () {
+
+            console.log('*** vm.item ***');
+            console.log(vm.item);
+
             vm.isLoggedIn=sv.getLogInID();
             if(vm.params.index && vm.params.singleimage) {
                 // the xml has different format nodes

@@ -11,13 +11,12 @@
     </div>
     <div class="hvfullsize">
      <ul class="hvInline">
-     <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index"  tabindex="0" aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}"
-         ng-click="$ctrl.openDialog($event,item)" ng-keypress="$ctrl.openDialog2($event,item)">
+     <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index"  tabindex="0" aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
          <div class="hvbox">
              <label role="multiple images" ng-if="item.pnx.display.lds20[0] > 1" class="badge" aria-label="{{item.pnx.display.lds28[0]|countFilter}}}">{{item.pnx.display.lds28[0]|countFilter}}</label>
              <div ng-if="item.pnx.display.lds20[0] < 2" class="nobadge">&nbsp;</div>
              <div class="photo" ng-if="item.pnx.links.thumbnail">
-                 <thumbnail src="item.pnx.links.thumbnail[0]" imgtitle="item.pnx.display.title[0]" restricted="item.restrictedImage"></thumbnail>
+                 <thumbnail dataitem="item" searchdata="$ctrl.searchData"></thumbnail>
              </div>
              <!-- show box that has no photo -->
              <div class="nophoto" ng-if="!item.pnx.links.thumbnail"  aria-label="{{item.pnx.display.title[0]}}" tabindex="0">

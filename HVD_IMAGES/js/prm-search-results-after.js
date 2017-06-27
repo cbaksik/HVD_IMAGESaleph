@@ -24,6 +24,7 @@ angular.module('viewCustom')
     vm.modalDialogFlag=false;
     vm.currentPage=1;
     vm.flag=false;
+    vm.searchData={};
     // set search result set per page, default 50 items per page
 
     // set up page counter
@@ -129,7 +130,7 @@ angular.module('viewCustom')
         // watch for new data change when a user search
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults,(newVal, oldVal)=>{
 
-            console.log('*** prm search result after ***');
+            console.log('** prm search result after ***');
             console.log(vm.parentCtrl);
             if(vm.parentCtrl.$stateParams.offset > 0) {
                 vm.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / this.searchInfo.pageSize) + 1;
@@ -161,55 +162,17 @@ angular.module('viewCustom')
 
     };
 
-
-    // open modal dialog when click on thumbnail image
-    this.openDialog=function ($event,item) {
-        // get user login status, true for login, false for not login
-        let logID=sv.getLogInID();
-        vm.parentCtrl.searchService.searchStateService.resultsBulkSize=this.searchInfo.pageSize;
-
-        // set data to build full display page
-        var itemData={'item':'','searchData':''};
-        itemData.item=item;
-        itemData.searchData=vm.parentCtrl.searchService.cheetah.searchData;
-        itemData.searchData.searchString=vm.parentCtrl.searchString;
-        sv.setItem(itemData);
-
-        // modal dialog pop up here
-        $mdDialog.show({
-            title:'Full View Details',
-            target:$event,
-            clickOutsideToClose: true,
-            escapeToClose: true,
-            bindToController:true,
-            templateUrl:'/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
-            controller:'customFullViewDialogController',
-            controllerAs:'vm',
-            fullscreen:true,
-            multiple:true,
-            openFrom:{left:0},
-            locals: {
-                items:itemData
-            },
-            onComplete:function (scope, element) {
-                vm.modalDialogFlag=true;
-            },
-            onRemoving:function (element,removePromise) {
-                vm.modalDialogFlag=false;
-            }
-        });
-
+    vm.$onChanges=function() {
+        vm.searchData=vm.parentCtrl.searchService.cheetah.searchData;
+        vm.searchData.searchString=vm.parentCtrl.searchString;
     };
 
-    // When a user press enter by using tab key
-    this.openDialog2=function(e,item){
-        if(e.which===13){
-            this.openDialog(e,item);
-        }
+    vm.$doCheck=function() {
+        vm.modalDialogFlag=sv.getDialogFlag();
     };
-    // close modal dialog of view full display
+
     this.closeDialog=function () {
-        vm.modalDialogFlag=false;
+        sv.setDialogFlag(false);
         $mdDialog.hide();
     };
 

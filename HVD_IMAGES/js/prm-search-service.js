@@ -194,6 +194,20 @@ angular.module('viewCustom')
       return serviceObj.auth;
     };
 
+    serviceObj.modalDialogFlag=false;
+    serviceObj.setDialogFlag=function (flag) {
+        serviceObj.modalDialogFlag=flag;
+    };
+
+    serviceObj.getDialogFlag=function () {
+        return serviceObj.modalDialogFlag;
+    };
+
+    // replace http with https
+    serviceObj.getHttps=function (url) {
+        var pattern = /^(http)/i;
+        return url.replace(pattern, 'https');
+    };
 
     return serviceObj;
 

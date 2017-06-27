@@ -88,3 +88,20 @@
 a.noline:hover {
     text-decoration: none !important;
 }
+
+.contextMenus {
+    position: absolute;
+    background:#efefef;
+    color:#3a3a3a;
+    padding:30px;
+    border-radius:5px;
+    list-style: none;
+    box-shadow:2px 2px 2px #666;
+    cursor: pointer;
+    z-index: 100000000;
+}
+
+.contextMenus > li {
+    text-align: left;
+    margin-bottom:15px;
+}

@@ -226,7 +226,7 @@ cl-paging > button.md-icon-button {
   text-decoration: none !important;
 }
 
-.hvLogo:hover {
+a.hvLogo:hover {
   text-decoration: none !important;
   color:#ffffff;
   cursor: pointer;

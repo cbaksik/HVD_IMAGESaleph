@@ -1,11 +1,16 @@
 <md-card class="hv-md-card">
-    <a class="thumbnail">
-        <img ng-src="{{vm.src}}"  class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.imgtitle}}" aria-label="{{vm.imgtitle}}" tabindex="0" ng-focus="vm.showToolTip($event)" ng-blur="vm.hideToolTip($event)"/>
-        <md-tooltip md-visible="vm.localScope.hideTooltip" md-direction="bottom" class="hvtooltip">{{vm.imgtitle}}</md-tooltip>
+    <a class="thumbnail" ng-click="vm.openDialog2($event)">
+        <img ng-src="{{vm.dataitem.pnx.links.thumbnail[0]}}"  class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.dataitem.pnx.display.title[0]}}" aria-label="{{vm.dataitem.pnx.display.title[0]}}" tabindex="0" ng-focus="vm.showToolTip($event)" ng-blur="vm.hideToolTip($event)"/>
+        <md-tooltip md-visible="vm.localScope.hideTooltip" md-direction="bottom" class="hvtooltip">{{vm.dataitem.pnx.display.title[0]}}</md-tooltip>
     </a>
     <div ng-if="vm.localScope.hideLockIcon" tabindex="-1">
         <div class="lockIcon">
             <img src="custom/HVD_IMAGES/img/lock_small.png" class="md-avatar" alt="Lock icon" aria-label="Lock icon"/>
         </div>
     </div>
+
+    <ul class="contextMenus" ng-if="vm.localScope.contextFlag">
+        <li ng-click="vm.openWindow()">Open image on new window tab</li>
+    </ul>
+
 </md-card>

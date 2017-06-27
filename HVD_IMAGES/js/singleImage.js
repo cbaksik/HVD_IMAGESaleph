@@ -31,13 +31,8 @@ angular.module('viewCustom')
                 }
                 vm.localScope={'imgClass':'','loading':true,'hideLockIcon':false};
                 if(vm.src && vm.showImage) {
-                    vm.imageUrl=$sce.trustAsResourceUrl(vm.src+'?buttons=Y');
-                    $timeout(function () {
-                        var iframes=$element.find('iframe')[0];
-                        console.log('*** iframes ***');
-                        console.log(iframes);
-
-                    },1000);
+                    var url=sv.getHttps(vm.src);
+                    vm.imageUrl=$sce.trustAsResourceUrl(url+'?buttons=Y');
 
                 }
 
