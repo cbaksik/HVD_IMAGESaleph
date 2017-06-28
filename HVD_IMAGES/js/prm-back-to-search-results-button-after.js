@@ -9,9 +9,6 @@ angular.module('viewCustom')
         let sv=prmSearchService;
         vm.params=$location.search();
 
-        console.log('*** prm back to search result button after ***');
-        console.log(vm);
-
         // get items from custom single image component
         vm.$doCheck=function () {
             vm.photo=sv.getPhoto();
@@ -21,10 +18,19 @@ angular.module('viewCustom')
         vm.goToSearch=function () {
             var url='/primo-explore/search?query='+vm.params.q+'&vid='+vm.parentCtrl.$stateParams.vid;
             url+='&sortby='+vm.parentCtrl.$stateParams.sortby+'&lang='+vm.parentCtrl.$stateParams.lang;
-            url+='&tab='+vm.parentCtrl.$stateParams.tab+'&=search_scope='+vm.parentCtrl.$stateParams.search_scope;
+            url+='&=search_scope='+vm.parentCtrl.$stateParams.search_scope;
             url+='&searchString='+vm.params.searchString;
+            if(vm.parentCtrl.$stateParams.tab) {
+                url += '&tab=' + vm.parentCtrl.$stateParams.tab;
+            }
             if(vm.params.facet) {
-                url+='&facet=' + vm.params.facet;
+                if(Array.isArray(vm.params.facet)) {
+                    for(var i=0; i < vm.params.facet.length; i++) {
+                        url += '&facet=' + vm.params.facet[i];
+                    }
+                } else {
+                    url += '&facet=' + vm.params.facet;
+                }
             }
             if(vm.params.offset) {
                 url+='&offset='+vm.params.offset;
@@ -40,10 +46,16 @@ angular.module('viewCustom')
             url+='&tab='+vm.parentCtrl.$stateParams.tab+'&search_scope='+vm.parentCtrl.$stateParams.search_scope;
             url+='&searchString='+vm.params.searchString;
             if(vm.params.facet) {
-                url+='&facet=' + vm.params.facet;
+                if(Array.isArray(vm.params.facet)) {
+                    for(var i=0; i < vm.params.facet.length; i++) {
+                        url += '&facet=' + vm.params.facet[i];
+                    }
+                } else {
+                    url += '&facet=' + vm.params.facet;
+                }
             }
             if(vm.params.offset) {
-                url+='&offset='+vm.params.offset;
+                url += '&offset=' + vm.params.offset;
             }
             $window.location.href=url;
         };

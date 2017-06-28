@@ -11,9 +11,6 @@ angular.module('viewCustom')
 
 
         vm.$onChanges=function() {
-            console.log('*** prm breadcrumbs after ***');
-            console.log(vm);
-
             // capture user select facets
             sv.setFacets(vm.parentCtrl.selectedFacets);
             // reset the current page to beginning when a user select new facets

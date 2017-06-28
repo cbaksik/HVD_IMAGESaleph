@@ -1,6 +1,6 @@
 <md-card class="hv-md-card">
-    <a class="thumbnail" ng-click="vm.openDialog2($event)">
-        <img ng-src="{{vm.dataitem.pnx.links.thumbnail[0]}}"  class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.dataitem.pnx.display.title[0]}}" aria-label="{{vm.dataitem.pnx.display.title[0]}}" tabindex="0" ng-focus="vm.showToolTip($event)" ng-blur="vm.hideToolTip($event)"/>
+    <a class="thumbnail" ng-click="$event.preventDefault()" href="{{vm.linkUrl}}">
+        <img ng-src="{{vm.imageUrl}}" ng-click="vm.openDialog($event)" class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.dataitem.pnx.display.title[0]}}" aria-label="{{vm.dataitem.pnx.display.title[0]}}" tabindex="0" ng-focus="vm.showToolTip($event)" ng-blur="vm.hideToolTip($event)"/>
         <md-tooltip md-visible="vm.localScope.hideTooltip" md-direction="bottom" class="hvtooltip">{{vm.dataitem.pnx.display.title[0]}}</md-tooltip>
     </a>
     <div ng-if="vm.localScope.hideLockIcon" tabindex="-1">

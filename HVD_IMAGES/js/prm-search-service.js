@@ -205,8 +205,12 @@ angular.module('viewCustom')
 
     // replace http with https
     serviceObj.getHttps=function (url) {
-        var pattern = /^(http)/i;
-        return url.replace(pattern, 'https');
+        var pattern = /^(http:)/i;
+        if(pattern.test(url)) {
+            return url.replace(pattern, 'https:');
+        } else {
+            return url;
+        }
     };
 
     return serviceObj;

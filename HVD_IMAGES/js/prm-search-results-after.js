@@ -73,6 +73,7 @@ angular.module('viewCustom')
        for(var i=0; i < facets.length; i++){
            facetsParam+='facet_'+facets[i].name+','+facets[i].displayedType+','+facets[i].value+'|,|';
        }
+       // remove the last string of [,]
        if(facetsParam.length > 5) {
            facetsParam=facetsParam.substring(0,facetsParam.length - 3);
        }
@@ -94,6 +95,9 @@ angular.module('viewCustom')
                 vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=false;
                 vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=false;
                 vm.searchInProgress=false;
+
+                console.log(vm.items);
+
                },
             function (err) {
                console.log(err);
@@ -130,8 +134,6 @@ angular.module('viewCustom')
         // watch for new data change when a user search
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults,(newVal, oldVal)=>{
 
-            console.log('** prm search result after ***');
-            console.log(vm.parentCtrl);
             if(vm.parentCtrl.$stateParams.offset > 0) {
                 vm.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / this.searchInfo.pageSize) + 1;
                 this.searchInfo.currentPage=parseInt(vm.parentCtrl.$stateParams.offset / this.searchInfo.pageSize) + 1;

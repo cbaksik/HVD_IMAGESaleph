@@ -12,14 +12,18 @@ angular.module('viewCustom')
             restricted:'<'
         },
         controllerAs:'vm',
-        controller:['$element','$timeout',function ($element,$timeout) {
+        controller:['$element','$timeout','prmSearchService',function ($element,$timeout,prmSearchService) {
             var vm=this;
+            var sv=prmSearchService;
             vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
+            vm.imageUrl='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
                 vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
                 if(vm.src) {
+                    vm.imageUrl=sv.getHttps(vm.src);
                     $timeout(function () {
                         var img=$element.find('img')[0];
                         // use default image if it is a broken link image
@@ -33,7 +37,7 @@ angular.module('viewCustom')
                             vm.localScope.hideLockIcon = true;
                         }
 
-                    },200);
+                    },300);
 
                 }
 

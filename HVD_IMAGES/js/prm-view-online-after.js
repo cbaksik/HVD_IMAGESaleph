@@ -28,7 +28,7 @@ angular.module('viewCustom')
                }
            }
 
-           console.log('***** prm view online after ****');
+           console.log('** prm view online after ***');
            console.log(vm);
         };
 
@@ -51,7 +51,13 @@ angular.module('viewCustom')
             url += '&q=' + vm.searchData.q + '&tab='+vm.searchData.tab;
             url+='&search_scope='+vm.searchData.scope+'&singleimage=true&index='+index;
             if(vm.params.facet) {
-                url+='&facet=' + vm.params.facet;
+                if(Array.isArray(vm.params.facet)) {
+                    for(var i=0; i < vm.params.facet.length; i++) {
+                        url += '&facet=' + vm.params.facet[i];
+                    }
+                } else {
+                    url += '&facet=' + vm.params.facet;
+                }
             }
             var offset=vm.params.offset;
             if(vm.pageInfo.userClick) {

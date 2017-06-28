@@ -29,7 +29,9 @@ angular.module('viewCustom')
                         vm.total = vm.item.mis1Data[0].image.length;
                         vm.itemData = vm.item.mis1Data[0];
                     } else if (vm.item.mis1Data.length > 1) {
-                        vm.photo = vm.item.mis1Data[vm.index].image[0];
+                        if(vm.item.mis1Data[vm.index].image) {
+                            vm.photo = vm.item.mis1Data[vm.index].image[0];
+                        }
                         vm.total = vm.item.mis1Data.length;
                         vm.itemData = vm.item.mis1Data[vm.index];
                     }

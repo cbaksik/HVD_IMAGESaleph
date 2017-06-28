@@ -11,21 +11,25 @@ angular.module('viewCustom')
             searchdata:'<'
         },
         controllerAs:'vm',
-        controller:['$element','$timeout','$window','$mdDialog','prmSearchService',function ($element,$timeout,$window,$mdDialog,prmSearchService) {
+        controller:['$element','$timeout','$window','$mdDialog','prmSearchService','$location',function ($element,$timeout,$window,$mdDialog,prmSearchService,$location) {
             var vm=this;
             var sv=prmSearchService;
             vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false,'contextFlag':false};
             vm.modalDialogFlag=false;
+            vm.imageUrl='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+            vm.linkUrl='';
+            vm.params=$location.search();
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
                 vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false,'contextFlag':false};
                 if(vm.dataitem.pnx.links.thumbnail[0]) {
+                    vm.imageUrl=sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                     $timeout(function () {
                         var img=$element.find('img')[0];
                         // use default image if it is a broken link image
                         var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                        if(pattern.test(vm.src)) {
+                        if(pattern.test(vm.dataitem.pnx.links.thumbnail[0])) {
                             img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                         }
                         img.onload=vm.callback;
@@ -34,8 +38,21 @@ angular.module('viewCustom')
                             vm.localScope.hideLockIcon = true;
                         }
 
-                    },200);
+                    },300);
 
+                }
+
+                vm.linkUrl='/primo-explore/fulldisplay?vid='+vm.searchdata.vid+'&docid='+vm.dataitem.pnx.control.recordid[0]+'&sortby='+vm.searchdata.sort;
+                vm.linkUrl+='&q='+vm.searchdata.q+'&searchString='+vm.searchdata.searchString+'&offset='+vm.searchdata.offset;
+                vm.linkUrl+='&tab='+vm.searchdata.tab+'&search_scope='+vm.searchdata.scope;
+                if(vm.params.facet) {
+                    if(Array.isArray(vm.params.facet)) {
+                        for(var i=0; i < vm.params.facet.length; i++) {
+                            vm.linkUrl+='&facet='+vm.params.facet[i];
+                        }
+                    } else {
+                        vm.linkUrl += '&facet=' + vm.params.facet;
+                    }
                 }
 
             };
@@ -60,12 +77,13 @@ angular.module('viewCustom')
                 vm.localScope.hideTooltip=false;
             };
 
+            /*
             $element.bind('contextmenu',function (e) {
                 vm.localScope.contextFlag=true;
                 e.preventDefault();
                 return false;
             });
-
+            */
 
             vm.closePopUp=function (e) {
                 vm.localScope.contextFlag = false;
@@ -103,6 +121,7 @@ angular.module('viewCustom')
                         items:itemData
                     },
                     onComplete:function (scope, element) {
+                       vm.localScope.contextFlag=false;
                        sv.setDialogFlag(true);
                     },
                     onRemoving:function (element,removePromise) {
