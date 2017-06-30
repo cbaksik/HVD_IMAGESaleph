@@ -4,7 +4,7 @@
     </prm-icon>
 </md-button>
 <md-content layout-padding ng-cloak class="hvPanel" ng-if="$ctrl.searchInProgress===false">
-    <div layout="row" layout-align="center center">
+    <div layout="row" layout-align="start start">
         <label flex ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
              {{$ctrl.searchInfo.totalItems|number}} results
         </label>

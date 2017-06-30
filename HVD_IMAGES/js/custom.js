@@ -16,7 +16,6 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['$sce
     vm.searchData = items.searchData;
 
     sv.setItem(items);
-
     vm.closeDialog = function () {
         $mdDialog.hide();
     };
@@ -118,6 +117,23 @@ angular.module('viewCustom').component('customSingleImage', {
     controller: 'customSingleImageController',
     controllerAs: 'vm',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-single-image.html'
+});
+
+/**
+ * Created by samsan on 6/29/17.
+ */
+
+angular.module('viewCustom').component('customTopMenu', {
+    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-top-menu.html',
+    bindings: {
+        parentCtrl: '<'
+    },
+    controllerAs: 'vm',
+    controller: ['$sce', function ($sce) {
+        var vm = this;
+
+        vm.topRightMenus = [{ 'title': 'HOLLIS +', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:bannerhollis+', 'label': 'Go to Hollis plus' }, { 'title': 'Libraries / Hours', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:bannerfindlib', 'label': 'Go to Library hours' }, { 'title': 'All My Accounts', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:banneraccounts', 'label': 'Go to all my accounts' }];
+    }]
 });
 
 /**
@@ -467,10 +483,53 @@ angular.module('viewCustom').component('prmBreadcrumbsAfter', {
 });
 
 /**
+ * Created by samsan on 6/30/17.
+ */
+angular.module('viewCustom').controller('prmBriefResultContainerAfterController', ['$sce', 'angularLoad', function ($sce, angularLoad) {
+
+    var vm = this;
+
+    vm.$onChanges = function () {
+        // hide IMAGE
+        vm.parentCtrl.showItemType = false;
+    };
+}]);
+
+angular.module('viewCustom').component('prmBriefResultContainerAfter', {
+    bindings: { parentCtrl: '=' },
+    controller: 'prmBriefResultContainerAfterController'
+});
+
+/**
+ * Created by samsan on 6/29/17.
+ * It insert in div tag to the top of the menu. Then it create a new component call custom-top-menu.
+ */
+
+angular.module('viewCustom').component('prmExploreMainAfter', {
+    bindings: {
+        parentCtrl: '<'
+    },
+    template: '<custom-top-menu></custom-top-menu>',
+    controllerAs: 'vm',
+    controller: ['$element', '$sce', function ($element, $sce) {
+        var vm = this;
+        vm.$onChanges = function () {
+
+            // insert div tag on top menu so it can create new menus
+            var el = $element[0].parentNode.parentNode;
+            var div = document.createElement('div');
+            div.setAttribute('id', 'customTopMenu');
+            div.setAttribute('class', 'topMenu');
+            el.prepend(div);
+        };
+    }]
+});
+
+/**
  * Created by samsan on 5/30/17.
  */
 
-angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad', 'prmSearchService', '$location', function (angularLoad, prmSearchService, $location) {
+angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad', 'prmSearchService', '$location', '$element', function (angularLoad, prmSearchService, $location, $element) {
     var vm = this;
     vm.params = $location.search();
     var sv = prmSearchService;
@@ -478,8 +537,10 @@ angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad
     var pageObj = sv.getPage();
 
     vm.$onChanges = function () {
-        console.log('*** prm facet after ****');
-        console.log(vm);
+        // change the width of facet column
+        var el = $element[0].parentNode.parentNode;
+        el.classList.value = 'sidebar flex-md-30 flex-lg-25';
+
         // if there is no facet, remove it from service
         if (!vm.parentCtrl.$stateParams.facet) {
             // reset facet if it is empty
@@ -589,18 +650,27 @@ angular.module('viewCustom').component('prmFullViewAfter', {
  * Created by samsan on 6/8/17.
  * This component add customize logo and Hollis Images text
  */
-angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angularLoad', function ($sce, angularLoad) {
+angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angularLoad', '$element', function ($sce, angularLoad, $element) {
 
     var vm = this;
 
     vm.$onChanges = function () {
-        // override the logo on top left corner
+        // remove flex top bar
+        var el = $element[0].parentNode.parentNode;
+        el.children[2].remove();
+        el.children[2].remove();
 
+        // remove logo div
+        var el2 = $element[0].parentNode;
+        el2.children[0].remove();
+
+        console.log('**** prm logo after ***');
+        console.log($element);
     };
 }]);
 
 angular.module('viewCustom').component('prmLogoAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmLogoAfterController',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-logo-after.html'
 });
@@ -697,6 +767,29 @@ angular.module('viewCustom').config(['$httpProvider', function ($httpProvider) {
         };
     });
 }]);
+/**
+ * Created by samsan on 6/30/17.
+ */
+
+angular.module('viewCustom').controller('prmSearchResultAvailabilityAfterController', ['$sce', 'angularLoad', '$element', '$timeout', function ($sce, angularLoad, $element, $timeout) {
+    var vm = this;
+    vm.$onChanges = function () {
+        // remove  access online and icon
+        $timeout(function () {
+            var el = $element[0].parentNode.childNodes[1].children;
+            if (el) {
+                el[0].remove();
+                el[0].remove();
+            }
+        }, 200);
+    };
+}]);
+
+angular.module('viewCustom').component('prmSearchResultAvailabilityLineAfter', {
+    bindings: { parentCtrl: '=' },
+    controller: 'prmSearchResultAvailabilityAfterController'
+});
+
 /* Author: Sam San
  This custom component is used for search result list which display all the images in thumbnail.
  */
@@ -790,8 +883,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
             vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress = false;
             vm.searchInProgress = false;
-
-            console.log(vm.items);
         }, function (err) {
             console.log(err);
             vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = false;
@@ -1120,6 +1211,24 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
 
     return serviceObj;
 }]);
+
+/**
+ * Created by samsan on 6/29/17.
+ */
+
+angular.module('viewCustom').controller('prmTopbarAfterController', ['$sce', 'angularLoad', function ($sce, angularLoad) {
+
+    var vm = this;
+    vm.$onChanges = function () {
+        // hide primo tab menu
+        vm.parentCtrl.showMainMenu = false;
+    };
+}]);
+
+angular.module('viewCustom').component('prmTopbarAfter', {
+    bindings: { parentCtrl: '<' },
+    controller: 'prmTopbarAfterController'
+});
 
 /**
  * Created by samsan on 5/17/17.

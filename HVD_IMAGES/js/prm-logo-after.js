@@ -3,12 +3,22 @@
  * This component add customize logo and Hollis Images text
  */
 angular.module('viewCustom')
-    .controller('prmLogoAfterController', [ '$sce', 'angularLoad', function ($sce, angularLoad) {
+    .controller('prmLogoAfterController', [ '$sce', 'angularLoad','$element', function ($sce, angularLoad, $element) {
 
         let vm = this;
 
         vm.$onChanges=function() {
-            // override the logo on top left corner
+            // remove flex top bar
+            var el=$element[0].parentNode.parentNode;
+            el.children[2].remove();
+            el.children[2].remove();
+
+            // remove logo div
+            var el2=$element[0].parentNode;
+            el2.children[0].remove();
+
+            console.log('**** prm logo after ***');
+            console.log($element);
 
         };
 
@@ -19,7 +29,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmLogoAfter', {
-        bindings: {parentCtrl: '='},
+        bindings: {parentCtrl: '<'},
         controller: 'prmLogoAfterController',
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/prm-logo-after.html'
     });

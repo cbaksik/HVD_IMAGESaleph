@@ -95,9 +95,6 @@ angular.module('viewCustom')
                 vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=false;
                 vm.parentCtrl.searchService.searchStateService.searchObject.searchInProgress=false;
                 vm.searchInProgress=false;
-
-                console.log(vm.items);
-
                },
             function (err) {
                console.log(err);
@@ -158,7 +155,6 @@ angular.module('viewCustom')
             this.searchInfo.searchString = vm.parentCtrl.searchString;
             sv.setPage(this.searchInfo);
             vm.searchInProgress=vm.parentCtrl.searchInProgress;
-
 
         });
 

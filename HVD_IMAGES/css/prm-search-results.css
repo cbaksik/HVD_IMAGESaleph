@@ -69,6 +69,10 @@ body {
 
 .main {
   background: #ffffff !important;
+  padding-right:0px !important;
+  padding-left:0px !important;
+  padding-top:10px !important;
+  text-align: left !important;
 }
 
 .disabled > a {
@@ -108,6 +112,7 @@ ul.pagination > li > .disabled  {
   margin-top:0px !important;
   margin-bottom:0px !important;
   padding-bottom:0px !important;
+  padding-left:0px !important;
   background: transparent !important;
 }
 
