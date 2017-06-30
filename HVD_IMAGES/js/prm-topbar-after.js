@@ -3,12 +3,19 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmTopbarAfterController', [ '$sce', 'angularLoad', function ($sce, angularLoad) {
+    .controller('prmTopbarAfterController', [ '$sce', 'angularLoad','$element', function ($sce, angularLoad,$element) {
 
         let vm = this;
         vm.$onChanges=function() {
             // hide primo tab menu
             vm.parentCtrl.showMainMenu=false;
+            // create new div for the top white menu
+            var el=$element[0].parentNode.parentNode.parentNode.parentNode.parentNode;
+            var div=document.createElement('div');
+            div.setAttribute('id','customTopMenu');
+            div.setAttribute('class','topMenu');
+            el.prepend(div);
+
 
         };
 

@@ -501,31 +501,6 @@ angular.module('viewCustom').component('prmBriefResultContainerAfter', {
 });
 
 /**
- * Created by samsan on 6/29/17.
- * It insert in div tag to the top of the menu. Then it create a new component call custom-top-menu.
- */
-
-angular.module('viewCustom').component('prmExploreMainAfter', {
-    bindings: {
-        parentCtrl: '<'
-    },
-    template: '<custom-top-menu></custom-top-menu>',
-    controllerAs: 'vm',
-    controller: ['$element', '$sce', function ($element, $sce) {
-        var vm = this;
-        vm.$onChanges = function () {
-
-            // insert div tag on top menu so it can create new menus
-            var el = $element[0].parentNode.parentNode;
-            var div = document.createElement('div');
-            div.setAttribute('id', 'customTopMenu');
-            div.setAttribute('class', 'topMenu');
-            el.prepend(div);
-        };
-    }]
-});
-
-/**
  * Created by samsan on 5/30/17.
  */
 
@@ -1216,12 +1191,18 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
  * Created by samsan on 6/29/17.
  */
 
-angular.module('viewCustom').controller('prmTopbarAfterController', ['$sce', 'angularLoad', function ($sce, angularLoad) {
+angular.module('viewCustom').controller('prmTopbarAfterController', ['$sce', 'angularLoad', '$element', function ($sce, angularLoad, $element) {
 
     var vm = this;
     vm.$onChanges = function () {
         // hide primo tab menu
         vm.parentCtrl.showMainMenu = false;
+        // create new div for the top white menu
+        var el = $element[0].parentNode.parentNode.parentNode.parentNode.parentNode;
+        var div = document.createElement('div');
+        div.setAttribute('id', 'customTopMenu');
+        div.setAttribute('class', 'topMenu');
+        el.prepend(div);
     };
 }]);
 

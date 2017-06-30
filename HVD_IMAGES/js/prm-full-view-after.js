@@ -75,7 +75,6 @@ angular.module('viewCustom')
 
            }
 
-
         };
 
         vm.$onInit=function() {

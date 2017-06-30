@@ -5,6 +5,6 @@
         </a>
     </div>
     <div flex="60" class="customMenu">
-        <md-button class="noTopMargin" ng-repeat="m in vm.topRightMenus track by $index" href="{{m.url}}" title="{{m.label}}" aria-label="{{m.label}}">{{m.title}}</md-button>
+        <a class="noTopMargin hv-menu" ng-repeat="m in vm.topRightMenus track by $index" href="{{m.url}}" title="{{m.label}}" aria-label="{{m.label}}">{{m.title}}</a>
     </div>
 </div>

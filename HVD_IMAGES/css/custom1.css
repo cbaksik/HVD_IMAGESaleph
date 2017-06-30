@@ -782,10 +782,17 @@ a.noline:hover {
 
 .customTopMenu {
     position: absolute;
-    top:0px;
+    top:-50px;
     left:0px;
     width:100%;
     height:50px;
+    color:#000000 !important;
+    z-index: 1000;
+}
+
+.hv-menu {
+    margin-right:15px;
+    padding:5px;
 }
 
 .customMenu {
@@ -798,6 +805,7 @@ a.noline:hover {
 
 .noTopMargin {
     margin-top:-6px !important;
+    color: #000000 !important;
 }
 
 div.search-actions > .md-button.button-confirm {
