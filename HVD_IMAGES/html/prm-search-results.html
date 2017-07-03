@@ -13,7 +13,9 @@
      <ul class="hvInline">
      <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index"  tabindex="0" aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
          <div class="hvbox">
-             <label role="multiple images" ng-if="item.pnx.display.lds20[0] > 1" class="badge" aria-label="{{item.pnx.display.lds28[0]|countFilter}}}">{{item.pnx.display.lds28[0]|countFilter}}</label>
+             <label role="multiple images" ng-if="item.pnx.display.lds20[0] > 1" class="badge" aria-label="{{item.pnx.display.lds28[0]|countFilter}}}">
+                 {{item.pnx.display.lds28[0]|countFilter}}
+             </label>
              <div ng-if="item.pnx.display.lds20[0] < 2" class="nobadge">&nbsp;</div>
              <div class="photo" ng-if="item.pnx.links.thumbnail">
                  <thumbnail dataitem="item" searchdata="$ctrl.searchData"></thumbnail>

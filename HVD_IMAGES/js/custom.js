@@ -36,14 +36,19 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
     vm.total = 0;
     vm.itemData = {};
     vm.imageNav = true;
+    vm.xmldata = {};
 
     vm.displayPhoto = function () {
-
-        console.log('*** vm.item ***');
-        console.log(vm.item);
-
         vm.isLoggedIn = sv.getLogInID();
         if (vm.params.index && vm.params.singleimage) {
+            if (vm.item.pnx.addata.mis1) {
+                vm.xmldata = sv.parseXml(vm.item.pnx.addata.mis1[0]);
+                if (vm.xmldata.work) {
+                    vm.xmldata = vm.xmldata.work[0];
+                }
+                console.log('*** vm.xmldata 2 ****');
+                console.log(vm.xmldata);
+            }
             // the xml has different format nodes
             if (vm.item.mis1Data) {
                 if (vm.item.mis1Data.length === 1) {
@@ -108,6 +113,15 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
         } else {
             vm.index = vm.total - 1;
             vm.displayPhoto();
+        }
+    };
+
+    // check if the item is array or not
+    vm.isArray = function (obj) {
+        if (Array.isArray(obj)) {
+            return true;
+        } else {
+            return false;
         }
     };
 }]);
@@ -313,10 +327,6 @@ angular.module('viewCustom').component('multipleThumbnail', {
                         img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                     }
                     img.onload = vm.callback;
-                    // show lock up icon
-                    if (vm.restricted) {
-                        vm.localScope.hideLockIcon = true;
-                    }
                 }, 300);
             }
         };
@@ -325,6 +335,10 @@ angular.module('viewCustom').component('multipleThumbnail', {
             if (image.height > 150) {
                 vm.localScope.imgclass = 'responsivePhoto';
                 image.className = 'md-card-image ' + vm.localScope.imgclass;
+            }
+            // show lock up icon
+            if (vm.restricted) {
+                vm.localScope.hideLockIcon = true;
             }
         };
 
@@ -919,6 +933,9 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             _this.searchInfo.searchString = vm.parentCtrl.searchString;
             sv.setPage(_this.searchInfo);
             vm.searchInProgress = vm.parentCtrl.searchInProgress;
+
+            console.log('*** prm search result after ***');
+            console.log(vm.items);
         });
     };
 
@@ -1454,10 +1471,6 @@ angular.module('viewCustom').component('thumbnail', {
                         img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                     }
                     img.onload = vm.callback;
-                    // show lock up icon
-                    if (vm.dataitem.restrictedImage) {
-                        vm.localScope.hideLockIcon = true;
-                    }
                 }, 300);
             }
 
@@ -1484,6 +1497,9 @@ angular.module('viewCustom').component('thumbnail', {
             if (image.height > 150) {
                 vm.localScope.imgclass = 'responsivePhoto';
                 image.className = 'md-card-image ' + vm.localScope.imgclass;
+            }
+            if (vm.dataitem.restrictedImage) {
+                vm.localScope.hideLockIcon = true;
             }
         };
 

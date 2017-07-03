@@ -88,10 +88,6 @@ ul.pagination > li > .disabled  {
   background: transparent;
 }
 
-.text-right {
-  text-align: left;
-}
-
 
 .hvtooltip {
   background:#ffffff;

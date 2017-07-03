@@ -33,10 +33,6 @@ angular.module('viewCustom')
                             img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                         }
                         img.onload=vm.callback;
-                        // show lock up icon
-                        if(vm.dataitem.restrictedImage) {
-                            vm.localScope.hideLockIcon = true;
-                        }
 
                     },300);
 
@@ -66,6 +62,9 @@ angular.module('viewCustom')
                 if(image.height > 150){
                     vm.localScope.imgclass='responsivePhoto';
                     image.className='md-card-image '+ vm.localScope.imgclass;
+                }
+                if(vm.dataitem.restrictedImage) {
+                    vm.localScope.hideLockIcon = true;
                 }
             };
             

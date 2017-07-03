@@ -14,14 +14,19 @@ angular.module('viewCustom')
         vm.total=0;
         vm.itemData={};
         vm.imageNav=true;
+        vm.xmldata={};
 
         vm.displayPhoto=function () {
-
-            console.log('*** vm.item ***');
-            console.log(vm.item);
-
             vm.isLoggedIn=sv.getLogInID();
             if(vm.params.index && vm.params.singleimage) {
+                if(vm.item.pnx.addata.mis1) {
+                    vm.xmldata = sv.parseXml(vm.item.pnx.addata.mis1[0]);
+                    if(vm.xmldata.work) {
+                        vm.xmldata=vm.xmldata.work[0];
+                    }
+                    console.log('*** vm.xmldata 2 ****');
+                    console.log(vm.xmldata);
+                }
                 // the xml has different format nodes
                 if (vm.item.mis1Data) {
                     if (vm.item.mis1Data.length === 1) {
@@ -90,8 +95,16 @@ angular.module('viewCustom')
             }
         };
 
-    }]);
+        // check if the item is array or not
+        vm.isArray=function (obj) {
+            if(Array.isArray(obj)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
+    }]);
 
 angular.module('viewCustom')
     .component('customSingleImage', {
