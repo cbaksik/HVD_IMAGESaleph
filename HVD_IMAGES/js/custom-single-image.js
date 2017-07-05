@@ -15,6 +15,7 @@ angular.module('viewCustom')
         vm.itemData={};
         vm.imageNav=true;
         vm.xmldata={};
+        vm.jp2=false;
 
         vm.displayPhoto=function () {
             vm.isLoggedIn=sv.getLogInID();
@@ -24,8 +25,6 @@ angular.module('viewCustom')
                     if(vm.xmldata.work) {
                         vm.xmldata=vm.xmldata.work[0];
                     }
-                    console.log('*** vm.xmldata 2 ****');
-                    console.log(vm.xmldata);
                 }
                 // the xml has different format nodes
                 if (vm.item.mis1Data) {
@@ -40,7 +39,8 @@ angular.module('viewCustom')
                         vm.total = vm.item.mis1Data.length;
                         vm.itemData = vm.item.mis1Data[vm.index];
                     }
-
+                    // find out if the image is jp2 or not
+                    vm.jp2=sv.findJP2(vm.photo);
                     // pass this data to use in prm-back-to-search-result-button-after
                     sv.setPhoto(vm.item);
                 }

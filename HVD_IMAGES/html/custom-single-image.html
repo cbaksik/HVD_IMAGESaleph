@@ -1,7 +1,10 @@
 <div ng-if="vm.params.singleimage && vm.params.index" layout="row">
    <div flex="{{vm.flexsize}}" class="full-view-inner-container">
 
-       <single-image src="vm.photo._attr.href._value" imgtitle="vm.item.mis1Data[0].title[0].textElement[0]._text" restricted="vm.photo._attr.restrictedImage._value"></single-image>
+       <!-- iframe component -->
+
+       <single-image src="vm.photo._attr.href._value" imgtitle="vm.item.mis1Data[0].title[0].textElement[0]._text"
+                     restricted="vm.photo._attr.restrictedImage._value" jp2="vm.jp2"></single-image>
 
 
        <section layout="row" layout-align="center center" class="imageNav" layout-wrap ng-if="vm.total > 1 && vm.imageNav">
@@ -256,6 +259,7 @@
                </span>
            </div>
        </div>
+       <!--
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space">
            <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
                <label class="bold-text">Link to this record:</label>
@@ -264,11 +268,12 @@
 
            </div>
        </div>
+       -->
 
        <!--- end display title and info from xml format -->
         <hr/>
 
-       <!-- display image info -->
+       <!-- display image info surrogate -->
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index]._attr.componentID">
            <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
                <label class="bold-text">Component ID:</label>
@@ -363,7 +368,7 @@
            </div>
        </div>
 
-       <!-- end display image info -->
+       <!-- end display image info surrogate -->
   
    </div>
 </div>

@@ -3,8 +3,8 @@
         <md-icon md-svg-icon="primo-ui:close" aria-label="Close icon" class="md-primoExplore-theme" tabindex="0"></md-icon>
     </prm-icon>
 </md-button>
-<md-content layout-padding ng-cloak class="hvPanel" ng-if="$ctrl.searchInProgress===false">
-    <div layout="row" layout-align="start start">
+<div layout-align="start start" ng-cloak class="hvPanel" ng-if="$ctrl.searchInProgress===false">
+    <div layout="row" layout-align="start start" class="resultTopDisplay">
         <label flex ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
              {{$ctrl.searchInfo.totalItems|number}} results
         </label>
@@ -13,17 +13,8 @@
      <ul class="hvInline">
      <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index"  tabindex="0" aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
          <div class="hvbox">
-             <label role="multiple images" ng-if="item.pnx.display.lds20[0] > 1" class="badge" aria-label="{{item.pnx.display.lds28[0]|countFilter}}}">
-                 {{item.pnx.display.lds28[0]|countFilter}}
-             </label>
-             <div ng-if="item.pnx.display.lds20[0] < 2" class="nobadge">&nbsp;</div>
-             <div class="photo" ng-if="item.pnx.links.thumbnail">
+             <div class="photo">
                  <thumbnail dataitem="item" searchdata="$ctrl.searchData"></thumbnail>
-             </div>
-             <!-- show box that has no photo -->
-             <div class="nophoto" ng-if="!item.pnx.links.thumbnail"  aria-label="{{item.pnx.display.title[0]}}" tabindex="0">
-                 <div>{{item.pnx.display.lds28[0]|countFilter}}</div>
-                 <md-tooltip md-visible="vm.localScope.hideTooltip" md-direction="bottom" class="hvtooltip">{{item.pnx.display.title[0]}}</md-tooltip>
              </div>
          </div>
 
@@ -34,7 +25,7 @@
     </div>
 
     <!-- pagination start here -->
-    <div layout="row" layout-align="center center">
+    <div layout="row" layout-align="center center" class="spaceLeft15">
         <label flex="20" ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
             {{$ctrl.pageCounter.min|number}} - {{$ctrl.pageCounter.max|number}} of {{$ctrl.searchInfo.totalItems|number}}
         </label>
@@ -43,4 +34,4 @@
         </div>
     </div>
     <!-- end pagination -->
-</md-content>
+</div>

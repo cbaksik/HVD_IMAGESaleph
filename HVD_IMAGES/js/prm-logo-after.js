@@ -8,7 +8,7 @@ angular.module('viewCustom')
         let vm = this;
 
         vm.$onChanges=function() {
-            // remove flex top bar
+            // remove flex top bar and also remove tab menus
             var el=$element[0].parentNode.parentNode;
             el.children[2].remove();
             el.children[2].remove();
@@ -16,9 +16,6 @@ angular.module('viewCustom')
             // remove logo div
             var el2=$element[0].parentNode;
             el2.children[0].remove();
-
-            console.log('**** prm logo after ***');
-            console.log($element);
 
         };
 

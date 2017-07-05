@@ -2,7 +2,7 @@
  This custom component is used for search result list which display all the images in thumbnail.
  */
 angular.module('viewCustom')
-    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$timeout','$mdDialog', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog) {
+    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$timeout','$mdDialog','$element', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog,$element) {
     // local variables
     this.tooltip = {'flag':[]};
     // show tooltip function when mouse over
@@ -127,6 +127,11 @@ angular.module('viewCustom')
     vm.items=[];
 
     vm.$onInit = function () {
+
+        // remove left margin on result list grid
+        var el=$element[0].parentNode.parentNode.parentNode;
+        el.children[0].remove();
+
         this.searchInfo = sv.getPage(); // get page info object
         // watch for new data change when a user search
         vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults,(newVal, oldVal)=>{
@@ -156,8 +161,8 @@ angular.module('viewCustom')
             sv.setPage(this.searchInfo);
             vm.searchInProgress=vm.parentCtrl.searchInProgress;
 
-            console.log('*** prm search result after ***');
-            console.log(vm.items);
+            console.log('*** prm search result list after ****');
+            console.log(vm);
 
         });
 

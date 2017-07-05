@@ -1,17 +1,24 @@
-<md-card class="hv-md-card">
-    <a class="thumbnail" ng-click="$event.preventDefault()" href="{{vm.linkUrl}}">
-        <img ng-src="{{vm.imageUrl}}" ng-click="vm.openDialog($event)" class="md-card-image {{vm.localScope.imgclass}}"
-             alt="{{vm.dataitem.pnx.display.title[0]}}" aria-label="{{vm.dataitem.pnx.display.title[0]}}" tabindex="0" ng-focus="vm.showToolTip($event)" ng-blur="vm.hideToolTip($event)"/>
-        <md-tooltip md-visible="vm.localScope.hideTooltip" md-direction="bottom" class="hvtooltip">{{vm.dataitem.pnx.display.title[0]}}</md-tooltip>
-    </a>
-    <div ng-if="vm.localScope.hideLockIcon" tabindex="-1">
-        <div class="lockIcon">
-            <img src="custom/HVD_IMAGES/img/lock_small.png" class="md-avatar" alt="Lock icon" aria-label="Lock icon"/>
+<md-card class="hv-image-card">
+    <div class="imageLabel">
+        <div role="multiple images" ng-if="vm.dataitem.pnx.display.lds20[0] > 1" class="badge" aria-label="{{vm.dataitem.pnx.display.lds28[0]|countFilter}}}">
+            {{vm.dataitem.pnx.display.lds20[0]|countFilter}}
         </div>
     </div>
-
-    <ul class="contextMenus" ng-if="vm.localScope.contextFlag">
-        <li ng-click="vm.openWindow()">Open image on new window tab</li>
-    </ul>
-
+    <md-card-content class="imageBox">
+        <a class="thumbnail" ng-click="$event.preventDefault()" href="{{vm.linkUrl}}">
+            <img ng-if="vm.dataitem.pnx.links.thumbnail" ng-src="{{vm.imageUrl}}" ng-click="vm.openDialog($event)" class="md-card-image {{vm.localScope.imgclass}}"
+             alt="{{vm.dataitem.pnx.display.title[0]}}" aria-label="{{vm.dataitem.pnx.display.title[0]}}" tabindex="0" ng-focus="vm.showToolTip($event)" ng-blur="vm.hideToolTip($event)"/>
+            <div ng-if="!vm.dataitem.pnx.links.thumbnail" class="nophoto" ng-click="vm.openDialog($event)">
+                {{vm.dataitem.pnx.display.lds28[0]}}
+            </div>
+        </a>
+        <div ng-if="vm.localScope.hideLockIcon" tabindex="-1">
+            <div class="lockIcon">
+                <img src="custom/HVD_IMAGES/img/icon_lock18.png" class="md-avatar" alt="Lock icon" aria-label="Lock icon"/>
+            </div>
+        </div>
+    </md-card-content>
+    <md-card-footer class="imageTitle">
+        {{vm.dataitem.pnx.display.title[0]}}
+    </md-card-footer>
 </md-card>

@@ -1,6 +1,7 @@
 
 .hvfullsize {
   width: 100%;
+  margin-left:15px;
 }
 
 
@@ -9,8 +10,6 @@
 .hvInline > li { display: inline-table; text-align: left; cursor: pointer; display: -moz-inline-stack;
   margin-bottom:5px; margin-right:10px; width: auto; height:180px; vertical-align: top; padding:5px;}
 
- .badge {color: #000; padding-left:5px; padding-right:5px; margin-right:8px; position: relative; bottom:-2px; font-size:80%;
-  display:inline-block; background:#efefef; border-top-right-radius:3px; border-top-left-radius: 3px; z-index: 1;}
 
 .nobadge {color: #000000; padding:2px;
   display:inline-block; z-index:1; }
@@ -145,6 +144,8 @@ cl-paging > button.md-icon-button {
 
 .hvPanel {
   margin-bottom:50px;
+  margin-left:15px;
+  text-align: left;
 }
 
 .bigCloseIcon {

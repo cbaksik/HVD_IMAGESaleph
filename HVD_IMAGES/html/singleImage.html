@@ -1,7 +1,12 @@
 <!-- show iframe in the center -->
 <div ng-if="vm.showImage" layout="column" layout-align="center center">
     <md-card class="hv-md-card">
-        <iframe src="{{vm.imageUrl}}" class="iframeClass"></iframe>
+        <div ng-if="vm.jp2">
+            <iframe src="{{vm.imageUrl}}" class="iframeClass"></iframe>
+        </div>
+        <div ng-if="!vm.jp2">
+            <img src="{{vm.imageUrl}}" class="md-card-image {{vm.localScope.imgClass}}" alt="{{vm.imgtitle}}" title="{{vm.imgtitle}}"/>
+        </div>
         <span ng-if="vm.localScope.loading"><img class="md-avatar" src="/custom/HVD_IMAGES/img/ajax-loader.gif"/></span>
     </md-card>
 </div>

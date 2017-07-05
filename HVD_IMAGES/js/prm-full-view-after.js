@@ -78,6 +78,10 @@ angular.module('viewCustom')
         };
 
         vm.$onInit=function() {
+
+            console.log('*** prm-full-view-after ***');
+            console.log(vm);
+
             vm.params=$location.search();
             // remove virtual browse shelf and more link
             if(vm.params.singleimage && vm.params.index) {

@@ -10,7 +10,8 @@ angular.module('viewCustom')
         bindings: {
           src:'<',
           imgtitle: '<',
-          restricted:'<'
+          restricted:'<',
+          jp2:'<'
         },
         controllerAs:'vm',
         controller:['$element','$window','$location','prmSearchService','$timeout','$sce',function ($element,$window,$location,prmSearchService, $timeout,$sce) {
@@ -31,17 +32,40 @@ angular.module('viewCustom')
                 }
                 vm.localScope={'imgClass':'','loading':true,'hideLockIcon':false};
                 if(vm.src && vm.showImage) {
-                    var url=sv.getHttps(vm.src) + '?buttons=Y';
-
-                    console.log('*** url ***');
-                    console.log(url);
-
-                    vm.imageUrl=$sce.trustAsResourceUrl(url);
+                    if(vm.jp2===true) {
+                        var url = sv.getHttps(vm.src) + '?buttons=Y';
+                        vm.imageUrl = $sce.trustAsResourceUrl(url);
+                    } else {
+                        vm.imageUrl=vm.src;
+                        $timeout(function () {
+                            var img=$element.find('img')[0];
+                            // use default image if it is a broken link image
+                            var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                            if(pattern.test(vm.src)) {
+                                img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                            }
+                            img.onload=vm.callback;
+                        },300);
+                    }
 
                 }
 
                 vm.localScope.loading=false;
 
+            };
+
+            vm.callback=function () {
+                var image=$element.find('img')[0];
+                // resize the image if it is larger than 600 pixel
+                if(image.width > 600){
+                    vm.localScope.imgClass='responsiveImage';
+                    image.className='md-card-image '+vm.localScope.imgClass;
+                }
+
+                // force to show lock icon
+                if(vm.restricted) {
+                    vm.localScope.hideLockIcon=true;
+                }
             };
 
             // login

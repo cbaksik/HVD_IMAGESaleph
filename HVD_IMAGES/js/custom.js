@@ -37,6 +37,7 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
     vm.itemData = {};
     vm.imageNav = true;
     vm.xmldata = {};
+    vm.jp2 = false;
 
     vm.displayPhoto = function () {
         vm.isLoggedIn = sv.getLogInID();
@@ -46,8 +47,6 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
                 if (vm.xmldata.work) {
                     vm.xmldata = vm.xmldata.work[0];
                 }
-                console.log('*** vm.xmldata 2 ****');
-                console.log(vm.xmldata);
             }
             // the xml has different format nodes
             if (vm.item.mis1Data) {
@@ -62,7 +61,8 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
                     vm.total = vm.item.mis1Data.length;
                     vm.itemData = vm.item.mis1Data[vm.index];
                 }
-
+                // find out if the image is jp2 or not
+                vm.jp2 = sv.findJP2(vm.photo);
                 // pass this data to use in prm-back-to-search-result-button-after
                 sv.setPhoto(vm.item);
             }
@@ -619,6 +619,10 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
     };
 
     vm.$onInit = function () {
+
+        console.log('*** prm-full-view-after ***');
+        console.log(vm);
+
         vm.params = $location.search();
         // remove virtual browse shelf and more link
         if (vm.params.singleimage && vm.params.index) {
@@ -644,7 +648,7 @@ angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angu
     var vm = this;
 
     vm.$onChanges = function () {
-        // remove flex top bar
+        // remove flex top bar and also remove tab menus
         var el = $element[0].parentNode.parentNode;
         el.children[2].remove();
         el.children[2].remove();
@@ -652,9 +656,6 @@ angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angu
         // remove logo div
         var el2 = $element[0].parentNode;
         el2.children[0].remove();
-
-        console.log('**** prm logo after ***');
-        console.log($element);
     };
 }]);
 
@@ -782,7 +783,7 @@ angular.module('viewCustom').component('prmSearchResultAvailabilityLineAfter', {
 /* Author: Sam San
  This custom component is used for search result list which display all the images in thumbnail.
  */
-angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$window', '$timeout', '$mdDialog', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog) {
+angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$window', '$timeout', '$mdDialog', '$element', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog, $element) {
     // local variables
     this.tooltip = { 'flag': [] };
     // show tooltip function when mouse over
@@ -903,6 +904,10 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     vm.$onInit = function () {
         var _this = this;
 
+        // remove left margin on result list grid
+        var el = $element[0].parentNode.parentNode.parentNode;
+        el.children[0].remove();
+
         this.searchInfo = sv.getPage(); // get page info object
         // watch for new data change when a user search
         vm.parentCtrl.$scope.$watch(function () {
@@ -934,8 +939,8 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             sv.setPage(_this.searchInfo);
             vm.searchInProgress = vm.parentCtrl.searchInProgress;
 
-            console.log('*** prm search result after ***');
-            console.log(vm.items);
+            console.log('*** prm search result list after ****');
+            console.log(vm);
         });
     };
 
@@ -1201,6 +1206,27 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         }
     };
 
+    // find image if it is jp2 or not
+    serviceObj.findJP2 = function (itemData) {
+        var flag = false;
+        var thumbnailUrl = itemData.thumbnail[0]._attr.href._value;
+        var photoUrl = itemData._attr.href._value;
+        var thumbnailList = thumbnailUrl.split(':');
+        var thumbnailFlag = 0;
+        if (thumbnailList.length > 0) {
+            thumbnailFlag = thumbnailList[thumbnailList.length - 1];
+        }
+        var photoList = photoUrl.split(':');
+        var photoFlag = 1;
+        if (photoList.length > 0) {
+            photoFlag = photoList[photoList.length - 1];
+        }
+        if (photoFlag === thumbnailFlag) {
+            flag = true;
+        }
+        return flag;
+    };
+
     return serviceObj;
 }]);
 
@@ -1388,7 +1414,8 @@ angular.module('viewCustom').component('singleImage', {
     bindings: {
         src: '<',
         imgtitle: '<',
-        restricted: '<'
+        restricted: '<',
+        jp2: '<'
     },
     controllerAs: 'vm',
     controller: ['$element', '$window', '$location', 'prmSearchService', '$timeout', '$sce', function ($element, $window, $location, prmSearchService, $timeout, $sce) {
@@ -1409,15 +1436,38 @@ angular.module('viewCustom').component('singleImage', {
             }
             vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
             if (vm.src && vm.showImage) {
-                var url = sv.getHttps(vm.src) + '?buttons=Y';
-
-                console.log('*** url ***');
-                console.log(url);
-
-                vm.imageUrl = $sce.trustAsResourceUrl(url);
+                if (vm.jp2 === true) {
+                    var url = sv.getHttps(vm.src) + '?buttons=Y';
+                    vm.imageUrl = $sce.trustAsResourceUrl(url);
+                } else {
+                    vm.imageUrl = vm.src;
+                    $timeout(function () {
+                        var img = $element.find('img')[0];
+                        // use default image if it is a broken link image
+                        var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                        if (pattern.test(vm.src)) {
+                            img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                        }
+                        img.onload = vm.callback;
+                    }, 300);
+                }
             }
 
             vm.localScope.loading = false;
+        };
+
+        vm.callback = function () {
+            var image = $element.find('img')[0];
+            // resize the image if it is larger than 600 pixel
+            if (image.width > 600) {
+                vm.localScope.imgClass = 'responsiveImage';
+                image.className = 'md-card-image ' + vm.localScope.imgClass;
+            }
+
+            // force to show lock icon
+            if (vm.restricted) {
+                vm.localScope.hideLockIcon = true;
+            }
         };
 
         // login
@@ -1460,8 +1510,12 @@ angular.module('viewCustom').component('thumbnail', {
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
+
+            console.log('**** dataitem *****');
+            console.log(vm.dataitem);
+
             vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
-            if (vm.dataitem.pnx.links.thumbnail[0]) {
+            if (vm.dataitem.pnx.links.thumbnail) {
                 vm.imageUrl = sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                 $timeout(function () {
                     var img = $element.find('img')[0];
@@ -1500,6 +1554,11 @@ angular.module('viewCustom').component('thumbnail', {
             }
             if (vm.dataitem.restrictedImage) {
                 vm.localScope.hideLockIcon = true;
+            }
+
+            var divs = $element[0].children[0].children[0].children[0];
+            if (divs) {
+                divs.style.marginLeft = image.clientWidth - 20 + 'px';
             }
         };
 
