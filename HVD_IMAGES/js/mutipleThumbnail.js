@@ -31,7 +31,10 @@ angular.module('viewCustom')
                         if(pattern.test(vm.src)) {
                             img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                         }
-                        img.onload=vm.callback;
+                        img.onload = vm.callback;
+                        if(img.clientWidth > 50) {
+                            vm.callback();
+                        }
 
                     },300);
 

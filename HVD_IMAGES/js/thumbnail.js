@@ -22,10 +22,6 @@ angular.module('viewCustom')
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
-
-                console.log('**** dataitem *****');
-                console.log(vm.dataitem);
-
                 vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false,'contextFlag':false};
                 if(vm.dataitem.pnx.links.thumbnail) {
                     vm.imageUrl=sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
@@ -36,7 +32,12 @@ angular.module('viewCustom')
                         if(pattern.test(vm.dataitem.pnx.links.thumbnail[0])) {
                             img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                         }
-                        img.onload=vm.callback;
+                        img.onload = vm.callback;
+
+                        if(img.clientWidth > 50) {
+                            vm.callback();
+                        }
+
                     },300);
 
                 }
@@ -85,13 +86,6 @@ angular.module('viewCustom')
                 vm.localScope.hideTooltip=false;
             };
 
-            /*
-            $element.bind('contextmenu',function (e) {
-                vm.localScope.contextFlag=true;
-                e.preventDefault();
-                return false;
-            });
-            */
 
             vm.closePopUp=function (e) {
                 vm.localScope.contextFlag = false;
@@ -150,3 +144,28 @@ angular.module('viewCustom')
 
         }]
     });
+
+
+// truncate word to limit 60 characters
+angular.module('viewCustom').filter('truncatefilter',function () {
+    return function (str) {
+        var newstr=str;
+        var index=60;
+        if(str) {
+            if (str.length > 60) {
+                newstr = str.substring(0, 60);
+                for (var i = newstr.length; i > 20; i--) {
+                    var text = newstr.substring(i - 1, i);
+                    if (text === ' ') {
+                        index = i;
+                        i = 20;
+                    }
+                }
+                newstr = str.substring(0, index) + '...';
+            }
+        }
+
+        return newstr;
+    }
+
+});

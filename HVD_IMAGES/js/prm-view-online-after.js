@@ -65,7 +65,7 @@ angular.module('viewCustom')
             }
 
             url += '&offset=' + offset;
-            $window.location.href=url;
+            $window.open(url,'_blank');
         }
 
     }]);

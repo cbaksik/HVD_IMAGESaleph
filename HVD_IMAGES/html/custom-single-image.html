@@ -21,8 +21,8 @@
        <!--- start display title and info from xml format -->
        <br/>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Title:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Title</label>
            </div>
            <div flex class="flex">
                <div ng-repeat="titles in vm.xmldata.title track by $index" class="space">
@@ -34,8 +34,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.workType">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Work Type:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Work Type</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="workType in vm.xmldata.workType track by $index">
@@ -44,8 +44,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.creator">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Creator:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Creator</label>
            </div>
            <div flex class="flex">
                <div ng-repeat="creator in vm.xmldata.creator track by $index" class="space">
@@ -65,8 +65,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.freeDate">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Date:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Date</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="freeDate in vm.xmldata.freeDate track by $index">
@@ -75,8 +75,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.description">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Description:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Description</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="description in vm.xmldata.description track by $index">
@@ -85,8 +85,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.topic">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Topics:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Topics</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="topic in vm.xmldata.topic track by $index">
@@ -96,8 +96,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.production">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Production:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Production</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="production in vm.xmldata.production track by $index">
@@ -108,8 +108,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.materials">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Materials/Techniques:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Materials/Techniques</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="materials in vm.xmldata.materials track by $index">
@@ -118,8 +118,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.placeName||vm.xmldata.location">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Location:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Location</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="placeName in vm.xmldata.placeName track by $index">
@@ -132,8 +132,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.style">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Style/Period:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Style/Period</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="style in vm.xmldata.style track by $index">
@@ -142,8 +142,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.dimensions">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Dimensions:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Dimensions</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="dimensions in vm.xmldata.dimensions track by $index">
@@ -152,8 +152,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.associatedName">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Associated Name:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Associated Name</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="associatedName in vm.xmldata.associatedName track by $index">
@@ -167,8 +167,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.culture">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Nationality/Culture:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Nationality/Culture</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="culture in vm.xmldata.culture track by $index">
@@ -177,8 +177,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.notes">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Note:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Note</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="notes in vm.xmldata.notes track by $index">
@@ -187,8 +187,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.itemIdentifier">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Item Identifier:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Item Identifier</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="ItemIdentifier in vm.xmldata.itemIdentifier track by $index">
@@ -198,8 +198,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.copyright">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Copyright:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Copyright</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="copyright in vm.xmldata.copyright track by $index">
@@ -208,8 +208,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.relatedWork">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Related Work:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Related Work</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="relatedWork in vm.xmldata.relatedWork track by $index">
@@ -219,8 +219,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.relatedInformation">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Related Information:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Related Information</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="relatedInformation in vm.xmldata.relatedInformation track by $index">
@@ -229,8 +229,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.useRestrictions">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Use Restrictions:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Use Restrictions</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="useRestrictions in vm.xmldata.useRestrictions track by $index">
@@ -239,8 +239,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.item.pnx.control.sourcerecordid">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">HOLLIS Number:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">HOLLIS Number</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="sourcerecordid in vm.item.pnx.control.sourcerecordid track by $index">
@@ -249,8 +249,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.repository">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Repository:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Repository</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="repository in vm.xmldata.repository track by $index">
@@ -275,16 +275,16 @@
 
        <!-- display image info surrogate -->
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index]._attr.componentID">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Component ID:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Component ID</label>
            </div>
            <div flex class="flex">
                <span ng-if="vm.xmldata.surrogate[vm.index]">{{vm.xmldata.surrogate[vm.index]._attr.componentID._value}}</span>
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].title">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Title:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Title</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="title in vm.xmldata.surrogate[vm.index].title track by $index">
@@ -293,8 +293,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].workType">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Work Type:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Work Type</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="workType in vm.xmldata.surrogate[vm.index].workType track by $index">
@@ -303,8 +303,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].notes">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Note:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Note</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="notes in vm.xmldata.surrogate[vm.index].notes track by $index">
@@ -313,8 +313,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].classification">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Classification:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Classification</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="classification in vm.xmldata.surrogate[vm.index].classification track by $index">
@@ -323,8 +323,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].topic">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Topics:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Topics</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="topic in vm.xmldata.surrogate[vm.index].topic track by $index">
@@ -333,8 +333,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].associatedName">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Associated Name:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Associated Name</label>
            </div>
            <div flex class="flex">
                <div ng-repeat="associatedName in vm.xmldata.surrogate[vm.index].associatedName track by $index">
@@ -343,8 +343,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].copyright">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Copyright:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Copyright</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="copyright in vm.xmldata.surrogate[vm.index].copyright track by $index">
@@ -353,8 +353,8 @@
            </div>
        </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].repository">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex text-right">
-               <label class="bold-text">Repository:</label>
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Repository</label>
            </div>
            <div flex class="flex">
                <span ng-repeat="repository in vm.xmldata.surrogate[vm.index].repository track by $index">

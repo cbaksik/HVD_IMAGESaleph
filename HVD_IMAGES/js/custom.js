@@ -327,6 +327,9 @@ angular.module('viewCustom').component('multipleThumbnail', {
                         img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                     }
                     img.onload = vm.callback;
+                    if (img.clientWidth > 50) {
+                        vm.callback();
+                    }
                 }, 300);
             }
         };
@@ -549,7 +552,7 @@ angular.module('viewCustom').component('prmFacetAfter', {
  * Created by samsan on 5/17/17.
  * This template is for direct access full view display link when a user send email to someone
  */
-angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$timeout', '$location', function ($sce, angularLoad, prmSearchService, $timeout, $location) {
+angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$timeout', '$location', '$element', function ($sce, angularLoad, prmSearchService, $timeout, $location, $element) {
 
     var sv = prmSearchService;
     var vm = this;
@@ -620,13 +623,33 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
 
     vm.$onInit = function () {
 
-        console.log('*** prm-full-view-after ***');
-        console.log(vm);
-
         vm.params = $location.search();
         // remove virtual browse shelf and more link
         if (vm.params.singleimage && vm.params.index) {
             vm.showSingImagePage();
+            // remove search box
+            var el = $element[0].parentNode.parentNode.parentNode.parentNode;
+            var children = el.children[0].children;
+            children[1].remove();
+
+            // remove back button breadcrumbs
+            var el2 = $element[0].parentNode.parentNode.parentNode.parentNode;
+            var children2 = el2.children;
+            var children1 = children2[0].children[0].children[1];
+            //remove bookmark
+            children1.children[2].remove();
+            // remove login
+            children1.children[2].remove();
+
+            // insert full image detail text
+            var span = document.createElement('div');
+            span.setAttribute('class', 'fullImageDetail');
+            var text = document.createTextNode('FULL IMAGE DETAIL');
+            span.appendChild(text);
+            children1.appendChild(span);
+
+            // remove breadcrumb
+            children2[1].remove();
         } else {
             vm.showFullViewPage();
         }
@@ -1319,7 +1342,7 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
         }
 
         url += '&offset=' + offset;
-        $window.location.href = url;
+        $window.open(url, '_blank');
     };
 }]);
 
@@ -1510,10 +1533,6 @@ angular.module('viewCustom').component('thumbnail', {
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-
-            console.log('**** dataitem *****');
-            console.log(vm.dataitem);
-
             vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
             if (vm.dataitem.pnx.links.thumbnail) {
                 vm.imageUrl = sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
@@ -1525,6 +1544,10 @@ angular.module('viewCustom').component('thumbnail', {
                         img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                     }
                     img.onload = vm.callback;
+
+                    if (img.clientWidth > 50) {
+                        vm.callback();
+                    }
                 }, 300);
             }
 
@@ -1569,14 +1592,6 @@ angular.module('viewCustom').component('thumbnail', {
         vm.hideToolTip = function (e) {
             vm.localScope.hideTooltip = false;
         };
-
-        /*
-        $element.bind('contextmenu',function (e) {
-            vm.localScope.contextFlag=true;
-            e.preventDefault();
-            return false;
-        });
-        */
 
         vm.closePopUp = function (e) {
             vm.localScope.contextFlag = false;
@@ -1632,6 +1647,28 @@ angular.module('viewCustom').component('thumbnail', {
     }]
 });
 
+// truncate word to limit 60 characters
+angular.module('viewCustom').filter('truncatefilter', function () {
+    return function (str) {
+        var newstr = str;
+        var index = 60;
+        if (str) {
+            if (str.length > 60) {
+                newstr = str.substring(0, 60);
+                for (var i = newstr.length; i > 20; i--) {
+                    var text = newstr.substring(i - 1, i);
+                    if (text === ' ') {
+                        index = i;
+                        i = 20;
+                    }
+                }
+                newstr = str.substring(0, index) + '...';
+            }
+        }
+
+        return newstr;
+    };
+});
 /* Copyright 2015 William Summers, MetaTribal LLC
  * adapted from https://developer.mozilla.org/en-US/docs/JXON
  *

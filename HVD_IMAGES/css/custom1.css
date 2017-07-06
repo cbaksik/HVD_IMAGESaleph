@@ -839,7 +839,12 @@ img.md-card-image {
 
 .boxHollis {
     padding-top:5px;
-    margin-left:15px;
+    margin-left:34px;
+}
+
+.betaIcon {
+    width:40px;
+    height:auto;
 }
 
 .text-right {
@@ -868,7 +873,7 @@ img.md-card-image {
 .badge {
     top:15px;
     position:relative;
-    z-index:100;
+    z-index:1;
     margin-left:120px;
     width:30px;
     height:30px;
@@ -896,8 +901,9 @@ img.md-card-image {
     font-size:100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    -webkit-text-overflow: ellipsis;
-    padding:0px !important;
+    white-space: inherit;
+    display: inline-block;
+
 }
 
 .hv-image-card {
@@ -910,6 +916,30 @@ img.md-card-image {
     width:200px;
     height:230px;
 }
+
+.goRight {
+    position:absolute;
+    z-index:1;
+    float:right;
+    background:#ffffff;
+    padding-top:30px;
+}
+
+.nospace {
+    padding:0px !important;
+    margin-bottom:0px !important;
+    margin-top:5px !important;
+}
+
+.fullImageDetail {
+    color: #ffffff;
+    font-size:110%;
+    text-align: center;
+    display: inline-block;
+    margin-left:10px;
+    line-height:60px;
+}
+
 
 
 .hvfullsize {
@@ -939,6 +969,7 @@ a.thumbnail > img:hover {
   transform: scale(1.04);
   transition:0.4s;
   transition-timing-function: ease-out;
+  border:1px solid #ff0000;
 }
 
 
@@ -947,6 +978,7 @@ a.thumbnail > img:focus {
   transform: scale(1.04);
   transition:0.4s;
   transition-timing-function: ease-out;
+  border:1px solid #ff0000;
 }
 
 .photo {
@@ -967,6 +999,14 @@ a.thumbnail > img:focus {
   background:#efefef;
   line-height:150px;
   z-index: 0;
+}
+
+.nophoto:hover {
+  border:1px solid #ff0000;
+}
+
+.nophoto:focus {
+  border:1px solid #ff0000;
 }
 
 

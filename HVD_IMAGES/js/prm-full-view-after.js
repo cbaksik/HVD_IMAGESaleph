@@ -3,7 +3,7 @@
  * This template is for direct access full view display link when a user send email to someone
  */
 angular.module('viewCustom')
-    .controller('prmFullViewAfterController', [ '$sce', 'angularLoad','prmSearchService','$timeout','$location', function ($sce, angularLoad, prmSearchService, $timeout, $location) {
+    .controller('prmFullViewAfterController', [ '$sce', 'angularLoad','prmSearchService','$timeout','$location','$element', function ($sce, angularLoad, prmSearchService, $timeout, $location,$element) {
 
         let sv=prmSearchService;
         let vm = this;
@@ -79,13 +79,34 @@ angular.module('viewCustom')
 
         vm.$onInit=function() {
 
-            console.log('*** prm-full-view-after ***');
-            console.log(vm);
-
             vm.params=$location.search();
             // remove virtual browse shelf and more link
             if(vm.params.singleimage && vm.params.index) {
                 vm.showSingImagePage();
+                // remove search box
+                var el=$element[0].parentNode.parentNode.parentNode.parentNode;
+                var children=el.children[0].children;
+                children[1].remove();
+
+                // remove back button breadcrumbs
+                var el2=$element[0].parentNode.parentNode.parentNode.parentNode;
+                var children2=el2.children;
+                var children1=children2[0].children[0].children[1];
+                //remove bookmark
+                children1.children[2].remove();
+                // remove login
+                children1.children[2].remove();
+
+                // insert full image detail text
+                var span=document.createElement('div');
+                span.setAttribute('class','fullImageDetail');
+                var text=document.createTextNode('FULL IMAGE DETAIL');
+                span.appendChild(text);
+                children1.appendChild(span);
+
+                // remove breadcrumb
+                children2[1].remove();
+
             } else {
                 vm.showFullViewPage();
             }
