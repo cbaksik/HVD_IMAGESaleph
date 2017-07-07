@@ -7,6 +7,7 @@ angular.module('viewCustom')
         // local variables
         let vm = this;
         let sv=prmSearchService;
+        vm.item={};
         vm.item = items.item;
         vm.searchData = items.searchData;
 

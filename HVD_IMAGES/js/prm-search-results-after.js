@@ -117,7 +117,9 @@ angular.module('viewCustom')
             this.searchInfo.query=vm.parentCtrl.$stateParams.query;
             sv.setPage(this.searchInfo); // keep track a user click on each current page
             // ajax call function
-            vm.ajaxSearch();
+            if(vm.parentCtrl.isFavorites===false) {
+                vm.ajaxSearch();
+            }
             // calculate the min and max of items
             this.findPageCounter();
         }
@@ -127,49 +129,56 @@ angular.module('viewCustom')
     vm.items=[];
 
     vm.$onInit = function () {
+        if(vm.parentCtrl.isFavorites===false) {
 
-        // remove left margin on result list grid
-        var el=$element[0].parentNode.parentNode.parentNode;
-        el.children[0].remove();
+            // remove left margin on result list grid
+            var el = $element[0].parentNode.parentNode.parentNode;
+            el.children[0].remove();
 
-        this.searchInfo = sv.getPage(); // get page info object
-        // watch for new data change when a user search
-        vm.parentCtrl.$scope.$watch(()=>vm.parentCtrl.searchResults,(newVal, oldVal)=>{
+            this.searchInfo = sv.getPage(); // get page info object
+            // watch for new data change when a user search
+            vm.parentCtrl.$scope.$watch(() => vm.parentCtrl.searchResults, (newVal, oldVal) => {
 
-            if(vm.parentCtrl.$stateParams.offset > 0) {
-                vm.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / this.searchInfo.pageSize) + 1;
-                this.searchInfo.currentPage=parseInt(vm.parentCtrl.$stateParams.offset / this.searchInfo.pageSize) + 1;
-            } else {
-                vm.currentPage = 1;
-                this.searchInfo.currentPage = 1;
-            }
-            vm.flag=true;
-            // convert xml data into json data so it knows which image is a restricted image
-            vm.items = sv.convertData(vm.parentCtrl.searchResults);
+                if (vm.parentCtrl.$stateParams.offset > 0) {
+                    vm.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / this.searchInfo.pageSize) + 1;
+                    this.searchInfo.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / this.searchInfo.pageSize) + 1;
+                } else {
+                    vm.currentPage = 1;
+                    this.searchInfo.currentPage = 1;
+                }
+                vm.flag = true;
+                // convert xml data into json data so it knows which image is a restricted image
+                if (vm.parentCtrl.isFavorites === false && vm.parentCtrl.searchResults) {
+                    vm.items = sv.convertData(vm.parentCtrl.searchResults);
+                }
+                // set up pagination
+                this.searchInfo.totalItems = vm.parentCtrl.totalItems;
+                this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / this.searchInfo.pageSize);
+                if ((this.searchInfo.pageSize * this.searchInfo.totalPages) < this.searchInfo.totalItems) {
+                    this.searchInfo.totalPages++;
+                }
 
-            // set up pagination
-            this.searchInfo.totalItems = vm.parentCtrl.totalItems;
-            this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / this.searchInfo.pageSize);
-            if((this.searchInfo.pageSize * this.searchInfo.totalPages) < this.searchInfo.totalItems) {
-                this.searchInfo.totalPages++;
-            }
+                this.findPageCounter();
 
-            this.findPageCounter();
+                this.searchInfo.query = vm.parentCtrl.$stateParams.query;
+                this.searchInfo.searchString = vm.parentCtrl.searchString;
+                sv.setPage(this.searchInfo);
+                vm.searchInProgress = vm.parentCtrl.searchInProgress;
 
-            this.searchInfo.query = vm.parentCtrl.$stateParams.query;
-            this.searchInfo.searchString = vm.parentCtrl.searchString;
-            sv.setPage(this.searchInfo);
-            vm.searchInProgress=vm.parentCtrl.searchInProgress;
+                console.log('** prm search result after ****');
 
-        });
+            });
+        }
 
     };
 
     vm.$onChanges=function() {
-        vm.searchData=vm.parentCtrl.searchService.cheetah.searchData;
-        if(vm.parentCtrl.searchString) {
-            vm.searchData.searchString = vm.parentCtrl.searchString;
-        }
+      if(vm.parentCtrl.isFavorites===false) {
+          vm.searchData = vm.parentCtrl.searchService.cheetah.searchData;
+          if (vm.parentCtrl.searchString) {
+              vm.searchData.searchString = vm.parentCtrl.searchString;
+          }
+      }
     };
 
     vm.$doCheck=function() {

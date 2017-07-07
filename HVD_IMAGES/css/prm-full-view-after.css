@@ -183,58 +183,6 @@ img.md-card-image {
     font-weight:200;
 }
 
-.imageLabel {
-    width:230px;
-    height:30px;
-    text-align: right;
-}
-
-.badge {
-    top:15px;
-    position:relative;
-    z-index:1;
-    margin-left:120px;
-    width:30px;
-    height:30px;
-    line-height:30px;
-    color:#ffffff;
-    font-size:80%;
-    text-align:center;
-    background: url('../img/icon_multipleAssets30.png') no-repeat;
-}
-
-.imageBox {
-    width:auto;
-    height:150px;
-    overflow: hidden;
-    padding:0px !important;
-    margin:0px !important;
-    text-align: left;
-}
-
-.imageTitle {
-    width:200px;
-    height:40px;
-    line-height:20px;
-    text-align:left;
-    font-size:100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: inherit;
-    display: inline-block;
-
-}
-
-.hv-image-card {
-    padding-top: 0px !important;
-    margin-top:0px !important;
-    margin-bottom:0px !important;
-    padding-bottom:0px !important;
-    padding-left:0px !important;
-    background: transparent !important;
-    width:200px;
-    height:230px;
-}
 
 .goRight {
     position:absolute;
@@ -244,11 +192,6 @@ img.md-card-image {
     padding-top:30px;
 }
 
-.nospace {
-    padding:0px !important;
-    margin-bottom:0px !important;
-    margin-top:5px !important;
-}
 
 .fullImageDetail {
     color: #ffffff;

@@ -1,0 +1,13 @@
+<div layout="row" layout-align="start start" ng-cloak class="hvPanel">
+    <div flex="100">
+    <ul class="hvInline">
+        <li role="thumbnail image" ng-repeat="item in $ctrl.favoriteItems track by $index"  aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
+            <div class="hvbox">
+                <div class="photo">
+                    <favorite-thumbnail dataitem="item" searchdata="$ctrl.searchData"></favorite-thumbnail>
+                </div>
+            </div>
+        </li>
+    </ul>
+    </div>
+</div>

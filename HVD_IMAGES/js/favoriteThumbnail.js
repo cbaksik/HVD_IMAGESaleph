@@ -4,8 +4,8 @@
  */
 
 angular.module('viewCustom')
-    .component('thumbnail', {
-        templateUrl:'/primo-explore/custom/HVD_IMAGES/html/thumbnail.html',
+    .component('favoriteThumbnail', {
+        templateUrl:'/primo-explore/custom/HVD_IMAGES/html/favoriteThumbnail.html',
         bindings: {
             dataitem:'<',
             searchdata:'<'
@@ -77,10 +77,6 @@ angular.module('viewCustom')
 
             };
 
-            vm.$doCheck=function() {
-                vm.modalDialogFlag=sv.getDialogFlag();
-            };
-
             vm.callback=function () {
                 var image=$element.find('img')[0];
                 if(image.height > 150){
@@ -97,87 +93,14 @@ angular.module('viewCustom')
                 }
 
             };
-            
 
-            vm.closePopUp=function (e) {
-                vm.localScope.contextFlag = false;
-            };
 
             vm.openWindow=function () {
                 var url='/primo-explore/fulldisplay?vid=HVD_IMAGES&docid='+vm.dataitem.pnx.control.recordid[0];
                 $window.open(url,'_blank');
-                vm.localScope.contextFlag=false;
-            };
-
-            // open modal dialog when click on thumbnail image
-            vm.openDialog=function ($event) {
-                // set data to build full display page
-                var itemData={'item':'','searchData':''};
-                itemData.item=vm.dataitem;
-                itemData.searchData=vm.searchdata;
-                sv.setItem(itemData);
-
-                // modal dialog pop up here
-                $mdDialog.show({
-                    title:'Full View Details',
-                    target:$event,
-                    clickOutsideToClose: true,
-                    focusOnOpen:true,
-                    escapeToClose: true,
-                    bindToController:true,
-                    templateUrl:'/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
-                    controller:'customFullViewDialogController',
-                    controllerAs:'vm',
-                    fullscreen:true,
-                    multiple:false,
-                    openFrom:{left:0},
-                    locals: {
-                        items:itemData
-                    },
-                    onComplete:function (scope, element) {
-                       vm.localScope.contextFlag=false;
-                       sv.setDialogFlag(true);
-                    },
-                    onRemoving:function (element,removePromise) {
-                        sv.setDialogFlag(false);
-                    }
-                });
-
-            };
-
-            // When a user press enter by using tab key
-            vm.openDialog2=function(e){
-                if(e.which===13||e.which===1){
-                    vm.openDialog(e);
-                }
-
             };
 
 
         }]
     });
 
-
-// truncate word to limit 60 characters
-angular.module('viewCustom').filter('truncatefilter',function () {
-    return function (str) {
-        var newstr=str;
-        var index=60;
-        if(str) {
-            if (str.length > 60) {
-                newstr = str.substring(0, 60);
-                for (var i = newstr.length; i > 20; i--) {
-                    var text = newstr.substring(i - 1, i);
-                    if (text === ' ') {
-                        index = i;
-                        i = 20;
-                    }
-                }
-                newstr = str.substring(0, index) + '...';
-            }
-        }
-
-        return newstr;
-    }
-
-});

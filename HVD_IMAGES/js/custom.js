@@ -12,6 +12,7 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['$sce
     // local variables
     var vm = this;
     var sv = prmSearchService;
+    vm.item = {};
     vm.item = items.item;
     vm.searchData = items.searchData;
 
@@ -168,6 +169,103 @@ angular.module('viewCustom').controller('customViewImageDialogController', ['$sc
         $mdDialog.hide();
     };
 }]);
+
+/**
+ * Created by samsan on 5/23/17.
+ * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
+ */
+
+angular.module('viewCustom').component('favoriteThumbnail', {
+    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/favoriteThumbnail.html',
+    bindings: {
+        dataitem: '<',
+        searchdata: '<'
+    },
+    controllerAs: 'vm',
+    controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location) {
+        var vm = this;
+        var sv = prmSearchService;
+        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
+        vm.modalDialogFlag = false;
+        vm.imageUrl = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+        vm.linkUrl = '';
+        vm.params = $location.search();
+
+        // check if image is not empty and it has width and height and greater than 150, then add css class
+        vm.$onChanges = function () {
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
+            if (vm.dataitem.pnx.links.thumbnail) {
+                vm.imageUrl = sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
+                $timeout(function () {
+                    var img = $element.find('img')[0];
+                    // use default image if it is a broken link image
+                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                    if (pattern.test(vm.dataitem.pnx.links.thumbnail[0])) {
+                        img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                    }
+                    img.onload = vm.callback;
+
+                    if (img.clientWidth > 50) {
+                        vm.callback();
+                    }
+                }, 300);
+            }
+
+            var vid = 'HVD_IMAGES';
+            var searchString = '';
+            var q = '';
+            var sort = 'rank';
+            var offset = 0;
+            var tab = '';
+            var scope = '';
+            if (vm.searchdata) {
+                vid = vm.searchdata.vid;
+                searchString = vm.searchdata.searchString;
+                q = vm.searchdata.q;
+                sort = vm.searchdata.sort;
+                offset = vm.searchdata.offset;
+                tab = vm.searchdata.tab;
+                scope = vm.searchdata.scope;
+            } else if (vm.params) {
+                vid = vm.params.vid;
+            }
+
+            vm.linkUrl = '/primo-explore/fulldisplay?vid=' + vid + '&docid=' + vm.dataitem.pnx.control.recordid[0] + '&sortby=' + sort;
+            vm.linkUrl += '&q=' + q + '&searchString=' + searchString + '&offset=' + offset;
+            vm.linkUrl += '&tab=' + tab + '&search_scope=' + scope;
+            if (vm.params.facet) {
+                if (Array.isArray(vm.params.facet)) {
+                    for (var i = 0; i < vm.params.facet.length; i++) {
+                        vm.linkUrl += '&facet=' + vm.params.facet[i];
+                    }
+                } else {
+                    vm.linkUrl += '&facet=' + vm.params.facet;
+                }
+            }
+        };
+
+        vm.callback = function () {
+            var image = $element.find('img')[0];
+            if (image.height > 150) {
+                vm.localScope.imgclass = 'responsivePhoto';
+                image.className = 'md-card-image ' + vm.localScope.imgclass;
+            }
+            if (vm.dataitem.restrictedImage) {
+                vm.localScope.hideLockIcon = true;
+            }
+
+            var divs = $element[0].children[0].children[0].children[0];
+            if (divs) {
+                divs.style.marginLeft = image.clientWidth - 20 + 'px';
+            }
+        };
+
+        vm.openWindow = function () {
+            var url = '/primo-explore/fulldisplay?vid=HVD_IMAGES&docid=' + vm.dataitem.pnx.control.recordid[0];
+            $window.open(url, '_blank');
+        };
+    }]
+});
 
 /**
  *
@@ -553,13 +651,19 @@ angular.module('viewCustom').component('prmFacetAfter', {
  * This component is for favorite section when a user pin his or her favorite image.
  */
 
-angular.module('viewCustom').controller('prmFavoritesAfterController', ['$sce', 'angularLoad', '$element', function ($sce, angularLoad, $element) {
+angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSearchService', function (prmSearchService) {
 
+    var sv = prmSearchService;
     var vm = this;
+    vm.favoriteItems = [];
+    vm.searchData = {};
 
-    vm.$onChanges = function () {
-        console.log('*** not implement yet prm-favorites-after ***');
-        console.log(vm.parentCtrl);
+    vm.$doCheck = function () {
+        vm.favoriteItems = vm.parentCtrl.favoritesService.items;
+        if (vm.favoriteItems.length > 0) {
+            vm.favoriteItems = sv.convertData(vm.favoriteItems);
+            vm.searchData.vid = vm.parentCtrl.vid;
+        }
     };
 }]);
 
@@ -960,7 +1064,9 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             this.searchInfo.query = vm.parentCtrl.$stateParams.query;
             sv.setPage(this.searchInfo); // keep track a user click on each current page
             // ajax call function
-            vm.ajaxSearch();
+            if (vm.parentCtrl.isFavorites === false) {
+                vm.ajaxSearch();
+            }
             // calculate the min and max of items
             this.findPageCounter();
         }
@@ -972,47 +1078,55 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
     vm.$onInit = function () {
         var _this = this;
 
-        // remove left margin on result list grid
-        var el = $element[0].parentNode.parentNode.parentNode;
-        el.children[0].remove();
+        if (vm.parentCtrl.isFavorites === false) {
 
-        this.searchInfo = sv.getPage(); // get page info object
-        // watch for new data change when a user search
-        vm.parentCtrl.$scope.$watch(function () {
-            return vm.parentCtrl.searchResults;
-        }, function (newVal, oldVal) {
+            // remove left margin on result list grid
+            var el = $element[0].parentNode.parentNode.parentNode;
+            el.children[0].remove();
 
-            if (vm.parentCtrl.$stateParams.offset > 0) {
-                vm.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / _this.searchInfo.pageSize) + 1;
-                _this.searchInfo.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / _this.searchInfo.pageSize) + 1;
-            } else {
-                vm.currentPage = 1;
-                _this.searchInfo.currentPage = 1;
-            }
-            vm.flag = true;
-            // convert xml data into json data so it knows which image is a restricted image
-            vm.items = sv.convertData(vm.parentCtrl.searchResults);
+            this.searchInfo = sv.getPage(); // get page info object
+            // watch for new data change when a user search
+            vm.parentCtrl.$scope.$watch(function () {
+                return vm.parentCtrl.searchResults;
+            }, function (newVal, oldVal) {
 
-            // set up pagination
-            _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
-            _this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / _this.searchInfo.pageSize);
-            if (_this.searchInfo.pageSize * _this.searchInfo.totalPages < _this.searchInfo.totalItems) {
-                _this.searchInfo.totalPages++;
-            }
+                if (vm.parentCtrl.$stateParams.offset > 0) {
+                    vm.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / _this.searchInfo.pageSize) + 1;
+                    _this.searchInfo.currentPage = parseInt(vm.parentCtrl.$stateParams.offset / _this.searchInfo.pageSize) + 1;
+                } else {
+                    vm.currentPage = 1;
+                    _this.searchInfo.currentPage = 1;
+                }
+                vm.flag = true;
+                // convert xml data into json data so it knows which image is a restricted image
+                if (vm.parentCtrl.isFavorites === false && vm.parentCtrl.searchResults) {
+                    vm.items = sv.convertData(vm.parentCtrl.searchResults);
+                }
+                // set up pagination
+                _this.searchInfo.totalItems = vm.parentCtrl.totalItems;
+                _this.searchInfo.totalPages = parseInt(vm.parentCtrl.totalItems / _this.searchInfo.pageSize);
+                if (_this.searchInfo.pageSize * _this.searchInfo.totalPages < _this.searchInfo.totalItems) {
+                    _this.searchInfo.totalPages++;
+                }
 
-            _this.findPageCounter();
+                _this.findPageCounter();
 
-            _this.searchInfo.query = vm.parentCtrl.$stateParams.query;
-            _this.searchInfo.searchString = vm.parentCtrl.searchString;
-            sv.setPage(_this.searchInfo);
-            vm.searchInProgress = vm.parentCtrl.searchInProgress;
-        });
+                _this.searchInfo.query = vm.parentCtrl.$stateParams.query;
+                _this.searchInfo.searchString = vm.parentCtrl.searchString;
+                sv.setPage(_this.searchInfo);
+                vm.searchInProgress = vm.parentCtrl.searchInProgress;
+
+                console.log('** prm search result after ****');
+            });
+        }
     };
 
     vm.$onChanges = function () {
-        vm.searchData = vm.parentCtrl.searchService.cheetah.searchData;
-        if (vm.parentCtrl.searchString) {
-            vm.searchData.searchString = vm.parentCtrl.searchString;
+        if (vm.parentCtrl.isFavorites === false) {
+            vm.searchData = vm.parentCtrl.searchService.cheetah.searchData;
+            if (vm.parentCtrl.searchString) {
+                vm.searchData.searchString = vm.parentCtrl.searchString;
+            }
         }
     };
 
@@ -1139,48 +1253,50 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         for (var i = 0; i < data.length; i++) {
             var obj = data[i];
             obj.restrictedImage = false;
-            if (obj.pnx.addata.mis1.length > 0) {
-                var xml = obj.pnx.addata.mis1[0];
-                var jsonData = serviceObj.parseXml(xml);
-                if (jsonData.work) {
-                    // it has a single image
-                    if (jsonData.work[0].surrogate) {
-                        obj.mis1Data = jsonData.work[0].surrogate;
-                        if (obj.mis1Data.length === 1) {
+            if (obj.pnx.addata.mis1) {
+                if (obj.pnx.addata.mis1.length > 0) {
+                    var xml = obj.pnx.addata.mis1[0];
+                    var jsonData = serviceObj.parseXml(xml);
+                    if (jsonData.work) {
+                        // it has a single image
+                        if (jsonData.work[0].surrogate) {
+                            obj.mis1Data = jsonData.work[0].surrogate;
+                            if (obj.mis1Data.length === 1) {
+                                if (obj.mis1Data[0].image) {
+                                    obj.restrictedImage = obj.mis1Data[0].image[0]._attr.restrictedImage._value;
+                                }
+                            } else {
+                                for (var j = 0; j < obj.mis1Data.length; j++) {
+                                    if (obj.mis1Data[j].image) {
+                                        if (obj.mis1Data[j].image[0]._attr.restrictedImage) {
+                                            obj.restrictedImage = true;
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (jsonData.work.length == 1) {
+                            obj.mis1Data = jsonData.work;
                             if (obj.mis1Data[0].image) {
                                 obj.restrictedImage = obj.mis1Data[0].image[0]._attr.restrictedImage._value;
                             }
                         } else {
-                            for (var j = 0; j < obj.mis1Data.length; j++) {
-                                if (obj.mis1Data[j].image) {
-                                    if (obj.mis1Data[j].image[0]._attr.restrictedImage) {
-                                        obj.restrictedImage = true;
+                            obj.mis1Data = jsonData.work;
+                            if (obj.mis1Data) {
+                                for (var c = 0; c < obj.mis1Data.length; c++) {
+                                    if (obj.mis1Data[c].image) {
+                                        obj.restrictedImage = obj.mis1Data[c].image[0]._attr.restrictedImage;
                                     }
                                 }
                             }
                         }
-                    } else if (jsonData.work.length == 1) {
-                        obj.mis1Data = jsonData.work;
-                        if (obj.mis1Data[0].image) {
-                            obj.restrictedImage = obj.mis1Data[0].image[0]._attr.restrictedImage._value;
-                        }
-                    } else {
-                        obj.mis1Data = jsonData.work;
+                    } else if (jsonData.group) {
+                        // it has multiple images
+                        obj.mis1Data = jsonData.group[0].subwork;
                         if (obj.mis1Data) {
-                            for (var c = 0; c < obj.mis1Data.length; c++) {
-                                if (obj.mis1Data[c].image) {
-                                    obj.restrictedImage = obj.mis1Data[c].image[0]._attr.restrictedImage;
+                            for (var k = 0; k < obj.mis1Data.length; k++) {
+                                if (obj.mis1Data[k].image) {
+                                    obj.restrictedImage = obj.mis1Data[k].image[0]._attr.restrictedImage._value;
                                 }
-                            }
-                        }
-                    }
-                } else if (jsonData.group) {
-                    // it has multiple images
-                    obj.mis1Data = jsonData.group[0].subwork;
-                    if (obj.mis1Data) {
-                        for (var k = 0; k < obj.mis1Data.length; k++) {
-                            if (obj.mis1Data[k].image) {
-                                obj.restrictedImage = obj.mis1Data[k].image[0]._attr.restrictedImage._value;
                             }
                         }
                     }
@@ -1349,9 +1465,6 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
                 vm.zoomButtonFlag = false;
             }
         }
-
-        console.log('** prm view online after ***');
-        console.log(vm);
     };
 
     // show the pop up image
@@ -1391,7 +1504,7 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
 }]);
 
 angular.module('viewCustom').component('prmViewOnlineAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmViewOnlineAfterController',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-view-online-after.html'
 });
@@ -1435,6 +1548,9 @@ angular.module('viewCustom').component('responsiveImage', {
                         img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                     }
                     img.onload = vm.callback;
+                    if (img.width > 50) {
+                        vm.callback();
+                    }
                 }, 200);
             }
 
@@ -1598,9 +1714,28 @@ angular.module('viewCustom').component('thumbnail', {
                 }, 300);
             }
 
-            vm.linkUrl = '/primo-explore/fulldisplay?vid=' + vm.searchdata.vid + '&docid=' + vm.dataitem.pnx.control.recordid[0] + '&sortby=' + vm.searchdata.sort;
-            vm.linkUrl += '&q=' + vm.searchdata.q + '&searchString=' + vm.searchdata.searchString + '&offset=' + vm.searchdata.offset;
-            vm.linkUrl += '&tab=' + vm.searchdata.tab + '&search_scope=' + vm.searchdata.scope;
+            var vid = 'HVD_IMAGES';
+            var searchString = '';
+            var q = '';
+            var sort = 'rank';
+            var offset = 0;
+            var tab = '';
+            var scope = '';
+            if (vm.searchdata) {
+                vid = vm.searchdata.vid;
+                searchString = vm.searchdata.searchString;
+                q = vm.searchdata.q;
+                sort = vm.searchdata.sort;
+                offset = vm.searchdata.offset;
+                tab = vm.searchdata.tab;
+                scope = vm.searchdata.scope;
+            } else if (vm.params) {
+                vid = vm.params.vid;
+            }
+
+            vm.linkUrl = '/primo-explore/fulldisplay?vid=' + vid + '&docid=' + vm.dataitem.pnx.control.recordid[0] + '&sortby=' + sort;
+            vm.linkUrl += '&q=' + q + '&searchString=' + searchString + '&offset=' + offset;
+            vm.linkUrl += '&tab=' + tab + '&search_scope=' + scope;
             if (vm.params.facet) {
                 if (Array.isArray(vm.params.facet)) {
                     for (var i = 0; i < vm.params.facet.length; i++) {
@@ -1630,14 +1765,6 @@ angular.module('viewCustom').component('thumbnail', {
             if (divs) {
                 divs.style.marginLeft = image.clientWidth - 20 + 'px';
             }
-        };
-
-        vm.showToolTip = function (e) {
-            vm.localScope.hideTooltip = true;
-        };
-
-        vm.hideToolTip = function (e) {
-            vm.localScope.hideTooltip = false;
         };
 
         vm.closePopUp = function (e) {

@@ -28,8 +28,6 @@ angular.module('viewCustom')
                }
            }
 
-           console.log('** prm view online after ***');
-           console.log(vm);
         };
 
 
@@ -73,7 +71,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmViewOnlineAfter', {
-        bindings: {parentCtrl: '='},
+        bindings: {parentCtrl: '<'},
         controller: 'prmViewOnlineAfterController',
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/prm-view-online-after.html'
     });

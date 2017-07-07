@@ -847,58 +847,6 @@ img.md-card-image {
     font-weight:200;
 }
 
-.imageLabel {
-    width:230px;
-    height:30px;
-    text-align: right;
-}
-
-.badge {
-    top:15px;
-    position:relative;
-    z-index:1;
-    margin-left:120px;
-    width:30px;
-    height:30px;
-    line-height:30px;
-    color:#ffffff;
-    font-size:80%;
-    text-align:center;
-    background: url('../img/icon_multipleAssets30.png') no-repeat;
-}
-
-.imageBox {
-    width:auto;
-    height:150px;
-    overflow: hidden;
-    padding:0px !important;
-    margin:0px !important;
-    text-align: left;
-}
-
-.imageTitle {
-    width:200px;
-    height:40px;
-    line-height:20px;
-    text-align:left;
-    font-size:100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: inherit;
-    display: inline-block;
-
-}
-
-.hv-image-card {
-    padding-top: 0px !important;
-    margin-top:0px !important;
-    margin-bottom:0px !important;
-    padding-bottom:0px !important;
-    padding-left:0px !important;
-    background: transparent !important;
-    width:200px;
-    height:230px;
-}
 
 .goRight {
     position:absolute;
@@ -908,11 +856,6 @@ img.md-card-image {
     padding-top:30px;
 }
 
-.nospace {
-    padding:0px !important;
-    margin-bottom:0px !important;
-    margin-top:5px !important;
-}
 
 .fullImageDetail {
     color: #ffffff;
@@ -934,7 +877,7 @@ img.md-card-image {
 .hvInline {list-style: none; margin-left:-45px; margin-top: -20px;}
 
 .hvInline > li { display: inline-table; text-align: left; cursor: pointer; display: -moz-inline-stack;
-  margin-bottom:5px; margin-right:10px; width: auto; height:180px; vertical-align: top; padding:5px;}
+  margin-bottom:5px; margin-right:10px; width: auto; height:240px; vertical-align: top; padding:0px;}
 
 
 .nobadge {color: #000000; padding:2px;
@@ -947,50 +890,6 @@ img.md-card-image {
 }
 
 
-a.thumbnail > img:hover {
-  cursor: pointer;
-  transform: scale(1.04);
-  transition:0.4s;
-  transition-timing-function: ease-out;
-  border:1px solid #ff0000;
-}
-
-
-a.thumbnail > img:focus {
-  cursor: pointer;
-  transform: scale(1.04);
-  transition:0.4s;
-  transition-timing-function: ease-out;
-  border:1px solid #ff0000;
-}
-
-.photo {
-  width:auto;
-  height:auto;
-  z-index: 0;
-}
-
-.responsivePhoto {
-   height:150px !important;
-   width: auto !important;
-}
-
-.nophoto {
-  width:150px;
-  height:150px;
-  text-align: center;
-  background:#efefef;
-  line-height:150px;
-  z-index: 0;
-}
-
-.nophoto:hover {
-  border:1px solid #ff0000;
-}
-
-.nophoto:focus {
-  border:1px solid #ff0000;
-}
 
 
 .row > .column {
@@ -1061,18 +960,6 @@ md-tooltip ._md-content {
   margin-top: -200px !important;
 }
 
-.lockIcon {
-  display:block;
-  position: absolute;
-  z-index:10;
-  margin-top:-29px;
-  margin-left:-1px;
-}
-
-.lockIcon > img {
-   height:32px !important;
-   width: auto !important;
-}
 
 cl-paging > button.md-icon-button {
   background:#f5f5f5;
@@ -1215,4 +1102,124 @@ div.search-actions > .md-button.button-confirm {
 
 div.search-actions > .md-button.button-confirm:hover {
     color:#a51c30;
+}
+
+.imageLabel {
+    width:230px;
+    height:30px;
+    text-align: right;
+}
+
+.badge {
+    top:15px;
+    position:relative;
+    z-index:1;
+    margin-left:120px;
+    width:30px;
+    height:30px;
+    line-height:30px;
+    color:#ffffff;
+    font-size:80%;
+    text-align:center;
+    background: url('../img/icon_multipleAssets30.png') no-repeat;
+}
+
+.imageBox {
+    width:auto;
+    height:150px;
+    overflow: hidden;
+    padding:0px !important;
+    margin:0px !important;
+    text-align: left;
+}
+
+.imageTitle {
+    width:200px;
+    height:40px;
+    line-height:20px;
+    text-align:left;
+    font-size:100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: inherit;
+    display: inline-block;
+    margin-top:20px;
+
+}
+
+.hv-image-card {
+    padding-top: 0px !important;
+    margin-top:0px !important;
+    margin-bottom:0px !important;
+    padding-bottom:0px !important;
+    padding-left:0px !important;
+    background: transparent !important;
+    width:200px;
+    height:230px;
+}
+
+.nospace {
+    padding:0px !important;
+    margin-bottom:0px !important;
+    margin-top:5px !important;
+}
+
+.lockIcon {
+    display:block;
+    position: absolute;
+    z-index:10;
+    margin-top:-29px;
+    margin-left:-1px;
+}
+
+.lockIcon > img {
+    width:25px;
+    height:auto;
+    margin-top:6px;
+    margin-left:-11px;
+}
+
+a.thumbnail > img:hover {
+    cursor: pointer;
+    transform: scale(1.04);
+    transition:0.4s;
+    transition-timing-function: ease-out;
+    border:1px solid #ff0000;
+}
+
+
+a.thumbnail > img:focus {
+    cursor: pointer;
+    transform: scale(1.04);
+    transition:0.4s;
+    transition-timing-function: ease-out;
+    border:1px solid #ff0000;
+}
+
+.photo {
+    width:auto;
+    height:auto;
+    z-index: 0;
+}
+
+.responsivePhoto {
+    height:150px !important;
+    width: auto !important;
+}
+
+.nophoto {
+    width:150px;
+    height:150px;
+    text-align: center;
+    background:#efefef;
+    line-height:150px;
+    z-index: 0;
+}
+
+.nophoto:hover {
+    border:1px solid #ff0000;
+}
+
+.nophoto:focus {
+    border:1px solid #ff0000;
 }

@@ -4,13 +4,20 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmFavoritesAfterController', [ '$sce', 'angularLoad','$element', function ($sce, angularLoad, $element) {
+    .controller('prmFavoritesAfterController', ['prmSearchService', function (prmSearchService) {
 
+        var sv=prmSearchService;
         let vm = this;
+        vm.favoriteItems=[];
+        vm.searchData={};
 
-        vm.$onChanges=function() {
-            console.log('*** not implement yet prm-favorites-after ***');
-            console.log(vm.parentCtrl);
+        vm.$doCheck=function() {
+            vm.favoriteItems=vm.parentCtrl.favoritesService.items;
+            if(vm.favoriteItems.length > 0) {
+                vm.favoriteItems = sv.convertData(vm.favoriteItems);
+                vm.searchData.vid=vm.parentCtrl.vid;
+
+            }
 
         };
 
