@@ -45,6 +45,9 @@ angular.module('viewCustom')
                                 img.src='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                             }
                             img.onload=vm.callback;
+                            if(img.width > 600) {
+                                vm.callback();
+                            }
                         },300);
                     }
 

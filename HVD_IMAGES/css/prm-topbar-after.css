@@ -1,0 +1,34 @@
+.top-nav-bar {
+    background:#000000 !important;
+    color:#ffffff !important;
+}
+
+prm-search-bar {
+    background:#383838 !important;
+    color:#ffffff !important;
+}
+
+.hollisImage {
+    width:200px;
+    height: auto;
+}
+
+
+.boxHollis {
+    padding-top:5px;
+    margin-left:34px;
+}
+
+.betaIcon {
+    width:33px;
+    height:auto;
+}
+
+/* magnify glass search in search box */
+div.search-actions > .md-button.button-confirm {
+    color:#a51c30;
+}
+
+div.search-actions > .md-button.button-confirm:hover {
+    color:#a51c30;
+}

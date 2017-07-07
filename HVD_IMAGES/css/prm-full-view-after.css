@@ -152,13 +152,6 @@ a.noline:hover {
     color: #000000 !important;
 }
 
-div.search-actions > .md-button.button-confirm {
-    color:#5c92bd;
-}
-
-div.search-actions > .md-button.button-confirm:hover {
-    color:#5c92bd;
-}
 
 .padding15 {
     padding:15px;
@@ -172,16 +165,6 @@ img.md-card-image {
     padding-left:0px !important;
 }
 
-
-.boxHollis {
-    padding-top:5px;
-    margin-left:34px;
-}
-
-.betaIcon {
-    width:40px;
-    height:auto;
-}
 
 .text-right {
     text-align: right;

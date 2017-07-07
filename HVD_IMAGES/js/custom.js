@@ -549,6 +549,27 @@ angular.module('viewCustom').component('prmFacetAfter', {
 });
 
 /**
+ * Created by samsan on 7/7/17.
+ * This component is for favorite section when a user pin his or her favorite image.
+ */
+
+angular.module('viewCustom').controller('prmFavoritesAfterController', ['$sce', 'angularLoad', '$element', function ($sce, angularLoad, $element) {
+
+    var vm = this;
+
+    vm.$onChanges = function () {
+        console.log('*** not implement yet prm-favorites-after ***');
+        console.log(vm.parentCtrl);
+    };
+}]);
+
+angular.module('viewCustom').component('prmFavoritesAfter', {
+    bindings: { parentCtrl: '<' },
+    controller: 'prmFavoritesAfterController',
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-favorites-after.html'
+});
+
+/**
  * Created by samsan on 5/17/17.
  * This template is for direct access full view display link when a user send email to someone
  */
@@ -781,6 +802,30 @@ angular.module('viewCustom').config(['$httpProvider', function ($httpProvider) {
     });
 }]);
 /**
+ * Created by samsan on 7/7/17.
+ * This component is for pin favorite and search icon on the top right menu tab
+ */
+
+angular.module('viewCustom').controller('prmSearchBookmarkFilterAfterController', ['$sce', 'angularLoad', '$element', function ($sce, angularLoad, $element) {
+
+    var vm = this;
+
+    vm.$onChanges = function () {
+
+        if (vm.parentCtrl.isFavorites) {
+            // remove search magnify glass icon on the top left menu tab
+            //var el=$element[0].parentNode.children;
+            //el[0].remove();
+        }
+    };
+}]);
+
+angular.module('viewCustom').component('prmSearchBookmarkFilterAfter', {
+    bindings: { parentCtrl: '<' },
+    controller: 'prmSearchBookmarkFilterAfterController'
+});
+
+/**
  * Created by samsan on 6/30/17.
  */
 
@@ -961,15 +1006,14 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             _this.searchInfo.searchString = vm.parentCtrl.searchString;
             sv.setPage(_this.searchInfo);
             vm.searchInProgress = vm.parentCtrl.searchInProgress;
-
-            console.log('*** prm search result list after ****');
-            console.log(vm);
         });
     };
 
     vm.$onChanges = function () {
         vm.searchData = vm.parentCtrl.searchService.cheetah.searchData;
-        vm.searchData.searchString = vm.parentCtrl.searchString;
+        if (vm.parentCtrl.searchString) {
+            vm.searchData.searchString = vm.parentCtrl.searchString;
+        }
     };
 
     vm.$doCheck = function () {
@@ -1472,6 +1516,9 @@ angular.module('viewCustom').component('singleImage', {
                             img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
                         }
                         img.onload = vm.callback;
+                        if (img.width > 600) {
+                            vm.callback();
+                        }
                     }, 300);
                 }
             }

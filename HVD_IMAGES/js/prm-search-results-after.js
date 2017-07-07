@@ -161,16 +161,15 @@ angular.module('viewCustom')
             sv.setPage(this.searchInfo);
             vm.searchInProgress=vm.parentCtrl.searchInProgress;
 
-            console.log('*** prm search result list after ****');
-            console.log(vm);
-
         });
 
     };
 
     vm.$onChanges=function() {
         vm.searchData=vm.parentCtrl.searchService.cheetah.searchData;
-        vm.searchData.searchString=vm.parentCtrl.searchString;
+        if(vm.parentCtrl.searchString) {
+            vm.searchData.searchString = vm.parentCtrl.searchString;
+        }
     };
 
     vm.$doCheck=function() {
