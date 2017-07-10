@@ -21,7 +21,10 @@ angular.module('viewCustom')
 
         };
 
-
+        vm.$onInit=function() {
+            console.log('*** prm-favorite-after ****');
+            console.log(vm.parentCtrl);
+        }
 
     }]);
 

@@ -1,4 +1,4 @@
-<div layout="row" layout-align="start start" ng-cloak class="hvPanel">
+<div layout="row" layout-align="start start" class="hvPanel" ng-if="$ctrl.parentCtrl.favoritesService.favoritesTab==='items'">
     <div flex="100">
     <ul class="hvInline">
         <li role="thumbnail image" ng-repeat="item in $ctrl.favoriteItems track by $index"  aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
@@ -10,4 +10,10 @@
         </li>
     </ul>
     </div>
+</div>
+
+<div layout="row" layout-align="start start"  ng-if="$ctrl.parentCtrl.favoritesService.favoritesTab==='search_history'">
+
+    <prm-saved-queries-list-after itemlist="$ctrl.parentCtrl.itemlist"></prm-saved-queries-list-after>
+
 </div>

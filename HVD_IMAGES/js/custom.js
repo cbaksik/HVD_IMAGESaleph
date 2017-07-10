@@ -47,8 +47,14 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
                 vm.xmldata = sv.parseXml(vm.item.pnx.addata.mis1[0]);
                 if (vm.xmldata.work) {
                     vm.xmldata = vm.xmldata.work[0];
+                } else if (vm.xmldata.group) {
+                    vm.xmldata = vm.xmldata.group[0];
+                    if (vm.xmldata.subwork) {
+                        vm.xmldata.surrogate = vm.xmldata.subwork;
+                    }
                 }
             }
+
             // the xml has different format nodes
             if (vm.item.mis1Data) {
                 if (vm.item.mis1Data.length === 1) {
@@ -185,7 +191,7 @@ angular.module('viewCustom').component('favoriteThumbnail', {
     controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location) {
         var vm = this;
         var sv = prmSearchService;
-        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
+        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
         vm.modalDialogFlag = false;
         vm.imageUrl = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
         vm.linkUrl = '';
@@ -193,7 +199,7 @@ angular.module('viewCustom').component('favoriteThumbnail', {
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
             if (vm.dataitem.pnx.links.thumbnail) {
                 vm.imageUrl = sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                 $timeout(function () {
@@ -220,12 +226,12 @@ angular.module('viewCustom').component('favoriteThumbnail', {
             var scope = '';
             if (vm.searchdata) {
                 vid = vm.searchdata.vid;
-                searchString = vm.searchdata.searchString;
-                q = vm.searchdata.q;
-                sort = vm.searchdata.sort;
-                offset = vm.searchdata.offset;
-                tab = vm.searchdata.tab;
-                scope = vm.searchdata.scope;
+                searchString = vm.searchdata.searchString ? vm.searchdata.searchString : searchString;
+                q = vm.searchdata.q ? vm.searchdata.q : q;
+                sort = vm.searchdata.sort ? vm.searchdata.sort : sort;
+                offset = vm.searchdata.offset ? vm.searchdata.offset : offset;
+                tab = vm.searchdata.tab ? vm.searchdata.tab : tab;
+                scope = vm.searchdata.scope ? vm.searchdata.scope : scope;
             } else if (vm.params) {
                 vid = vm.params.vid;
             }
@@ -665,6 +671,11 @@ angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSear
             vm.searchData.vid = vm.parentCtrl.vid;
         }
     };
+
+    vm.$onInit = function () {
+        console.log('*** prm-favorite-after ****');
+        console.log(vm.parentCtrl);
+    };
 }]);
 
 angular.module('viewCustom').component('prmFavoritesAfter', {
@@ -930,6 +941,36 @@ angular.module('viewCustom').component('prmSearchBookmarkFilterAfter', {
 });
 
 /**
+ * Created by samsan on 7/10/17.
+ */
+
+angular.module('viewCustom').controller('prmSearchHistoryAfterController', ['prmSearchService', '$window', function (prmSearchService, $window) {
+
+    var sv = prmSearchService;
+    var vm = this;
+    vm.itemlist = [];
+
+    vm.$doCheck = function () {
+        vm.itemlist = vm.parentCtrl.searchHistoryService.items;
+        console.log('***** prm-search-history-after ****');
+        console.log(vm);
+    };
+
+    vm.removeSearchHistoryItem = function (id) {
+        var indexedDB = $window.indexedDB;
+        console.log(id);
+        console.log(indexedDB);
+    };
+}]);
+
+angular.module('viewCustom').component('prmSearchHistoryAfter', {
+    bindings: { parentCtrl: '<' },
+    controller: 'prmSearchHistoryAfterController',
+    controllerAs: 'vm',
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-search-history-after.html'
+});
+
+/**
  * Created by samsan on 6/30/17.
  */
 
@@ -1115,8 +1156,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
                 _this.searchInfo.searchString = vm.parentCtrl.searchString;
                 sv.setPage(_this.searchInfo);
                 vm.searchInProgress = vm.parentCtrl.searchInProgress;
-
-                console.log('** prm search result after ****');
             });
         }
     };
@@ -1474,15 +1513,15 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
         if (vm.item.adaptor) {
             url += '&adaptor=' + vm.item.adaptor;
         } else {
-            url += '&adaptor=' + vm.searchData.adaptor;
+            url += '&adaptor=' + (vm.searchData.adaptor ? vm.searchData.adaptor : '');
         }
         if (vm.searchData.searchString) {
-            url += '&searchString=' + vm.searchData.searchString;
+            url += '&searchString=' + (vm.searchData.searchString ? vm.searchData.searchString : '');
         } else {
             url += '&searchString=';
         }
-        url += '&sortby=' + vm.searchData.sortby;
-        url += '&q=' + vm.searchData.q + '&tab=' + vm.searchData.tab;
+        url += '&sortby=' + (vm.searchData.sortby ? vm.searchData.sortby : 'rank');
+        url += '&q=' + (vm.searchData.q ? vm.searchData.q : '') + '&tab=' + (vm.searchData.tab ? vm.searchData.tab : '');
         url += '&search_scope=' + vm.searchData.scope + '&singleimage=true&index=' + index;
         if (vm.params.facet) {
             if (Array.isArray(vm.params.facet)) {
@@ -1498,7 +1537,7 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce',
             offset = parseInt(vm.pageInfo.currentPage - 1) * vm.pageInfo.pageSize;
         }
 
-        url += '&offset=' + offset;
+        url += '&offset=' + (offset ? offset : 0);
         $window.open(url, '_blank');
     };
 }]);
@@ -1688,7 +1727,7 @@ angular.module('viewCustom').component('thumbnail', {
     controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location) {
         var vm = this;
         var sv = prmSearchService;
-        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
+        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
         vm.modalDialogFlag = false;
         vm.imageUrl = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
         vm.linkUrl = '';
@@ -1696,7 +1735,7 @@ angular.module('viewCustom').component('thumbnail', {
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false, 'contextFlag': false };
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
             if (vm.dataitem.pnx.links.thumbnail) {
                 vm.imageUrl = sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                 $timeout(function () {
@@ -1774,7 +1813,6 @@ angular.module('viewCustom').component('thumbnail', {
         vm.openWindow = function () {
             var url = '/primo-explore/fulldisplay?vid=HVD_IMAGES&docid=' + vm.dataitem.pnx.control.recordid[0];
             $window.open(url, '_blank');
-            vm.localScope.contextFlag = false;
         };
 
         // open modal dialog when click on thumbnail image

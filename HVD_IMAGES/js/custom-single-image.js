@@ -24,8 +24,14 @@ angular.module('viewCustom')
                     vm.xmldata = sv.parseXml(vm.item.pnx.addata.mis1[0]);
                     if(vm.xmldata.work) {
                         vm.xmldata=vm.xmldata.work[0];
+                    } else if(vm.xmldata.group) {
+                        vm.xmldata=vm.xmldata.group[0];
+                        if(vm.xmldata.subwork) {
+                            vm.xmldata.surrogate=vm.xmldata.subwork;
+                        }
                     }
                 }
+
                 // the xml has different format nodes
                 if (vm.item.mis1Data) {
                     if (vm.item.mis1Data.length === 1) {

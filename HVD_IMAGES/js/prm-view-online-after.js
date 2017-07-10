@@ -38,15 +38,15 @@ angular.module('viewCustom')
             if(vm.item.adaptor) {
                 url+='&adaptor='+vm.item.adaptor;
             } else {
-                url+='&adaptor='+vm.searchData.adaptor;
+                url+='&adaptor='+(vm.searchData.adaptor?vm.searchData.adaptor:'');
             }
             if(vm.searchData.searchString) {
-                url += '&searchString=' + vm.searchData.searchString;
+                url += '&searchString=' + (vm.searchData.searchString?vm.searchData.searchString:'');
             } else {
                 url += '&searchString=';
             }
-            url+='&sortby='+vm.searchData.sortby;
-            url += '&q=' + vm.searchData.q + '&tab='+vm.searchData.tab;
+            url+='&sortby='+(vm.searchData.sortby?vm.searchData.sortby:'rank');
+            url += '&q=' + (vm.searchData.q?vm.searchData.q:'') + '&tab='+(vm.searchData.tab?vm.searchData.tab:'');
             url+='&search_scope='+vm.searchData.scope+'&singleimage=true&index='+index;
             if(vm.params.facet) {
                 if(Array.isArray(vm.params.facet)) {
@@ -62,7 +62,7 @@ angular.module('viewCustom')
                 offset=parseInt(vm.pageInfo.currentPage - 1) * vm.pageInfo.pageSize;
             }
 
-            url += '&offset=' + offset;
+            url += '&offset=' + (offset?offset:0);
             $window.open(url,'_blank');
         }
 

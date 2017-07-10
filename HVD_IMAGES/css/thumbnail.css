@@ -21,10 +21,10 @@
 .imageBox {
     width:auto;
     height:150px;
-    overflow: hidden;
     padding:0px !important;
     margin:0px !important;
     text-align: left;
+    z-index:0;
 }
 
 .imageTitle {
@@ -50,6 +50,7 @@
     background: transparent !important;
     width:200px;
     height:230px;
+    z-index:0 !important;
 }
 
 .nospace {
@@ -61,16 +62,14 @@
 .lockIcon {
     display:block;
     position: absolute;
-    z-index:10;
-    margin-top:-29px;
-    margin-left:-1px;
+    margin-left:-11px;
+    margin-top:-20px;
+    z-index:5;
 }
 
 .lockIcon > img {
     width:25px;
     height:auto;
-    margin-top:6px;
-    margin-left:-11px;
 }
 
 a.thumbnail > img:hover {

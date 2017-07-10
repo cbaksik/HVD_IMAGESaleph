@@ -165,8 +165,6 @@ angular.module('viewCustom')
                 sv.setPage(this.searchInfo);
                 vm.searchInProgress = vm.parentCtrl.searchInProgress;
 
-                console.log('** prm search result after ****');
-
             });
         }
 

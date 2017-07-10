@@ -14,7 +14,7 @@ angular.module('viewCustom')
         controller:['$element','$timeout','$window','$mdDialog','prmSearchService','$location',function ($element,$timeout,$window,$mdDialog,prmSearchService,$location) {
             var vm=this;
             var sv=prmSearchService;
-            vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false,'contextFlag':false};
+            vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
             vm.modalDialogFlag=false;
             vm.imageUrl='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
             vm.linkUrl='';
@@ -22,7 +22,7 @@ angular.module('viewCustom')
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
-                vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false,'contextFlag':false};
+                vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
                 if(vm.dataitem.pnx.links.thumbnail) {
                     vm.imageUrl=sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                     $timeout(function () {
@@ -106,7 +106,6 @@ angular.module('viewCustom')
             vm.openWindow=function () {
                 var url='/primo-explore/fulldisplay?vid=HVD_IMAGES&docid='+vm.dataitem.pnx.control.recordid[0];
                 $window.open(url,'_blank');
-                vm.localScope.contextFlag=false;
             };
 
             // open modal dialog when click on thumbnail image

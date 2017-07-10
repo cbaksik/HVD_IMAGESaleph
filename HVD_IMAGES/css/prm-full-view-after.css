@@ -65,6 +65,10 @@
     margin-bottom: 0px;
 }
 
+.spaceTop {
+    margin-top:10px !important;
+}
+
 .space {
     margin-bottom:5px;
 }

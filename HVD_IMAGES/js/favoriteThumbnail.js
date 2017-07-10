@@ -14,7 +14,7 @@ angular.module('viewCustom')
         controller:['$element','$timeout','$window','$mdDialog','prmSearchService','$location',function ($element,$timeout,$window,$mdDialog,prmSearchService,$location) {
             var vm=this;
             var sv=prmSearchService;
-            vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false,'contextFlag':false};
+            vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
             vm.modalDialogFlag=false;
             vm.imageUrl='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
             vm.linkUrl='';
@@ -22,7 +22,7 @@ angular.module('viewCustom')
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
-                vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false,'contextFlag':false};
+                vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
                 if(vm.dataitem.pnx.links.thumbnail) {
                     vm.imageUrl=sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                     $timeout(function () {
@@ -51,16 +51,15 @@ angular.module('viewCustom')
                 var scope='';
                 if(vm.searchdata) {
                     vid=vm.searchdata.vid;
-                    searchString=vm.searchdata.searchString;
-                    q=vm.searchdata.q;
-                    sort=vm.searchdata.sort;
-                    offset=vm.searchdata.offset;
-                    tab=vm.searchdata.tab;
-                    scope=vm.searchdata.scope;
+                    searchString=vm.searchdata.searchString?vm.searchdata.searchString:searchString;
+                    q=vm.searchdata.q?vm.searchdata.q:q;
+                    sort=vm.searchdata.sort?vm.searchdata.sort:sort;
+                    offset=vm.searchdata.offset?vm.searchdata.offset:offset;
+                    tab=vm.searchdata.tab?vm.searchdata.tab:tab;
+                    scope=vm.searchdata.scope?vm.searchdata.scope:scope;
                 } else if(vm.params) {
                     vid=vm.params.vid;
                 }
-
 
                 vm.linkUrl='/primo-explore/fulldisplay?vid='+vid+'&docid='+vm.dataitem.pnx.control.recordid[0]+'&sortby='+sort;
                 vm.linkUrl+='&q='+q+'&searchString='+searchString+'&offset='+offset;

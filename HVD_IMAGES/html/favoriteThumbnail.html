@@ -11,12 +11,10 @@
             <div ng-if="!vm.dataitem.pnx.links.thumbnail" class="nophoto" ng-click="vm.openWindow()">
                 {{vm.dataitem.pnx.display.lds28[0]}}
             </div>
-        </a>
-        <div ng-if="vm.localScope.hideLockIcon" tabindex="-1">
-            <div class="lockIcon">
+            <div class="lockIcon" ng-if="vm.localScope.hideLockIcon" tabindex="-1">
                 <img src="custom/HVD_IMAGES/img/icon_lock25.png" class="md-avatar" alt="Lock icon" aria-label="Lock icon"/>
             </div>
-        </div>
+        </a>
     </md-card-content>
     <md-card-footer class="nospace">
         <div class="imageTitle">{{vm.dataitem.pnx.display.title[0]|truncatefilter}}</div>
