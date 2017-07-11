@@ -9,17 +9,34 @@ angular.module('viewCustom')
         var vm = this;
         vm.itemlist=[];
 
+        var db;
+        var request=$window.indexedDB.open('If',2);
+        request.onerror=function (err) {
+            console.log('*** error ***');
+            console.log(err);
+        };
+
+        request.onsuccess=function(e) {
+            db=request.result;
+            console.log('*** success ***');
+            console.log(db);
+        };
+
+        request.onupgradeneeded=function (e) {
+            console.log('*** upgrade needed ****');
+            console.log(e);
+        };
+
+
         vm.$doCheck=function() {
             vm.itemlist=vm.parentCtrl.searchHistoryService.items;
-            console.log('***** prm-search-history-after ****');
-            console.log(vm);
+            //console.log('*** prm-search-history-after ****');
+            //console.log(vm);
         };
 
         vm.removeSearchHistoryItem=function (id) {
-            var indexedDB=$window.indexedDB;
-            console.log(id);
-            console.log(indexedDB);
-
+            console.log(request);
+            console.log(db);
 
         }
 

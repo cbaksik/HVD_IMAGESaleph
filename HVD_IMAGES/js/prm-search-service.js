@@ -218,20 +218,22 @@ angular.module('viewCustom')
     // find image if it is jp2 or not
     serviceObj.findJP2=function (itemData) {
       var flag=false;
-      var thumbnailUrl=itemData.thumbnail[0]._attr.href._value;
-      var photoUrl=itemData._attr.href._value;
-      var thumbnailList=thumbnailUrl.split(':');
-      var thumbnailFlag=0;
-      if(thumbnailList.length > 0) {
-         thumbnailFlag=thumbnailList[thumbnailList.length - 1];
-      }
-      var photoList=photoUrl.split(':');
-      var photoFlag=1;
-      if(photoList.length > 0) {
-          photoFlag=photoList[photoList.length - 1];
-      }
-      if(photoFlag===thumbnailFlag) {
-          flag=true;
+      if(itemData.thumbnail) {
+          var thumbnailUrl = itemData.thumbnail[0]._attr.href._value;
+          var photoUrl = itemData._attr.href._value;
+          var thumbnailList = thumbnailUrl.split(':');
+          var thumbnailFlag = 0;
+          if (thumbnailList.length > 0) {
+              thumbnailFlag = thumbnailList[thumbnailList.length - 1];
+          }
+          var photoList = photoUrl.split(':');
+          var photoFlag = 1;
+          if (photoList.length > 0) {
+              photoFlag = photoList[photoList.length - 1];
+          }
+          if (photoFlag === thumbnailFlag) {
+              flag = true;
+          }
       }
       return flag;
     };

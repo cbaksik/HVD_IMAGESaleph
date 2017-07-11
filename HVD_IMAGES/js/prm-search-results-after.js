@@ -2,7 +2,7 @@
  This custom component is used for search result list which display all the images in thumbnail.
  */
 angular.module('viewCustom')
-    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$timeout','$mdDialog','$element', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog,$element) {
+    .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$timeout','$mdDialog','$element','$mdMedia', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog,$element, $mdMedia) {
     // local variables
     this.tooltip = {'flag':[]};
     // show tooltip function when mouse over
@@ -25,6 +25,8 @@ angular.module('viewCustom')
     vm.currentPage=1;
     vm.flag=false;
     vm.searchData={};
+    vm.paginationNumber=6;
+    vm.flexSize={'size1':20,'size2':80,'class':'spaceLeft15'};
     // set search result set per page, default 50 items per page
 
     // set up page counter
@@ -171,12 +173,19 @@ angular.module('viewCustom')
     };
 
     vm.$onChanges=function() {
-      if(vm.parentCtrl.isFavorites===false) {
-          vm.searchData = vm.parentCtrl.searchService.cheetah.searchData;
-          if (vm.parentCtrl.searchString) {
-              vm.searchData.searchString = vm.parentCtrl.searchString;
-          }
-      }
+        if(vm.parentCtrl.isFavorites===false) {
+            vm.searchData = vm.parentCtrl.searchService.cheetah.searchData;
+            if (vm.parentCtrl.searchString) {
+                vm.searchData.searchString = vm.parentCtrl.searchString;
+            }
+        }
+        // for small screen size
+        if($mdMedia('xs')) {
+            vm.paginationNumber=2;
+            vm.flexSize.size1=100;
+            vm.flexSize.size2=100;
+            vm.flexSize.class='';
+        }
     };
 
     vm.$doCheck=function() {

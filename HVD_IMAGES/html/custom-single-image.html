@@ -292,6 +292,27 @@
                </span>
            </div>
        </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].creator">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Creator</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="creator in vm.xmldata.surrogate[vm.index].creator track by $index">
+                   <span ng-repeat="namedates in creator.namedates track by $index" class="spaceRight">{{namedates._text}},</span>
+                   <span ng-repeat="role in creator.role track by $index" class="spaceRight">{{role._text}},</span>
+               </span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].freeDate">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Date</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="freeDate in vm.xmldata.surrogate[vm.index].freeDate track by $index" class="spaceRight">
+                   {{freeDate._text}}
+               </span>
+           </div>
+       </div>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].workType">
            <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
                <label class="bold-text">Work Type</label>
@@ -299,6 +320,16 @@
            <div flex class="flex">
                <span ng-repeat="workType in vm.xmldata.surrogate[vm.index].workType track by $index">
                    {{workType._text}}
+               </span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].dimensions">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Dimensions</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="dimensions in vm.xmldata.surrogate[vm.index].dimensions track by $index" class="spaceRight">
+                   {{dimensions._text}}
                </span>
            </div>
        </div>
@@ -349,6 +380,16 @@
            <div flex class="flex">
                <span ng-repeat="copyright in vm.xmldata.surrogate[vm.index].copyright track by $index">
                    {{copyright._text}}
+               </span>
+           </div>
+       </div>
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.xmldata.surrogate[vm.index].useRestrictions">
+           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
+               <label class="bold-text">Use Restrictions</label>
+           </div>
+           <div flex class="flex">
+               <span ng-repeat="useRestrictions in vm.xmldata.surrogate[vm.index].useRestrictions track by $index" class="spaceRight">
+                   {{useRestrictions._text}}
                </span>
            </div>
        </div>

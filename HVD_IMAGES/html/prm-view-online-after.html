@@ -1,4 +1,4 @@
-<div ng-if="$ctrl.item.mis1Data.length === 1 && $ctrl.item.mis1Data[0].image.length === 1" ng-repeat="item in $ctrl.item.mis1Data track by $index">
+<div ng-if="$ctrl.singleImageFlag" ng-repeat="item in $ctrl.item.mis1Data track by $index">
     <div layout="column" layout-align="center center" ng-if="$ctrl.zoomButtonFlag">
         <md-button class="md-raised md-primary btn-margin-bottom" (click)="$ctrl.gotoFullPhoto($event,item,$index)" tabindex="0">
             <md-icon md-svg-src="/primo-explore/custom/HVD_IMAGES/img/file-find.svg"></md-icon> ZOOM OPTIONS AND FULL RECORD DETAILS
@@ -12,21 +12,11 @@
 </div>
 
 <ul class="hvInline spaceTop" ng-if="$ctrl.item.mis1Data[0].image.length > 1 || $ctrl.item.mis1Data.length > 1" tabindex="-1">
-    <li ng-if="$ctrl.item.mis1Data.length === 1 && $ctrl.item.mis1Data[0].image.length > 1" ng-repeat="item in $ctrl.item.mis1Data[0].image track by $index">
-        <div ng-if="item.thumbnail[0]"  ng-click="$ctrl.gotoFullPhoto($event,item,$index)" tabindex="0">
-            <multiple-thumbnail src="item.thumbnail[0]._attr.href._value + '?width=150&height=150'" imgtitle="$ctrl.item.mis1Data[0].title[0].textElement[0]._text" restricted="item._attr.restrictedImage._value"></multiple-thumbnail>
-        </div>
-        <div ng-if="!item.thumbnail[0]" class="nophoto" tabindex="0">
-            Image not digitized
-        </div>
+    <li ng-if="$ctrl.item.mis1Data.length === 1 && $ctrl.item.mis1Data[0].image.length > 1" ng-repeat="item in $ctrl.item.mis1Data[0].image track by $index" ng-click="$ctrl.gotoFullPhoto($event,item,$index)" tabindex="0">
+        <multiple-thumbnail itemdata="item" searchdata="$ctrl.searchData"></multiple-thumbnail>
     </li>
-    <li ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index">
-        <div ng-if="item.image[0]"  ng-click="$ctrl.gotoFullPhoto($event,item.image[0],$index)" tabindex="0">
-            <multiple-thumbnail src="item.image[0].thumbnail[0]._attr.href._value + '?width=150&height=150'" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></multiple-thumbnail>
-        </div>
-        <div ng-if="!item.image[0]" class="nophoto" tabindex="0">
-            Image not digitized
-        </div>
+    <li ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" ng-click="$ctrl.gotoFullPhoto($event,item.image[0],$index)" tabindex="0">
+        <multiple-thumbnail itemdata="item" searchdata="$ctrl.searchData"></multiple-thumbnail>
     </li>
 </ul>
 

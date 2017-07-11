@@ -12,6 +12,7 @@ angular.module('viewCustom')
         vm.searchData=itemData.searchData;
         vm.params=$location.search();
         vm.zoomButtonFlag=true;
+        vm.singleImageFlag=false;
 
         vm.$onChanges=function() {
             vm.isLoggedIn=sv.getLogInID();
@@ -27,6 +28,16 @@ angular.module('viewCustom')
                    vm.zoomButtonFlag=false;
                }
            }
+           if(vm.item.mis1Data) {
+               if(vm.item.mis1Data[0].image) {
+                   if(vm.item.mis1Data.length===1 && vm.item.mis1Data[0].image.length===1) {
+                       vm.singleImageFlag = true;
+                   }
+               } else if(vm.item.mis1Data.length===1) {
+                   vm.singleImageFlag=true;
+               }
+           }
+
 
         };
 

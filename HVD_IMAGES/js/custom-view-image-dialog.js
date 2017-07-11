@@ -9,7 +9,7 @@ angular.module('viewCustom')
         let vm = this;
         vm.item = items;
 
-        console.log('*** single image ***');
+        console.log('** single image **');
         console.log(items);
 
         // close modal dialog when a user click on x icon

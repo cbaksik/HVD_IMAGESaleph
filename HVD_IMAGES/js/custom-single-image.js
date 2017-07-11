@@ -32,6 +32,7 @@ angular.module('viewCustom')
                     }
                 }
 
+
                 // the xml has different format nodes
                 if (vm.item.mis1Data) {
                     if (vm.item.mis1Data.length === 1) {
