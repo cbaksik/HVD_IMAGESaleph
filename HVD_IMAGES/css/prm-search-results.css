@@ -1,7 +1,6 @@
 
 .hvfullsize {
   width: 100%;
-  margin-left:15px;
 }
 
 
@@ -27,9 +26,12 @@
    display: inline-flex;
 }
 
+.prm-background {
+  background: #ffffff;
+}
 
 body {
-  background: #ffffff !important;
+  background: #ffffff;
 }
 
 .main {
@@ -97,7 +99,7 @@ cl-paging > button.md-icon-button {
 }
 
 .hvPanel {
-  margin-bottom:50px;
+  margin-bottom:20px;
   margin-left:15px;
   text-align: left;
 }
@@ -197,5 +199,23 @@ prm-topbar {
   display: none !important;
   height: auto !important;
   width: auto !important;
+}
+
+prm-favorites {
+  background:#ffffff;
+}
+
+@media only screen and (max-width: 800px) {
+  .hvPanel {
+    padding-bottom:70px;
+    padding-left:15px;
+    text-align: left;
+  }
+
+  .hvInline {list-style: none; margin-left:-45px; margin-top: -20px;}
+
+  .hvInline > li { display: inline-table; text-align: left; cursor: pointer; display: -moz-inline-stack;
+    margin-bottom:1px; margin-right:1px; width: auto; height:240px; vertical-align: top; padding:0px;}
+
 }
 

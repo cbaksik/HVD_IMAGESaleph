@@ -3,7 +3,7 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmSearchResultAvailabilityAfterController', [ '$sce', 'angularLoad','$element','$timeout', function ($sce, angularLoad, $element,$timeout) {
+    .controller('prmSearchResultAvailabilityAfterController', ['$element','$timeout', function ($element,$timeout) {
         let vm = this;
         vm.$onChanges=function() {
             // remove  access online and icon

@@ -1,6 +1,15 @@
-<div layout="row" layout-align="start start" class="hvPanel" ng-if="$ctrl.parentCtrl.favoritesService.favoritesTab==='items'">
-    <div flex="100">
-    <ul class="hvInline">
+
+<md-sidenav class="md-sidenav-right" md-component-id="right" md-disable-backdrop  md-whiteframe="1"
+                md-is-locked-open="$ctrl.isOpenSideNav">
+    <md-content layout-margin class="favoritePanel">
+        <prm-full-view ng-if="$ctrl.selectitem"  [item]="$ctrl.selectitem" flex class="flex" tabindex="-1">
+
+        </prm-full-view>
+    </md-content>
+</md-sidenav>
+
+<div layout-align="start start" class="hvPanelFavorite bkWhite" ng-if="$ctrl.parentCtrl.favoritesService.favoritesTab==='items'">
+    <ul class="hvInline bkWhite">
         <li role="thumbnail image" ng-repeat="item in $ctrl.favoriteItems track by $index"  aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
             <div class="hvbox">
                 <div class="photo">
@@ -9,7 +18,6 @@
             </div>
         </li>
     </ul>
-    </div>
 </div>
 
 <div layout="row" layout-align="start start"  ng-if="$ctrl.parentCtrl.favoritesService.favoritesTab==='search_history'">

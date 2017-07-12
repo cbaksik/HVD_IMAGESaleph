@@ -27,6 +27,7 @@ angular.module('viewCustom')
                     } else if(vm.xmldata.group) {
                         vm.xmldata=vm.xmldata.group[0];
                         if(vm.xmldata.subwork) {
+                            // make it to the same key
                             vm.xmldata.surrogate=vm.xmldata.subwork;
                         }
                     }

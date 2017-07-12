@@ -11,7 +11,7 @@ angular.module('viewCustom')
             searchdata:'<'
         },
         controllerAs:'vm',
-        controller:['$element','$timeout','$window','$mdDialog','prmSearchService','$location',function ($element,$timeout,$window,$mdDialog,prmSearchService,$location) {
+        controller:['$element','$timeout','$window','$mdDialog','prmSearchService','$location','$mdSidenav',function ($element,$timeout,$window,$mdDialog,prmSearchService,$location,$mdSidenav) {
             var vm=this;
             var sv=prmSearchService;
             vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
@@ -22,7 +22,7 @@ angular.module('viewCustom')
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
-                vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
+                vm.localScope={'imgclass':'','hideLockIcon':false};
                 if(vm.dataitem.pnx.links.thumbnail) {
                     vm.imageUrl=sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                     $timeout(function () {
@@ -98,6 +98,17 @@ angular.module('viewCustom')
                 var url='/primo-explore/fulldisplay?vid=HVD_IMAGES&docid='+vm.dataitem.pnx.control.recordid[0];
                 $window.open(url,'_blank');
             };
+
+            vm.openWindow3=function() {
+
+               //vm.isOpenSideNav=true;
+                sv.setItem(vm.dataitem);
+               $mdSidenav('right').toggle()
+                   .then(function () {
+                       console.log('***** open side nav ***');
+
+                   },200);
+            }
 
 
         }]

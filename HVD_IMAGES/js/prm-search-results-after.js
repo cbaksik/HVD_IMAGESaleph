@@ -139,6 +139,7 @@ angular.module('viewCustom')
 
             this.searchInfo = sv.getPage(); // get page info object
             // watch for new data change when a user search
+
             vm.parentCtrl.$scope.$watch(() => vm.parentCtrl.searchResults, (newVal, oldVal) => {
 
                 if (vm.parentCtrl.$stateParams.offset > 0) {
@@ -168,6 +169,7 @@ angular.module('viewCustom')
                 vm.searchInProgress = vm.parentCtrl.searchInProgress;
 
             });
+
         }
 
     };

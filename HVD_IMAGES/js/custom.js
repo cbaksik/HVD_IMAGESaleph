@@ -8,13 +8,16 @@ angular.module('viewCustom', ['angularLoad', 'cl.paging']);
  * Created by samsan on 5/17/17.
  * A custom modal dialog when a user click on thumbnail on search result list page
  */
-angular.module('viewCustom').controller('customFullViewDialogController', ['$sce', 'angularLoad', 'items', '$mdDialog', 'prmSearchService', function ($sce, angularLoad, items, $mdDialog, prmSearchService) {
+angular.module('viewCustom').controller('customFullViewDialogController', ['items', '$mdDialog', 'prmSearchService', function (items, $mdDialog, prmSearchService) {
     // local variables
     var vm = this;
     var sv = prmSearchService;
     vm.item = {};
     vm.item = items.item;
     vm.searchData = items.searchData;
+
+    console.log('**** vm.item ***');
+    console.log(vm.item);
 
     sv.setItem(items);
     vm.closeDialog = function () {
@@ -50,6 +53,7 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
                 } else if (vm.xmldata.group) {
                     vm.xmldata = vm.xmldata.group[0];
                     if (vm.xmldata.subwork) {
+                        // make it to the same key
                         vm.xmldata.surrogate = vm.xmldata.subwork;
                     }
                 }
@@ -188,7 +192,7 @@ angular.module('viewCustom').component('favoriteThumbnail', {
         searchdata: '<'
     },
     controllerAs: 'vm',
-    controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location) {
+    controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', '$mdSidenav', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location, $mdSidenav) {
         var vm = this;
         var sv = prmSearchService;
         vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
@@ -199,7 +203,7 @@ angular.module('viewCustom').component('favoriteThumbnail', {
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false };
             if (vm.dataitem.pnx.links.thumbnail) {
                 vm.imageUrl = sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                 $timeout(function () {
@@ -269,6 +273,15 @@ angular.module('viewCustom').component('favoriteThumbnail', {
         vm.openWindow = function () {
             var url = '/primo-explore/fulldisplay?vid=HVD_IMAGES&docid=' + vm.dataitem.pnx.control.recordid[0];
             $window.open(url, '_blank');
+        };
+
+        vm.openWindow3 = function () {
+
+            //vm.isOpenSideNav=true;
+            sv.setItem(vm.dataitem);
+            $mdSidenav('right').toggle().then(function () {
+                console.log('***** open side nav ***');
+            }, 200);
         };
     }]
 });
@@ -641,7 +654,7 @@ angular.module('viewCustom').component('prmBriefResultContainerAfter', {
  * Created by samsan on 5/30/17.
  */
 
-angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad', 'prmSearchService', '$location', '$element', function (angularLoad, prmSearchService, $location, $element) {
+angular.module('viewCustom').controller('prmFacetAfterController', ['prmSearchService', '$location', function (prmSearchService, $location) {
     var vm = this;
     vm.params = $location.search();
     var sv = prmSearchService;
@@ -649,9 +662,6 @@ angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad
     var pageObj = sv.getPage();
 
     vm.$onChanges = function () {
-        // change the width of facet column
-        var el = $element[0].parentNode.parentNode;
-        el.classList.value = 'sidebar flex-md-30 flex-lg-25';
 
         // if there is no facet, remove it from service
         if (!vm.parentCtrl.$stateParams.facet) {
@@ -664,7 +674,7 @@ angular.module('viewCustom').controller('prmFacetAfterController', ['angularLoad
 }]);
 
 angular.module('viewCustom').component('prmFacetAfter', {
-    bindings: { parentCtrl: '<' },
+    bindings: { parentCtrl: '=' },
     controller: 'prmFacetAfterController'
 });
 
@@ -679,12 +689,16 @@ angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSear
     var vm = this;
     vm.favoriteItems = [];
     vm.searchData = {};
+    vm.selectitem = null;
+    vm.isOpenSideNav = false;
 
     vm.$doCheck = function () {
+        // get data from parent controller
         vm.favoriteItems = vm.parentCtrl.favoritesService.items;
         if (vm.favoriteItems.length > 0) {
             vm.favoriteItems = sv.convertData(vm.favoriteItems);
             vm.searchData.vid = vm.parentCtrl.vid;
+            vm.selectitem = sv.getItem();
         }
     };
 }]);
@@ -961,8 +975,9 @@ angular.module('viewCustom').controller('prmSearchHistoryAfterController', ['prm
     var vm = this;
     vm.itemlist = [];
 
+    // open database connection, dbName=lf, dbVersion=2
     var db;
-    var request = $window.indexedDB.open('If', 2);
+    var request = $window.indexedDB.open('lf', 2);
     request.onerror = function (err) {
         console.log('*** error ***');
         console.log(err);
@@ -974,6 +989,7 @@ angular.module('viewCustom').controller('prmSearchHistoryAfterController', ['prm
         console.log(db);
     };
 
+    // for update or create new record
     request.onupgradeneeded = function (e) {
         console.log('*** upgrade needed ****');
         console.log(e);
@@ -986,8 +1002,24 @@ angular.module('viewCustom').controller('prmSearchHistoryAfterController', ['prm
     };
 
     vm.removeSearchHistoryItem = function (id) {
-        console.log(request);
-        console.log(db);
+        //anonymous-0712_145554_SearchHistoryQeuriesKey
+
+        var query = db.transaction(['keyvaluepairs'], "readwrite").objectStore('keyvaluepairs').get('anonymous-0712_145554_SearchHistoryQeuriesKey');
+
+        console.log(query);
+
+        query.onerror = function (err) {
+            console.log('*** error ***');
+            console.log(err);
+        };
+
+        query.onsuccess = function (e) {
+            var result = query.result;
+            console.log('*** success result ***');
+            console.log(result);
+            console.log('*** id ***');
+            console.log(id);
+        };
     };
 }]);
 
@@ -1002,7 +1034,7 @@ angular.module('viewCustom').component('prmSearchHistoryAfter', {
  * Created by samsan on 6/30/17.
  */
 
-angular.module('viewCustom').controller('prmSearchResultAvailabilityAfterController', ['$sce', 'angularLoad', '$element', '$timeout', function ($sce, angularLoad, $element, $timeout) {
+angular.module('viewCustom').controller('prmSearchResultAvailabilityAfterController', ['$element', '$timeout', function ($element, $timeout) {
     var vm = this;
     vm.$onChanges = function () {
         // remove  access online and icon
@@ -1157,6 +1189,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
             this.searchInfo = sv.getPage(); // get page info object
             // watch for new data change when a user search
+
             vm.parentCtrl.$scope.$watch(function () {
                 return vm.parentCtrl.searchResults;
             }, function (newVal, oldVal) {
@@ -1776,7 +1809,7 @@ angular.module('viewCustom').component('thumbnail', {
     controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location) {
         var vm = this;
         var sv = prmSearchService;
-        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
+        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'showImageLabel': false };
         vm.modalDialogFlag = false;
         vm.imageUrl = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
         vm.linkUrl = '';
@@ -1840,6 +1873,11 @@ angular.module('viewCustom').component('thumbnail', {
         };
 
         vm.callback = function () {
+            // show image label number on the top right corner
+            if (vm.dataitem.pnx.display.lds20[0] > 1) {
+                vm.localScope.showImageLabel = true;
+            }
+
             var image = $element.find('img')[0];
             if (image.height > 150) {
                 vm.localScope.imgclass = 'responsivePhoto';
@@ -1853,10 +1891,6 @@ angular.module('viewCustom').component('thumbnail', {
             if (divs) {
                 divs.style.marginLeft = image.clientWidth - 20 + 'px';
             }
-        };
-
-        vm.closePopUp = function (e) {
-            vm.localScope.contextFlag = false;
         };
 
         vm.openWindow = function () {
@@ -1890,7 +1924,6 @@ angular.module('viewCustom').component('thumbnail', {
                     items: itemData
                 },
                 onComplete: function onComplete(scope, element) {
-                    vm.localScope.contextFlag = false;
                     sv.setDialogFlag(true);
                 },
                 onRemoving: function onRemoving(element, removePromise) {

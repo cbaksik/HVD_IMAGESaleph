@@ -1,5 +1,7 @@
 
-<div class="md-subheader md-primoExplore-theme"> {{vm.itemlist.length}} search queries</div>
+<div class="md-subheader md-primoExplore-theme spaceLeft10">
+    {{vm.itemlist.length}} search queries
+</div>
 <md-list>
     <md-list-item ng-repeat="item in vm.itemlist track by $index" class="space">
         <label flex="5" tabindex="-1">{{$index+1}}.</label>

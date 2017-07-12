@@ -1,6 +1,6 @@
 <md-card class="hv-image-card" tabindex="0">
     <div class="imageLabel">
-        <div role="multiple images" ng-if="vm.dataitem.pnx.display.lds20[0] > 1" class="badge" aria-label="{{vm.dataitem.pnx.display.lds28[0]|countFilter}}}">
+        <div ng-show="vm.localScope.showImageLabel" role="multiple images" class="badge" aria-label="{{vm.dataitem.pnx.display.lds28[0]|countFilter}}}">
             {{vm.dataitem.pnx.display.lds20[0]|countFilter}}
         </div>
     </div>

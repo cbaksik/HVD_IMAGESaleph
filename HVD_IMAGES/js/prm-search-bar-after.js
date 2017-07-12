@@ -26,6 +26,7 @@ angular.module('viewCustom')
                 }
             }
 
+
         };
 
     }]);

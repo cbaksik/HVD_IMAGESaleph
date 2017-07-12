@@ -4,23 +4,25 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmFavoritesAfterController', ['prmSearchService', function (prmSearchService) {
+    .controller('prmFavoritesAfterController', ['prmSearchService',function (prmSearchService) {
 
         var sv=prmSearchService;
         let vm = this;
         vm.favoriteItems=[];
         vm.searchData={};
+        vm.selectitem=null;
+        vm.isOpenSideNav=false;
 
         vm.$doCheck=function() {
+            // get data from parent controller
             vm.favoriteItems=vm.parentCtrl.favoritesService.items;
             if(vm.favoriteItems.length > 0) {
                 vm.favoriteItems = sv.convertData(vm.favoriteItems);
                 vm.searchData.vid=vm.parentCtrl.vid;
-
+                vm.selectitem=sv.getItem();
             }
 
         };
-
 
     }]);
 

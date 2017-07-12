@@ -14,7 +14,7 @@ angular.module('viewCustom')
         controller:['$element','$timeout','$window','$mdDialog','prmSearchService','$location',function ($element,$timeout,$window,$mdDialog,prmSearchService,$location) {
             var vm=this;
             var sv=prmSearchService;
-            vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
+            vm.localScope={'imgclass':'','hideLockIcon':false,'showImageLabel':false};
             vm.modalDialogFlag=false;
             vm.imageUrl='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
             vm.linkUrl='';
@@ -82,6 +82,11 @@ angular.module('viewCustom')
             };
 
             vm.callback=function () {
+                // show image label number on the top right corner
+                if(vm.dataitem.pnx.display.lds20[0] > 1) {
+                    vm.localScope.showImageLabel=true;
+                }
+
                 var image=$element.find('img')[0];
                 if(image.height > 150){
                     vm.localScope.imgclass='responsivePhoto';
@@ -99,9 +104,6 @@ angular.module('viewCustom')
             };
             
 
-            vm.closePopUp=function (e) {
-                vm.localScope.contextFlag = false;
-            };
 
             vm.openWindow=function () {
                 var url='/primo-explore/fulldisplay?vid=HVD_IMAGES&docid='+vm.dataitem.pnx.control.recordid[0];
@@ -134,7 +136,6 @@ angular.module('viewCustom')
                         items:itemData
                     },
                     onComplete:function (scope, element) {
-                       vm.localScope.contextFlag=false;
                        sv.setDialogFlag(true);
                     },
                     onRemoving:function (element,removePromise) {
