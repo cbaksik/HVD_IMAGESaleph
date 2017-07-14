@@ -25,6 +25,6 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmSearchResultAvailabilityLineAfter', {
-        bindings: {parentCtrl: '='},
+        bindings: {parentCtrl: '<'},
         controller: 'prmSearchResultAvailabilityAfterController'
     });

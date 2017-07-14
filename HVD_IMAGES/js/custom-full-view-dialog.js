@@ -11,9 +11,6 @@ angular.module('viewCustom')
         vm.item = items.item;
         vm.searchData = items.searchData;
 
-        console.log('**** vm.item ***');
-        console.log(vm.item);
-
         sv.setItem(items);
         vm.closeDialog=function() {
             $mdDialog.hide();

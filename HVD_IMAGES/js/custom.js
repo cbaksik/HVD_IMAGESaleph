@@ -16,9 +16,6 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['item
     vm.item = items.item;
     vm.searchData = items.searchData;
 
-    console.log('**** vm.item ***');
-    console.log(vm.item);
-
     sv.setItem(items);
     vm.closeDialog = function () {
         $mdDialog.hide();
@@ -30,7 +27,7 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['item
  * This component is for a single image full display when a user click on thumbnail from a full display page
  */
 
-angular.module('viewCustom').controller('customSingleImageController', ['$sce', 'angularLoad', '$window', '$mdMedia', 'prmSearchService', function ($sce, angularLoad, $window, $mdMedia, prmSearchService) {
+angular.module('viewCustom').controller('customSingleImageController', ['$sce', '$window', '$mdMedia', 'prmSearchService', function ($sce, $window, $mdMedia, prmSearchService) {
 
     var vm = this;
     var sv = prmSearchService;
@@ -166,125 +163,16 @@ angular.module('viewCustom').component('customTopMenu', {
  * A modal dialog pop up the image when a user click on thumbnail image in view full detail page
  */
 
-angular.module('viewCustom').controller('customViewImageDialogController', ['$sce', 'angularLoad', 'items', '$mdDialog', function ($sce, angularLoad, items, $mdDialog) {
+angular.module('viewCustom').controller('customViewImageDialogController', ['items', '$mdDialog', function (items, $mdDialog) {
     // local variables
     var vm = this;
     vm.item = items;
-
-    console.log('** single image **');
-    console.log(items);
 
     // close modal dialog when a user click on x icon
     vm.closeImage = function () {
         $mdDialog.hide();
     };
 }]);
-
-/**
- * Created by samsan on 5/23/17.
- * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
- */
-
-angular.module('viewCustom').component('favoriteThumbnail', {
-    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/favoriteThumbnail.html',
-    bindings: {
-        dataitem: '<',
-        searchdata: '<'
-    },
-    controllerAs: 'vm',
-    controller: ['$element', '$timeout', '$window', '$mdDialog', 'prmSearchService', '$location', '$mdSidenav', function ($element, $timeout, $window, $mdDialog, prmSearchService, $location, $mdSidenav) {
-        var vm = this;
-        var sv = prmSearchService;
-        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
-        vm.modalDialogFlag = false;
-        vm.imageUrl = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-        vm.linkUrl = '';
-        vm.params = $location.search();
-
-        // check if image is not empty and it has width and height and greater than 150, then add css class
-        vm.$onChanges = function () {
-            vm.localScope = { 'imgclass': '', 'hideLockIcon': false };
-            if (vm.dataitem.pnx.links.thumbnail) {
-                vm.imageUrl = sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
-                $timeout(function () {
-                    var img = $element.find('img')[0];
-                    // use default image if it is a broken link image
-                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
-                    if (pattern.test(vm.dataitem.pnx.links.thumbnail[0])) {
-                        img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
-                    }
-                    img.onload = vm.callback;
-
-                    if (img.clientWidth > 50) {
-                        vm.callback();
-                    }
-                }, 300);
-            }
-
-            var vid = 'HVD_IMAGES';
-            var searchString = '';
-            var q = '';
-            var sort = 'rank';
-            var offset = 0;
-            var tab = '';
-            var scope = '';
-            if (vm.searchdata) {
-                vid = vm.searchdata.vid;
-                searchString = vm.searchdata.searchString ? vm.searchdata.searchString : searchString;
-                q = vm.searchdata.q ? vm.searchdata.q : q;
-                sort = vm.searchdata.sort ? vm.searchdata.sort : sort;
-                offset = vm.searchdata.offset ? vm.searchdata.offset : offset;
-                tab = vm.searchdata.tab ? vm.searchdata.tab : tab;
-                scope = vm.searchdata.scope ? vm.searchdata.scope : scope;
-            } else if (vm.params) {
-                vid = vm.params.vid;
-            }
-
-            vm.linkUrl = '/primo-explore/fulldisplay?vid=' + vid + '&docid=' + vm.dataitem.pnx.control.recordid[0] + '&sortby=' + sort;
-            vm.linkUrl += '&q=' + q + '&searchString=' + searchString + '&offset=' + offset;
-            vm.linkUrl += '&tab=' + tab + '&search_scope=' + scope;
-            if (vm.params.facet) {
-                if (Array.isArray(vm.params.facet)) {
-                    for (var i = 0; i < vm.params.facet.length; i++) {
-                        vm.linkUrl += '&facet=' + vm.params.facet[i];
-                    }
-                } else {
-                    vm.linkUrl += '&facet=' + vm.params.facet;
-                }
-            }
-        };
-
-        vm.callback = function () {
-            var image = $element.find('img')[0];
-            if (image.height > 150) {
-                vm.localScope.imgclass = 'responsivePhoto';
-                image.className = 'md-card-image ' + vm.localScope.imgclass;
-            }
-            if (vm.dataitem.restrictedImage) {
-                vm.localScope.hideLockIcon = true;
-            }
-
-            var divs = $element[0].children[0].children[0].children[0];
-            if (divs) {
-                divs.style.marginLeft = image.clientWidth - 20 + 'px';
-            }
-        };
-
-        vm.openWindow = function () {
-            var url = '/primo-explore/fulldisplay?vid=HVD_IMAGES&docid=' + vm.dataitem.pnx.control.recordid[0];
-            $window.open(url, '_blank');
-        };
-
-        vm.openWindow3 = function () {
-
-            //vm.isOpenSideNav=true;
-            sv.setItem(vm.dataitem);
-            $mdSidenav('right').toggle().then(function () {
-                console.log('***** open side nav ***');
-            }, 200);
-        };
-    }]
-});
 
 /**
  *
@@ -436,8 +324,7 @@ angular.module('viewCustom').component('multipleThumbnail', {
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-            console.log('**** vm.itemdata ****');
-            console.log(vm.itemdata);
+
             vm.localScope = { 'imgclass': '', 'hideLockIcon': false };
             if (vm.itemdata.image) {
                 vm.imageFlag = true;
@@ -519,7 +406,7 @@ angular.module('viewCustom').component('noResultsFound', {
  * Created by samsan on 5/25/17.
  */
 
-angular.module('viewCustom').controller('prmAuthenticationAfterController', ['angularLoad', 'prmSearchService', function (angularLoad, prmSearchService) {
+angular.module('viewCustom').controller('prmAuthenticationAfterController', ['prmSearchService', function (prmSearchService) {
     var vm = this;
     // initialize custom service search
     var sv = prmSearchService;
@@ -600,7 +487,7 @@ angular.module('viewCustom').controller('prmBackToSearchResultsButtonAfterContro
 }]);
 
 angular.module('viewCustom').component('prmBackToSearchResultsButtonAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmBackToSearchResultsButtonAfterController',
     controllerAs: 'vm',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-back-to-search-results-button-after.html'
@@ -610,7 +497,7 @@ angular.module('viewCustom').component('prmBackToSearchResultsButtonAfter', {
  * Created by samsan on 6/13/17.
  */
 
-angular.module('viewCustom').controller('prmBreadcrumbsAfterController', ['angularLoad', 'prmSearchService', function (angularLoad, prmSearchService) {
+angular.module('viewCustom').controller('prmBreadcrumbsAfterController', ['prmSearchService', function (prmSearchService) {
     var vm = this;
     // initialize custom service search
     var sv = prmSearchService;
@@ -635,7 +522,7 @@ angular.module('viewCustom').component('prmBreadcrumbsAfter', {
 /**
  * Created by samsan on 6/30/17.
  */
-angular.module('viewCustom').controller('prmBriefResultContainerAfterController', ['$sce', 'angularLoad', function ($sce, angularLoad) {
+angular.module('viewCustom').controller('prmBriefResultContainerAfterController', ['$sce', function ($sce) {
 
     var vm = this;
 
@@ -646,7 +533,7 @@ angular.module('viewCustom').controller('prmBriefResultContainerAfterController'
 }]);
 
 angular.module('viewCustom').component('prmBriefResultContainerAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmBriefResultContainerAfterController'
 });
 
@@ -674,7 +561,7 @@ angular.module('viewCustom').controller('prmFacetAfterController', ['prmSearchSe
 }]);
 
 angular.module('viewCustom').component('prmFacetAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmFacetAfterController'
 });
 
@@ -713,7 +600,7 @@ angular.module('viewCustom').component('prmFavoritesAfter', {
  * Created by samsan on 5/17/17.
  * This template is for direct access full view display link when a user send email to someone
  */
-angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$timeout', '$location', '$element', function ($sce, angularLoad, prmSearchService, $timeout, $location, $element) {
+angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', 'prmSearchService', '$timeout', '$location', '$element', function ($sce, prmSearchService, $timeout, $location, $element) {
 
     var sv = prmSearchService;
     var vm = this;
@@ -818,7 +705,7 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
 }]);
 
 angular.module('viewCustom').component('prmFullViewAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmFullViewAfterController',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
 });
@@ -827,7 +714,7 @@ angular.module('viewCustom').component('prmFullViewAfter', {
  * Created by samsan on 6/8/17.
  * This component add customize logo and Hollis Images text
  */
-angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', 'angularLoad', '$element', function ($sce, angularLoad, $element) {
+angular.module('viewCustom').controller('prmLogoAfterController', ['$sce', '$element', function ($sce, $element) {
 
     var vm = this;
 
@@ -853,7 +740,7 @@ angular.module('viewCustom').component('prmLogoAfter', {
  * Created by samsan on 5/22/17.
  * Access search box json data. Then change the number item per page. See prm-search-service.js file
  */
-angular.module('viewCustom').controller('prmSearchBarAfterController', ['angularLoad', 'prmSearchService', '$location', function (angularLoad, prmSearchService, $location) {
+angular.module('viewCustom').controller('prmSearchBarAfterController', ['prmSearchService', '$location', function (prmSearchService, $location) {
     var vm = this;
     // initialize custom service search
     var sv = prmSearchService;
@@ -879,7 +766,7 @@ angular.module('viewCustom').controller('prmSearchBarAfterController', ['angular
 }]);
 
 angular.module('viewCustom').component('prmSearchBarAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmSearchBarAfterController',
     'template': '<div id="searchResultList"></div>'
 });
@@ -946,7 +833,7 @@ angular.module('viewCustom').config(['$httpProvider', function ($httpProvider) {
  * This component is for pin favorite and search icon on the top right menu tab
  */
 
-angular.module('viewCustom').controller('prmSearchBookmarkFilterAfterController', ['$sce', 'angularLoad', '$element', function ($sce, angularLoad, $element) {
+angular.module('viewCustom').controller('prmSearchBookmarkFilterAfterController', ['$sce', '$element', function ($sce, $element) {
 
     var vm = this;
 
@@ -1015,7 +902,7 @@ angular.module('viewCustom').controller('prmSearchHistoryAfterController', ['prm
 
         query.onsuccess = function (e) {
             var result = query.result;
-            console.log('*** success result ***');
+            console.log('* success result ***');
             console.log(result);
             console.log('*** id ***');
             console.log(id);
@@ -1049,7 +936,7 @@ angular.module('viewCustom').controller('prmSearchResultAvailabilityAfterControl
 }]);
 
 angular.module('viewCustom').component('prmSearchResultAvailabilityLineAfter', {
-    bindings: { parentCtrl: '=' },
+    bindings: { parentCtrl: '<' },
     controller: 'prmSearchResultAvailabilityAfterController'
 });
 
@@ -1528,7 +1415,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
  * Created by samsan on 6/29/17.
  */
 
-angular.module('viewCustom').controller('prmTopbarAfterController', ['$sce', 'angularLoad', '$element', function ($sce, angularLoad, $element) {
+angular.module('viewCustom').controller('prmTopbarAfterController', ['$element', function ($element) {
 
     var vm = this;
     vm.$onChanges = function () {
@@ -1552,7 +1439,7 @@ angular.module('viewCustom').component('prmTopbarAfter', {
  * Created by samsan on 5/17/17.
  * This component is to insert images into online section
  */
-angular.module('viewCustom').controller('prmViewOnlineAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$mdDialog', '$timeout', '$window', '$location', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout, $window, $location) {
+angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSearchService', '$mdDialog', '$timeout', '$window', '$location', function (prmSearchService, $mdDialog, $timeout, $window, $location) {
 
     var vm = this;
     var sv = prmSearchService;
@@ -1866,6 +1753,14 @@ angular.module('viewCustom').component('thumbnail', {
                     vm.linkUrl += '&facet=' + vm.params.facet;
                 }
             }
+
+            // context menu
+            var context = $element.find('a');
+            context.bind('contextmenu', function (e) {
+
+                //e.preventDefault();
+                return false;
+            });
         };
 
         vm.$doCheck = function () {
@@ -1877,19 +1772,30 @@ angular.module('viewCustom').component('thumbnail', {
             if (vm.dataitem.pnx.display.lds20[0] > 1) {
                 vm.localScope.showImageLabel = true;
             }
-
+            // find the width and height of image after it is rendering
             var image = $element.find('img')[0];
-            if (image.height > 150) {
+            if (image.height > 150 && image.width < 185) {
                 vm.localScope.imgclass = 'responsivePhoto';
                 image.className = 'md-card-image ' + vm.localScope.imgclass;
+            } else if (image.height > 150 && image.width > 185) {
+                vm.localScope.imgclass = 'responsivePhoto2';
+                image.className = 'md-card-image ' + vm.localScope.imgclass;
+            } else if (image.width > 185) {
+                vm.localScope.imgclass = 'responsivePhoto3';
+                image.className = 'md-card-image ' + vm.localScope.imgclass;
             }
+
+            // show lock icon
             if (vm.dataitem.restrictedImage) {
                 vm.localScope.hideLockIcon = true;
             }
 
+            // line up the image label on the top of the image
             var divs = $element[0].children[0].children[0].children[0];
             if (divs) {
-                divs.style.marginLeft = image.clientWidth - 20 + 'px';
+                var margin = (185 - image.clientWidth) / 2;
+                var leftMargin = margin + image.clientWidth - 20 + 'px';
+                divs.style.marginLeft = leftMargin;
             }
         };
 
@@ -1930,6 +1836,7 @@ angular.module('viewCustom').component('thumbnail', {
                     sv.setDialogFlag(false);
                 }
             });
+            return false;
         };
 
         // When a user press enter by using tab key
@@ -1945,10 +1852,10 @@ angular.module('viewCustom').component('thumbnail', {
 angular.module('viewCustom').filter('truncatefilter', function () {
     return function (str) {
         var newstr = str;
-        var index = 60;
+        var index = 45;
         if (str) {
-            if (str.length > 60) {
-                newstr = str.substring(0, 60);
+            if (str.length > 45) {
+                newstr = str.substring(0, 45);
                 for (var i = newstr.length; i > 20; i--) {
                     var text = newstr.substring(i - 1, i);
                     if (text === ' ') {
@@ -1963,6 +1870,7 @@ angular.module('viewCustom').filter('truncatefilter', function () {
         return newstr;
     };
 });
+
 /* Copyright 2015 William Summers, MetaTribal LLC
  * adapted from https://developer.mozilla.org/en-US/docs/JXON
  *

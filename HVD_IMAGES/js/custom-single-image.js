@@ -4,7 +4,7 @@
  */
 
 angular.module('viewCustom')
-    .controller('customSingleImageController', [ '$sce', 'angularLoad','$window','$mdMedia','prmSearchService', function ($sce, angularLoad,$window,$mdMedia,prmSearchService) {
+    .controller('customSingleImageController', [ '$sce','$window','$mdMedia','prmSearchService', function ($sce,$window,$mdMedia,prmSearchService) {
 
         let vm = this;
         var sv=prmSearchService;

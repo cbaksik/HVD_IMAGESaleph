@@ -65,7 +65,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmBackToSearchResultsButtonAfter', {
-        bindings: {parentCtrl: '='},
+        bindings: {parentCtrl: '<'},
         controller: 'prmBackToSearchResultsButtonAfterController',
         controllerAs:'vm',
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/prm-back-to-search-results-button-after.html'

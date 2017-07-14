@@ -28,7 +28,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmFacetAfter', {
-        bindings: {parentCtrl: '='},
+        bindings: {parentCtrl: '<'},
         controller: 'prmFacetAfterController'
     });
 

@@ -3,7 +3,7 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmAuthenticationAfterController', [ 'angularLoad','prmSearchService', function (angularLoad,prmSearchService) {
+    .controller('prmAuthenticationAfterController', ['prmSearchService', function (prmSearchService) {
         let vm=this;
         // initialize custom service search
         let sv=prmSearchService;

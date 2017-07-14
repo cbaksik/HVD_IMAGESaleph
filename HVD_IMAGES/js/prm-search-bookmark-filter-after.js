@@ -4,7 +4,7 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmSearchBookmarkFilterAfterController', [ '$sce', 'angularLoad','$element', function ($sce, angularLoad, $element) {
+    .controller('prmSearchBookmarkFilterAfterController', [ '$sce','$element', function ($sce, $element) {
 
         let vm = this;
 

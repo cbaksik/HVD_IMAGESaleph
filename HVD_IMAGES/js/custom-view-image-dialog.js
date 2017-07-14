@@ -4,13 +4,10 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewImageDialogController', [ '$sce', 'angularLoad','items','$mdDialog', function ($sce, angularLoad, items, $mdDialog) {
+    .controller('customViewImageDialogController', ['items','$mdDialog', function (items, $mdDialog) {
         // local variables
         let vm = this;
         vm.item = items;
-
-        console.log('** single image **');
-        console.log(items);
 
         // close modal dialog when a user click on x icon
         vm.closeImage=function () {

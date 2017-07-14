@@ -1,12 +1,20 @@
+prm-alert-bar {
+    display: none !important;
+}
+
 .top-nav-bar {
     background:#000000 !important;
     color:#ffffff !important;
 }
 
 prm-search-bar {
-    background:#383838 !important;
-    color:#ffffff !important;
+    background:#383838;
+    color:#ffffff;
     padding-left:15px;
+}
+
+prm-search-bar md-card {
+    color:#000000;
 }
 
 .hollisImage {

@@ -3,7 +3,7 @@
  * This component add customize logo and Hollis Images text
  */
 angular.module('viewCustom')
-    .controller('prmLogoAfterController', [ '$sce', 'angularLoad','$element', function ($sce, angularLoad, $element) {
+    .controller('prmLogoAfterController', [ '$sce','$element', function ($sce, $element) {
 
         let vm = this;
 

@@ -75,6 +75,15 @@ angular.module('viewCustom')
                     }
                 }
 
+                // context menu
+                var context=$element.find('a');
+                context.bind('contextmenu',function (e) {
+
+                    //e.preventDefault();
+                    return false;
+                });
+
+
             };
 
             vm.$doCheck=function() {
@@ -86,20 +95,32 @@ angular.module('viewCustom')
                 if(vm.dataitem.pnx.display.lds20[0] > 1) {
                     vm.localScope.showImageLabel=true;
                 }
-
+                // find the width and height of image after it is rendering
                 var image=$element.find('img')[0];
-                if(image.height > 150){
+                if(image.height > 150 && image.width < 185){
                     vm.localScope.imgclass='responsivePhoto';
                     image.className='md-card-image '+ vm.localScope.imgclass;
+                } else if(image.height > 150 && image.width > 185) {
+                    vm.localScope.imgclass='responsivePhoto2';
+                    image.className='md-card-image '+ vm.localScope.imgclass;
+                } else if(image.width > 185) {
+                    vm.localScope.imgclass='responsivePhoto3';
+                    image.className='md-card-image '+ vm.localScope.imgclass;
                 }
+
+                // show lock icon
                 if(vm.dataitem.restrictedImage) {
                     vm.localScope.hideLockIcon = true;
                 }
 
+                // line up the image label on the top of the image
                 var divs=$element[0].children[0].children[0].children[0];
                 if(divs) {
-                    divs.style.marginLeft = (image.clientWidth - 20) + 'px';
+                    var margin= (185 - image.clientWidth) / 2;
+                    var leftMargin=((margin + image.clientWidth) - 20) + 'px';
+                    divs.style.marginLeft = leftMargin;
                 }
+
 
             };
             
@@ -142,7 +163,7 @@ angular.module('viewCustom')
                         sv.setDialogFlag(false);
                     }
                 });
-
+                return false;
             };
 
             // When a user press enter by using tab key
@@ -162,10 +183,10 @@ angular.module('viewCustom')
 angular.module('viewCustom').filter('truncatefilter',function () {
     return function (str) {
         var newstr=str;
-        var index=60;
+        var index=45;
         if(str) {
-            if (str.length > 60) {
-                newstr = str.substring(0, 60);
+            if (str.length > 45) {
+                newstr = str.substring(0, 45);
                 for (var i = newstr.length; i > 20; i--) {
                     var text = newstr.substring(i - 1, i);
                     if (text === ' ') {
@@ -174,10 +195,13 @@ angular.module('viewCustom').filter('truncatefilter',function () {
                     }
                 }
                 newstr = str.substring(0, index) + '...';
+
             }
+
         }
 
         return newstr;
     }
 
 });
+

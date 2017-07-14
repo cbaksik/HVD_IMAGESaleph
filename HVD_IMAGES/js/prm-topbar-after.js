@@ -3,7 +3,7 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmTopbarAfterController', [ '$sce', 'angularLoad','$element', function ($sce, angularLoad,$element) {
+    .controller('prmTopbarAfterController', ['$element', function ($element) {
 
         let vm = this;
         vm.$onChanges=function() {

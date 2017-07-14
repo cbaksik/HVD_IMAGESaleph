@@ -3,7 +3,7 @@
  * This component is to insert images into online section
  */
 angular.module('viewCustom')
-    .controller('prmViewOnlineAfterController', [ '$sce', 'angularLoad','prmSearchService','$mdDialog','$timeout','$window','$location', function ($sce, angularLoad, prmSearchService, $mdDialog, $timeout,$window,$location) {
+    .controller('prmViewOnlineAfterController', ['prmSearchService','$mdDialog','$timeout','$window','$location', function (prmSearchService, $mdDialog, $timeout,$window,$location) {
 
         let vm = this;
         let sv=prmSearchService;

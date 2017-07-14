@@ -28,10 +28,12 @@
 
 .prm-background {
   background: #ffffff;
+  color:#000000;
 }
 
 body {
   background: #ffffff;
+  color:#000000;
 }
 
 .main {
@@ -40,6 +42,7 @@ body {
   padding-left:0px !important;
   padding-top:10px !important;
   text-align: left !important;
+  color:#000000;
 }
 
 .disabled > a {

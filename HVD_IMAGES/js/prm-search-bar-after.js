@@ -3,7 +3,7 @@
  * Access search box json data. Then change the number item per page. See prm-search-service.js file
  */
 angular.module('viewCustom')
-    .controller('prmSearchBarAfterController', [ 'angularLoad','prmSearchService','$location', function (angularLoad,prmSearchService,$location) {
+    .controller('prmSearchBarAfterController', ['prmSearchService','$location', function (prmSearchService,$location) {
         let vm=this;
         // initialize custom service search
         let sv=prmSearchService;
@@ -35,7 +35,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmSearchBarAfter', {
-        bindings: {parentCtrl: '='},
+        bindings: {parentCtrl: '<'},
         controller: 'prmSearchBarAfterController',
         'template':`<div id="searchResultList"></div>`
     });

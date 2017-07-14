@@ -3,7 +3,7 @@
  * This template is for direct access full view display link when a user send email to someone
  */
 angular.module('viewCustom')
-    .controller('prmFullViewAfterController', [ '$sce', 'angularLoad','prmSearchService','$timeout','$location','$element', function ($sce, angularLoad, prmSearchService, $timeout, $location,$element) {
+    .controller('prmFullViewAfterController', [ '$sce','prmSearchService','$timeout','$location','$element', function ($sce, prmSearchService, $timeout, $location,$element) {
 
         let sv=prmSearchService;
         let vm = this;
@@ -118,7 +118,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmFullViewAfter', {
-        bindings: {parentCtrl: '='},
+        bindings: {parentCtrl: '<'},
         controller: 'prmFullViewAfterController',
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/prm-full-view-after.html'
     });

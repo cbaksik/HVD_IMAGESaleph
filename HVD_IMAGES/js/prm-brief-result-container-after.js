@@ -2,7 +2,7 @@
  * Created by samsan on 6/30/17.
  */
 angular.module('viewCustom')
-    .controller('prmBriefResultContainerAfterController', [ '$sce', 'angularLoad', function ($sce, angularLoad) {
+    .controller('prmBriefResultContainerAfterController', [ '$sce', function ($sce) {
 
         let vm = this;
 
@@ -19,7 +19,7 @@ angular.module('viewCustom')
 
 angular.module('viewCustom')
     .component('prmBriefResultContainerAfter', {
-        bindings: {parentCtrl: '='},
+        bindings: {parentCtrl: '<'},
         controller: 'prmBriefResultContainerAfterController'
     });
 

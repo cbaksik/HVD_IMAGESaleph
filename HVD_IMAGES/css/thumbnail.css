@@ -1,17 +1,18 @@
 .imageLabel {
-    width:230px;
+    width:185px;
     height:30px;
     text-align: right;
 }
 
 .badge {
-    top:15px;
-    position:relative;
+    position: absolute;
+    margin-left:160px;
+    margin-top:10px;
+    padding:0px;
     z-index:1;
-    margin-left:120px;
     width:30px;
     height:30px;
-    line-height:30px;
+    line-height:25px;
     color:#ffffff;
     font-size:80%;
     text-align:center;
@@ -22,22 +23,23 @@
     width:auto;
     height:150px;
     padding:0px !important;
-    margin:0px !important;
+    margin-left:auto !important;
+    margin-right: auto !important;
     text-align: left;
     z-index:0;
 }
 
 .imageTitle {
-    width:200px;
+    width:185px;
     height:40px;
-    line-height:20px;
-    text-align:left;
+    line-height:15px;
     font-size:100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: inherit;
     display: inline-block;
-    margin-top:20px;
+    margin-top:10px;
+    text-align: center;
 
 }
 
@@ -48,7 +50,7 @@
     padding-bottom:0px !important;
     padding-left:0px !important;
     background: transparent !important;
-    width:200px;
+    width:185px;
     height:230px;
     z-index:0 !important;
 }
@@ -96,9 +98,20 @@ a.thumbnail > img:focus {
 }
 
 .responsivePhoto {
-    height:150px !important;
-    width: auto !important;
+    height:150px;
+    width: auto;
 }
+
+.responsivePhoto2 {
+    height:150px;
+    width: 185px;
+}
+
+.responsivePhoto3 {
+    height:auto;
+    width: 180px;
+}
+
 
 .nophoto {
     width:150px;

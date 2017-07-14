@@ -50,7 +50,7 @@ angular.module('viewCustom')
 
             query.onsuccess=function(e) {
                 var result=query.result;
-                console.log('*** success result ***');
+                console.log('* success result ***');
                 console.log(result);
                 console.log('*** id ***');
                 console.log(id);

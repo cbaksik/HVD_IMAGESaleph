@@ -24,8 +24,7 @@ angular.module('viewCustom')
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
-                console.log('**** vm.itemdata ****');
-                console.log(vm.itemdata);
+
                 vm.localScope={'imgclass':'','hideLockIcon':false};
                 if(vm.itemdata.image) {
                     vm.imageFlag=true;
