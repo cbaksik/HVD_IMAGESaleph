@@ -6,7 +6,7 @@
         </div>
         <div ng-if="!vm.jp2">
             <img ng-if="vm.imageUrl" src="{{vm.imageUrl}}" class="md-card-image {{vm.localScope.imgClass}}" alt="{{vm.imgtitle}}" title="{{vm.imgtitle}}"/>
-            <div class="nophoto" ng-if="!vm.imageUrl">Image not digitized</div>
+            <div class="nophoto" ng-if="!vm.imageUrl" title="{{vm.imgtitle}}">Image not digitized</div>
         </div>
         <span ng-if="vm.localScope.loading"><img class="md-avatar" src="/custom/HVD_IMAGES/img/ajax-loader.gif"/></span>
     </md-card>

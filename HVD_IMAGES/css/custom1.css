@@ -1179,7 +1179,6 @@ div.search-actions > .md-button.button-confirm:hover {
 .imageLabel {
     width:185px;
     height:30px;
-    text-align: right;
 }
 
 .badge {
@@ -1198,13 +1197,19 @@ div.search-actions > .md-button.button-confirm:hover {
 }
 
 .imageBox {
-    width:auto;
     height:150px;
-    padding:0px !important;
+    display: table-cell;
+    padding:0px;
+    margin-left:auto;
+    margin-right: auto ;
+    z-index:0;
+    text-align: center;
+}
+
+.imageBox > img {
     margin-left:auto !important;
     margin-right: auto !important;
-    text-align: left;
-    z-index:0;
+    display: block !important;
 }
 
 .imageTitle {
@@ -1292,12 +1297,14 @@ a.thumbnail > img:focus {
 
 
 .nophoto {
-    width:150px;
-    height:150px;
+    width:148px;
+    height:148px;
     text-align: center;
     background:#efefef;
-    line-height:150px;
+    line-height:148px;
     z-index: 0;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .nophoto:hover {

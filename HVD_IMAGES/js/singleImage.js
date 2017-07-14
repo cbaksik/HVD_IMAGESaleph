@@ -50,7 +50,6 @@ angular.module('viewCustom')
                             }
                         },300);
                     }
-
                 }
 
                 vm.localScope.loading=false;

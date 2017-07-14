@@ -38,6 +38,7 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
     vm.itemData = {};
     vm.imageNav = true;
     vm.xmldata = {};
+    vm.imageTitle = '';
     vm.jp2 = false;
 
     vm.displayPhoto = function () {
@@ -79,6 +80,12 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
                 vm.imageNav = false;
             }
 
+            // get image title
+            if (vm.xmldata.surrogate) {
+                if (vm.xmldata.surrogate[vm.index].title) {
+                    vm.imageTitle = vm.xmldata.surrogate[vm.index].title[0].textElement[0]._text;
+                }
+            }
             // hide previous page
             var doc = document.getElementById('fullView');
             var div = doc.getElementsByClassName('full-view-inner-container');
