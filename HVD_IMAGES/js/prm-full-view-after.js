@@ -5,8 +5,8 @@
 angular.module('viewCustom')
     .controller('prmFullViewAfterController', [ '$sce','prmSearchService','$timeout','$location','$element', function ($sce, prmSearchService, $timeout, $location,$element) {
 
-        let sv=prmSearchService;
-        let vm = this;
+        var sv=prmSearchService;
+        var vm = this;
         vm.item=vm.parentCtrl.item;
         vm.params=$location.search();
         vm.services=[];

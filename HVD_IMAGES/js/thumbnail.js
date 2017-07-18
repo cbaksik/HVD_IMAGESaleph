@@ -22,7 +22,7 @@ angular.module('viewCustom')
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
-                vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
+                vm.localScope={'imgclass':'','hideLockIcon':false};
                 if(vm.dataitem.pnx.links.thumbnail) {
                     vm.imageUrl=sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                     $timeout(function () {
@@ -91,6 +91,10 @@ angular.module('viewCustom')
             };
 
             vm.callback=function () {
+                // show lock icon
+                if(vm.dataitem.restrictedImage) {
+                    vm.localScope.hideLockIcon = true;
+                }
                 // show image label number on the top right corner
                 if(vm.dataitem.pnx.display.lds20[0] > 1) {
                     vm.localScope.showImageLabel=true;
@@ -108,11 +112,6 @@ angular.module('viewCustom')
                     image.className='md-card-image '+ vm.localScope.imgclass;
                 }
 
-                // show lock icon
-                if(vm.dataitem.restrictedImage) {
-                    vm.localScope.hideLockIcon = true;
-                }
-
                 // line up the image label on the top of the image
                 var divs=$element[0].children[0].children[0].children[0];
                 if(divs) {
@@ -120,7 +119,6 @@ angular.module('viewCustom')
                     var leftMargin=((margin + image.clientWidth) - 20) + 'px';
                     divs.style.marginLeft = leftMargin;
                 }
-
 
             };
             

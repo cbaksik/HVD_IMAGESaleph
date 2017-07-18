@@ -42,6 +42,9 @@ angular.module('viewCustom').controller('customSingleImageController', ['$sce', 
     vm.jp2 = false;
 
     vm.displayPhoto = function () {
+        console.log('*** custom-single-image ****');
+        console.log(vm);
+
         vm.isLoggedIn = sv.getLogInID();
         if (vm.params.index && vm.params.singleimage) {
             if (vm.item.pnx.addata.mis1) {
@@ -149,6 +152,86 @@ angular.module('viewCustom').component('customSingleImage', {
 });
 
 /**
+ * Created by samsan on 5/23/17.
+ * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
+ */
+
+angular.module('viewCustom').component('customThumbnail', {
+    templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-thumbnail.html',
+    bindings: {
+        itemdata: '<',
+        searchdata: '<'
+    },
+    controllerAs: 'vm',
+    controller: ['$element', '$timeout', 'prmSearchService', function ($element, $timeout, prmSearchService) {
+        var vm = this;
+        var sv = prmSearchService;
+        vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
+        vm.imageUrl = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+        vm.src = '';
+        vm.imageTitle = '';
+        vm.restricted = false;
+        vm.imageFlag = false;
+
+        // check if image is not empty and it has width and height and greater than 150, then add css class
+        vm.$onChanges = function () {
+
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false };
+            if (vm.itemdata.image) {
+                vm.imageFlag = true;
+                if (vm.itemdata.image.length === 1) {
+                    vm.src = vm.itemdata.image[0].thumbnail[0]._attr.href._value + '?width=150&height=150';
+                    vm.restricted = vm.itemdata.image[0]._attr.restrictedImage._value;
+                }
+            } else if (vm.itemdata.thumbnail) {
+                vm.imageFlag = true;
+                if (vm.itemdata.thumbnail.length === 1) {
+                    vm.src = vm.itemdata.thumbnail[0]._attr.href._value + '?width=150&height=150';
+                    vm.imageTitle = vm.itemdata.thumbnail[0]._text[0];
+                }
+                if (vm.itemdata._attr) {
+                    vm.restricted = vm.itemdata._attr.restrictedImage._value;
+                }
+            }
+            if (vm.itemdata.title) {
+                vm.imageTitle = vm.itemdata.title[0].textElement[0]._text;
+            }
+            if (vm.src && vm.imageFlag) {
+                vm.imageUrl = sv.getHttps(vm.src);
+                $timeout(function () {
+                    var img = $element.find('img')[0];
+                    // use default image if it is a broken link image
+                    var pattern = /^(onLoad\?)/; // the broken image start with onLoad
+                    if (pattern.test(vm.src)) {
+                        img.src = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
+                    }
+                    img.onload = vm.callback;
+                    if (img.clientWidth > 50) {
+                        vm.callback();
+                    }
+                }, 300);
+            }
+        };
+        vm.callback = function () {
+            var image = $element.find('img')[0];
+            if (image.height > 150) {
+                vm.localScope.imgclass = 'responsivePhoto';
+                image.className = 'md-card-image ' + vm.localScope.imgclass;
+            }
+            // show lock up icon
+            if (vm.restricted) {
+                vm.localScope.hideLockIcon = true;
+            }
+        };
+
+        $element.bind('contextmenu', function (e) {
+            e.preventDefault();
+            return false;
+        });
+    }]
+});
+
+/**
  * Created by samsan on 6/29/17.
  */
 
@@ -163,6 +246,64 @@ angular.module('viewCustom').component('customTopMenu', {
 
         vm.topRightMenus = [{ 'title': 'HOLLIS +', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:bannerhollis+', 'label': 'Go to Hollis plus' }, { 'title': 'Libraries / Hours', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:bannerfindlib', 'label': 'Go to Library hours' }, { 'title': 'All My Accounts', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:banneraccounts', 'label': 'Go to all my accounts' }];
     }]
+});
+
+/**
+ * Created by samsan on 7/17/17.
+ */
+
+angular.module('viewCustom').controller('customViewAllComponentMetadataController', ['$sce', '$element', '$location', 'prmSearchService', function ($sce, $element, $location, prmSearchService) {
+
+    var vm = this;
+    var sv = prmSearchService;
+    vm.params = $location.search();
+    vm.xmldata = [];
+    vm.items = {};
+
+    vm.getData = function () {
+        var restUrl = vm.parentCtrl.searchService.cheetah.restUrl + '/' + vm.params.context + '/' + vm.params.docid;
+        var params = { 'vid': 'HVD_IMAGES', 'lang': 'en_US', 'search_scope': 'default_scope', 'adaptor': 'Local Search Engine' };
+        params.vid = vm.params.vid;
+        params.lang = vm.params.lang;
+        params.search_scope = vm.params.search_scope;
+        params.adaptor = vm.params.adaptor;
+        sv.getAjax(restUrl, params, 'get').then(function (result) {
+            vm.items = result.data;
+            vm.xmldata = sv.parseXml(vm.items.pnx.addata.mis1[0]);
+            if (vm.xmldata.work) {
+                vm.xmldata = vm.xmldata.work[0];
+            } else if (vm.xmldata.group) {
+                vm.xmldata = vm.xmldata.group[0];
+                if (vm.xmldata.subwork) {
+                    vm.xmldata.surrogate = vm.xmldata.subwork;
+                }
+            }
+
+            console.log('**** vm.xmldata ****');
+            console.log(vm.xmldata);
+        }, function (err) {
+            console.log(err);
+        });
+    };
+
+    vm.$onChanges = function () {
+        console.log('*** custom-view-all-component-metadata ***');
+        console.log(vm);
+        // hide search box
+        var el = $element[0].parentNode.parentNode.children[0].children[2];
+        if (el) {
+            el.style.display = 'none';
+        }
+
+        vm.getData();
+    };
+}]);
+
+angular.module('viewCustom').component('customViewAllComponentMetadata', {
+    bindings: { parentCtrl: '<' },
+    controller: 'customViewAllComponentMetadataController',
+    controllerAs: 'vm',
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-view-all-component-metadata.html'
 });
 
 /**
@@ -1446,7 +1587,7 @@ angular.module('viewCustom').component('prmTopbarAfter', {
  * Created by samsan on 5/17/17.
  * This component is to insert images into online section
  */
-angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSearchService', '$mdDialog', '$timeout', '$window', '$location', function (prmSearchService, $mdDialog, $timeout, $window, $location) {
+angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSearchService', '$mdDialog', '$timeout', '$window', '$location', '$state', function (prmSearchService, $mdDialog, $timeout, $window, $location, $state) {
 
     var vm = this;
     var sv = prmSearchService;
@@ -1455,6 +1596,7 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     vm.searchData = itemData.searchData;
     vm.params = $location.search();
     vm.zoomButtonFlag = true;
+    vm.viewAllComponetMetadataFlag = false;
     vm.singleImageFlag = false;
 
     vm.$onChanges = function () {
@@ -1475,11 +1617,28 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
             if (vm.item.mis1Data[0].image) {
                 if (vm.item.mis1Data.length === 1 && vm.item.mis1Data[0].image.length === 1) {
                     vm.singleImageFlag = true;
+                } else {
+                    vm.viewAllComponetMetadataFlag = true;
                 }
             } else if (vm.item.mis1Data.length === 1) {
                 vm.singleImageFlag = true;
+            } else if (vm.item.mis1Data.length > 1) {
+                vm.viewAllComponetMetadataFlag = true;
             }
         }
+    };
+
+    // view all component metadata
+    vm.viewAllComponentMetaData = function () {
+
+        console.log('***** view all component metadata ***');
+        console.log(vm);
+
+        var url = '/primo-explore/viewallcomponentmetadata?vid=' + vm.params.vid + '&docid=' + vm.item.pnx.control.recordid[0];
+        url += '&query=' + vm.params.query + '&sortby=' + vm.params.sortby + '&tab=' + vm.params.tab + '&search_scope=' + vm.params.search_scope;
+        url += '&offset=' + vm.params.offset + '&lang=' + vm.params.lang;
+        url += '&context=' + vm.item.context + '&adaptor=' + vm.item.adaptor;
+        $window.open(url, '_blank');
     };
 
     // show the pop up image
@@ -1518,7 +1677,16 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     };
 }]);
 
-angular.module('viewCustom').component('prmViewOnlineAfter', {
+angular.module('viewCustom').config(function ($stateProvider) {
+    $stateProvider.state('exploreMain.viewallcomponentdata', {
+        url: '/viewallcomponentmetadata',
+        views: {
+            '': {
+                template: '<custom-view-all-component-metadata parent-ctrl="$ctrl"></custom-view-all-component-metadata>'
+            }
+        }
+    });
+}).component('prmViewOnlineAfter', {
     bindings: { parentCtrl: '<' },
     controller: 'prmViewOnlineAfterController',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-view-online-after.html'
@@ -1711,7 +1879,7 @@ angular.module('viewCustom').component('thumbnail', {
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false };
             if (vm.dataitem.pnx.links.thumbnail) {
                 vm.imageUrl = sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                 $timeout(function () {
@@ -1775,6 +1943,10 @@ angular.module('viewCustom').component('thumbnail', {
         };
 
         vm.callback = function () {
+            // show lock icon
+            if (vm.dataitem.restrictedImage) {
+                vm.localScope.hideLockIcon = true;
+            }
             // show image label number on the top right corner
             if (vm.dataitem.pnx.display.lds20[0] > 1) {
                 vm.localScope.showImageLabel = true;
@@ -1790,11 +1962,6 @@ angular.module('viewCustom').component('thumbnail', {
             } else if (image.width > 185) {
                 vm.localScope.imgclass = 'responsivePhoto3';
                 image.className = 'md-card-image ' + vm.localScope.imgclass;
-            }
-
-            // show lock icon
-            if (vm.dataitem.restrictedImage) {
-                vm.localScope.hideLockIcon = true;
             }
 
             // line up the image label on the top of the image

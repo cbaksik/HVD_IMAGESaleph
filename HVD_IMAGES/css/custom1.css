@@ -645,6 +645,11 @@ prm-search-result-list-after{
     text-align: center; }
 
 
+#componentMetadata {
+    padding:15px;
+    background: #ffffff;
+    color:#000000;
+}
 prm-logo {
 	display: flex;
 	flex-direction: row;
@@ -1250,11 +1255,19 @@ div.search-actions > .md-button.button-confirm:hover {
     margin-left:-11px;
     margin-top:-20px;
     z-index:5;
+    width:25px;
+    height:25px;
 }
 
 .lockIcon > img {
     width:25px;
     height:auto;
+}
+
+.thumbnail {
+    display: inline-block;
+    flex:1;
+    flex-direction: column;
 }
 
 a.thumbnail > img:hover {
@@ -1287,7 +1300,7 @@ a.thumbnail > img:focus {
 
 .responsivePhoto2 {
     height:150px;
-    width: 185px;
+    width: 180px;
 }
 
 .responsivePhoto3 {

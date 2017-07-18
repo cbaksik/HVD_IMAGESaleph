@@ -72,11 +72,19 @@
     margin-left:-11px;
     margin-top:-20px;
     z-index:5;
+    width:25px;
+    height:25px;
 }
 
 .lockIcon > img {
     width:25px;
     height:auto;
+}
+
+.thumbnail {
+    display: inline-block;
+    flex:1;
+    flex-direction: column;
 }
 
 a.thumbnail > img:hover {
@@ -109,7 +117,7 @@ a.thumbnail > img:focus {
 
 .responsivePhoto2 {
     height:150px;
-    width: 185px;
+    width: 180px;
 }
 
 .responsivePhoto3 {

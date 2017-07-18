@@ -19,6 +19,9 @@ angular.module('viewCustom')
         vm.jp2=false;
 
         vm.displayPhoto=function () {
+            console.log('*** custom-single-image ****');
+            console.log(vm);
+
             vm.isLoggedIn=sv.getLogInID();
             if(vm.params.index && vm.params.singleimage) {
                 if(vm.item.pnx.addata.mis1) {

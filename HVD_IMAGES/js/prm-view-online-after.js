@@ -3,15 +3,16 @@
  * This component is to insert images into online section
  */
 angular.module('viewCustom')
-    .controller('prmViewOnlineAfterController', ['prmSearchService','$mdDialog','$timeout','$window','$location', function (prmSearchService, $mdDialog, $timeout,$window,$location) {
+    .controller('prmViewOnlineAfterController', ['prmSearchService','$mdDialog','$timeout','$window','$location','$state', function (prmSearchService, $mdDialog, $timeout,$window,$location,$state) {
 
-        let vm = this;
-        let sv=prmSearchService;
-        let itemData=sv.getItem();
+        var vm = this;
+        var sv=prmSearchService;
+        var itemData=sv.getItem();
         vm.item=itemData.item;
         vm.searchData=itemData.searchData;
         vm.params=$location.search();
         vm.zoomButtonFlag=true;
+        vm.viewAllComponetMetadataFlag=false;
         vm.singleImageFlag=false;
 
         vm.$onChanges=function() {
@@ -32,12 +33,30 @@ angular.module('viewCustom')
                if(vm.item.mis1Data[0].image) {
                    if(vm.item.mis1Data.length===1 && vm.item.mis1Data[0].image.length===1) {
                        vm.singleImageFlag = true;
+                   } else {
+                       vm.viewAllComponetMetadataFlag=true;
                    }
                } else if(vm.item.mis1Data.length===1) {
                    vm.singleImageFlag=true;
+               } else if(vm.item.mis1Data.length > 1) {
+                   vm.viewAllComponetMetadataFlag=true;
                }
            }
 
+
+        };
+
+        // view all component metadata
+        vm.viewAllComponentMetaData=function () {
+
+            console.log('***** view all component metadata ***');
+            console.log(vm);
+
+            var url='/primo-explore/viewallcomponentmetadata?vid='+vm.params.vid+'&docid='+vm.item.pnx.control.recordid[0];
+            url+='&query='+vm.params.query+'&sortby='+vm.params.sortby+'&tab='+vm.params.tab+'&search_scope='+vm.params.search_scope;
+            url+='&offset='+vm.params.offset+'&lang='+vm.params.lang;
+            url+='&context='+vm.item.context+'&adaptor='+vm.item.adaptor;
+            $window.open(url,'_blank');
 
         };
 
@@ -81,6 +100,19 @@ angular.module('viewCustom')
 
 
 angular.module('viewCustom')
+    .config(function ($stateProvider) {
+        $stateProvider
+            .state('exploreMain.viewallcomponentdata', {
+                    url: '/viewallcomponentmetadata',
+                    views:{
+                        '': {
+                            template: `<custom-view-all-component-metadata parent-ctrl="$ctrl"></custom-view-all-component-metadata>`
+                        }
+                    }
+                }
+
+            )
+    })
     .component('prmViewOnlineAfter', {
         bindings: {parentCtrl: '<'},
         controller: 'prmViewOnlineAfterController',

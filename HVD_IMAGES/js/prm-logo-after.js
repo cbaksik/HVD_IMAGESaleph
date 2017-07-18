@@ -5,7 +5,7 @@
 angular.module('viewCustom')
     .controller('prmLogoAfterController', [ '$sce','$element', function ($sce, $element) {
 
-        let vm = this;
+        var vm = this;
 
         vm.$onChanges=function() {
             // remove flex top bar and also remove tab menus
