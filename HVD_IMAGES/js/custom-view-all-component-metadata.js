@@ -3,16 +3,20 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService', function ($sce, $element,$location, prmSearchService) {
+    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService','$window','$stateParams', function ($sce, $element,$location, prmSearchService, $window, $stateParams) {
 
         var vm = this;
         var sv=prmSearchService;
         vm.params=$location.search();
+        // get ui-router parameters
+        vm.context=$stateParams.context;
+        vm.docid=$stateParams.docid;
+
         vm.xmldata=[];
         vm.items={};
 
         vm.getData=function () {
-          var restUrl=vm.parentCtrl.searchService.cheetah.restUrl+'/'+vm.params.context+'/'+vm.params.docid;
+          var restUrl=vm.parentCtrl.searchService.cheetah.restUrl+'/'+vm.context+'/'+vm.docid;
           var params={'vid':'HVD_IMAGES','lang':'en_US','search_scope':'default_scope','adaptor':'Local Search Engine'}
           params.vid=vm.params.vid;
           params.lang=vm.params.lang;
@@ -21,19 +25,11 @@ angular.module('viewCustom')
           sv.getAjax(restUrl,params,'get')
               .then(function (result) {
                   vm.items=result.data;
-                  vm.xmldata = sv.parseXml(vm.items.pnx.addata.mis1[0]);
-                  if(vm.xmldata.work) {
-                      vm.xmldata=vm.xmldata.work[0];
-                  } else if(vm.xmldata.group) {
-                      vm.xmldata=vm.xmldata.group[0];
-                      if(vm.xmldata.subwork) {
-                          vm.xmldata.surrogate=vm.xmldata.subwork;
-                      }
-
-                  }
+                  vm.xmldata = sv.getXMLdata(vm.items.pnx.addata.mis1[0]);
 
                   console.log('**** vm.xmldata ****');
                   console.log(vm.xmldata);
+                  console.log(vm.items)
 
               },function (err) {
                   console.log(err);
@@ -41,9 +37,18 @@ angular.module('viewCustom')
 
         };
 
+        // show the pop up image
+        vm.gotoFullPhoto=function (index) {
+
+            // go to full display page
+            var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid+'/'+index+'?vid='+vm.params.vid+'&lang='+vm.params.lang;
+            if(vm.params.adaptor) {
+                url+='&adaptor='+vm.params.adaptor;
+            }
+            $window.open(url,'_blank');
+        };
+
         vm.$onChanges=function() {
-            console.log('*** custom-view-all-component-metadata ***');
-            console.log(vm);
             // hide search box
             var el=$element[0].parentNode.parentNode.children[0].children[2];
             if(el) {

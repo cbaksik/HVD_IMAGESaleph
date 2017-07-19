@@ -244,6 +244,8 @@
 <hr/>
 
 
+<!--- display surrogate and subwork image -->
+
 <md-content id="componentMetadata"  ng-repeat="data in vm.xmldata.surrogate track by $index">
 <div layout="row" class="layout-row">
   <div flex="80">
@@ -338,7 +340,7 @@
         </div>
     </div>
   </div>
-  <div flex="20">
+  <div flex="20" ng-click="vm.gotoFullPhoto($index)">
       <custom-thumbnail itemdata="data" searchdata="vm.params"></custom-thumbnail>
   </div>
  </div>

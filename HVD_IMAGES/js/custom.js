@@ -23,135 +23,6 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['item
 }]);
 
 /**
- * Created by samsan on 6/9/17.
- * This component is for a single image full display when a user click on thumbnail from a full display page
- */
-
-angular.module('viewCustom').controller('customSingleImageController', ['$sce', '$window', '$mdMedia', 'prmSearchService', function ($sce, $window, $mdMedia, prmSearchService) {
-
-    var vm = this;
-    var sv = prmSearchService;
-    vm.photo = {};
-    vm.flexsize = 80;
-    vm.index = parseInt(vm.params.index);
-    vm.total = 0;
-    vm.itemData = {};
-    vm.imageNav = true;
-    vm.xmldata = {};
-    vm.imageTitle = '';
-    vm.jp2 = false;
-
-    vm.displayPhoto = function () {
-        console.log('*** custom-single-image ****');
-        console.log(vm);
-
-        vm.isLoggedIn = sv.getLogInID();
-        if (vm.params.index && vm.params.singleimage) {
-            if (vm.item.pnx.addata.mis1) {
-                vm.xmldata = sv.parseXml(vm.item.pnx.addata.mis1[0]);
-                if (vm.xmldata.work) {
-                    vm.xmldata = vm.xmldata.work[0];
-                } else if (vm.xmldata.group) {
-                    vm.xmldata = vm.xmldata.group[0];
-                    if (vm.xmldata.subwork) {
-                        // make it to the same key
-                        vm.xmldata.surrogate = vm.xmldata.subwork;
-                    }
-                }
-            }
-
-            // the xml has different format nodes
-            if (vm.item.mis1Data) {
-                if (vm.item.mis1Data.length === 1) {
-                    vm.photo = vm.item.mis1Data[0].image[vm.index];
-                    vm.total = vm.item.mis1Data[0].image.length;
-                    vm.itemData = vm.item.mis1Data[0];
-                } else if (vm.item.mis1Data.length > 1) {
-                    if (vm.item.mis1Data[vm.index].image) {
-                        vm.photo = vm.item.mis1Data[vm.index].image[0];
-                    }
-                    vm.total = vm.item.mis1Data.length;
-                    vm.itemData = vm.item.mis1Data[vm.index];
-                }
-                // find out if the image is jp2 or not
-                vm.jp2 = sv.findJP2(vm.photo);
-                // pass this data to use in prm-back-to-search-result-button-after
-                sv.setPhoto(vm.item);
-            }
-
-            if (vm.item.restrictedImage && vm.isLoggedIn === false) {
-                vm.imageNav = false;
-            }
-
-            // get image title
-            if (vm.xmldata.surrogate) {
-                if (vm.xmldata.surrogate[vm.index].title) {
-                    vm.imageTitle = vm.xmldata.surrogate[vm.index].title[0].textElement[0]._text;
-                }
-            }
-            // hide previous page
-            var doc = document.getElementById('fullView');
-            var div = doc.getElementsByClassName('full-view-inner-container');
-            div[0].style.display = 'none';
-        }
-    };
-
-    vm.$onChanges = function () {
-
-        // if the smaller screen size, make the flex size to 100.
-        if ($mdMedia('sm')) {
-            vm.flexsize = 100;
-        } else if ($mdMedia('xs')) {
-            vm.flexsize = 100;
-        }
-
-        vm.displayPhoto();
-    };
-
-    // when a user click on breadcrumbs navigator
-    vm.goBack = function () {
-        $window.location.href = vm.breadcrumbs.url;
-    };
-
-    // next photo
-    vm.nextPhoto = function () {
-        vm.index++;
-        if (vm.index < vm.total && vm.index >= 0) {
-            vm.displayPhoto();
-        } else {
-            vm.index = 0;
-            vm.displayPhoto();
-        }
-    };
-    // prev photo
-    vm.prevPhoto = function () {
-        vm.index--;
-        if (vm.index >= 0 && vm.index < vm.total) {
-            vm.displayPhoto();
-        } else {
-            vm.index = vm.total - 1;
-            vm.displayPhoto();
-        }
-    };
-
-    // check if the item is array or not
-    vm.isArray = function (obj) {
-        if (Array.isArray(obj)) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-}]);
-
-angular.module('viewCustom').component('customSingleImage', {
-    bindings: { item: '<', services: '<', params: '<' },
-    controller: 'customSingleImageController',
-    controllerAs: 'vm',
-    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-single-image.html'
-});
-
-/**
  * Created by samsan on 5/23/17.
  * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
  */
@@ -252,16 +123,20 @@ angular.module('viewCustom').component('customTopMenu', {
  * Created by samsan on 7/17/17.
  */
 
-angular.module('viewCustom').controller('customViewAllComponentMetadataController', ['$sce', '$element', '$location', 'prmSearchService', function ($sce, $element, $location, prmSearchService) {
+angular.module('viewCustom').controller('customViewAllComponentMetadataController', ['$sce', '$element', '$location', 'prmSearchService', '$window', '$stateParams', function ($sce, $element, $location, prmSearchService, $window, $stateParams) {
 
     var vm = this;
     var sv = prmSearchService;
     vm.params = $location.search();
+    // get ui-router parameters
+    vm.context = $stateParams.context;
+    vm.docid = $stateParams.docid;
+
     vm.xmldata = [];
     vm.items = {};
 
     vm.getData = function () {
-        var restUrl = vm.parentCtrl.searchService.cheetah.restUrl + '/' + vm.params.context + '/' + vm.params.docid;
+        var restUrl = vm.parentCtrl.searchService.cheetah.restUrl + '/' + vm.context + '/' + vm.docid;
         var params = { 'vid': 'HVD_IMAGES', 'lang': 'en_US', 'search_scope': 'default_scope', 'adaptor': 'Local Search Engine' };
         params.vid = vm.params.vid;
         params.lang = vm.params.lang;
@@ -269,26 +144,28 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
         params.adaptor = vm.params.adaptor;
         sv.getAjax(restUrl, params, 'get').then(function (result) {
             vm.items = result.data;
-            vm.xmldata = sv.parseXml(vm.items.pnx.addata.mis1[0]);
-            if (vm.xmldata.work) {
-                vm.xmldata = vm.xmldata.work[0];
-            } else if (vm.xmldata.group) {
-                vm.xmldata = vm.xmldata.group[0];
-                if (vm.xmldata.subwork) {
-                    vm.xmldata.surrogate = vm.xmldata.subwork;
-                }
-            }
+            vm.xmldata = sv.getXMLdata(vm.items.pnx.addata.mis1[0]);
 
             console.log('**** vm.xmldata ****');
             console.log(vm.xmldata);
+            console.log(vm.items);
         }, function (err) {
             console.log(err);
         });
     };
 
+    // show the pop up image
+    vm.gotoFullPhoto = function (index) {
+
+        // go to full display page
+        var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '/' + index + '?vid=' + vm.params.vid + '&lang=' + vm.params.lang;
+        if (vm.params.adaptor) {
+            url += '&adaptor=' + vm.params.adaptor;
+        }
+        $window.open(url, '_blank');
+    };
+
     vm.$onChanges = function () {
-        console.log('*** custom-view-all-component-metadata ***');
-        console.log(vm);
         // hide search box
         var el = $element[0].parentNode.parentNode.children[0].children[2];
         if (el) {
@@ -304,6 +181,135 @@ angular.module('viewCustom').component('customViewAllComponentMetadata', {
     controller: 'customViewAllComponentMetadataController',
     controllerAs: 'vm',
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-view-all-component-metadata.html'
+});
+
+/**
+ * Created by samsan on 6/9/17.
+ * This component is for a single image full display when a user click on thumbnail from a full display page
+ */
+
+angular.module('viewCustom').controller('customViewComponentController', ['$sce', '$mdMedia', 'prmSearchService', '$location', '$stateParams', '$element', function ($sce, $mdMedia, prmSearchService, $location, $stateParams, $element) {
+
+    var vm = this;
+    var sv = prmSearchService;
+    // get location parameter
+    vm.params = $location.search();
+    // get parameter from angular ui-router
+    vm.context = $stateParams.context;
+    vm.docid = $stateParams.docid;
+    vm.index = parseInt($stateParams.index);
+
+    vm.photo = {};
+    vm.flexsize = 80;
+    vm.total = 0;
+    vm.itemData = {};
+    vm.imageNav = true;
+    vm.xmldata = {};
+    vm.imageTitle = '';
+    vm.jp2 = false;
+
+    // ajax call to get data
+    vm.getData = function () {
+        var url = vm.parentCtrl.searchService.cheetah.restBaseURLs.pnxBaseURL + '/' + vm.context + '/' + vm.docid;
+        var params = { 'vid': '', 'lang': '', 'search_scope': '', 'adaptor': '' };
+        params.vid = vm.params.vid;
+        params.lang = vm.params.lang;
+        params.search_scope = vm.params.search_scope;
+        params.adaptor = vm.params.adaptor;
+        sv.getAjax(url, params, 'get').then(function (result) {
+            vm.item = result.data;
+            // convert xml to json
+            if (vm.item.pnx.addata) {
+                vm.xmldata = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
+            }
+            // show total of image
+            if (vm.xmldata.surrogate) {
+                vm.total = vm.xmldata.surrogate.length;
+            } else if (vm.xmldata.image) {
+                vm.total = vm.xmldata.image.length;
+            }
+            // display photo
+            vm.displayPhoto();
+        }, function (error) {
+            console.log(error);
+        });
+    };
+
+    vm.displayPhoto = function () {
+        vm.isLoggedIn = sv.getLogInID();
+
+        if (vm.xmldata.surrogate && !vm.xmldata.image) {
+            if (vm.xmldata.surrogate[vm.index].image) {
+                vm.photo = vm.xmldata.surrogate[vm.index].image[0];
+                // find out if the image is jp2 or not
+                vm.jp2 = sv.findJP2(vm.photo);
+            }
+            if (vm.xmldata.surrogate[vm.index].title) {
+                vm.imageTitle = vm.xmldata.surrogate[vm.index].title[0].textElement[0]._text;
+            }
+        } else if (vm.xmldata.image) {
+            vm.photo = vm.xmldata.image[vm.index];
+            vm.jp2 = sv.findJP2(vm.photo);
+        }
+
+        if (vm.photo._attr) {
+            if (vm.photo._attr.restrictedImage._value && vm.isLoggedIn === false) {
+                vm.imageNav = false;
+            }
+        }
+    };
+
+    vm.$onChanges = function () {
+
+        // if the smaller screen size, make the flex size to 100.
+        if ($mdMedia('sm')) {
+            vm.flexsize = 100;
+        } else if ($mdMedia('xs')) {
+            vm.flexsize = 100;
+        }
+        // call ajax and display data
+        vm.getData();
+        // hide search bar
+        var el = $element[0].parentNode.parentNode.children[0].children[2];
+        el.style.display = 'none';
+    };
+
+    // next photo
+    vm.nextPhoto = function () {
+        vm.index++;
+        if (vm.index < vm.total && vm.index >= 0) {
+            vm.displayPhoto();
+        } else {
+            vm.index = 0;
+            vm.displayPhoto();
+        }
+    };
+    // prev photo
+    vm.prevPhoto = function () {
+        vm.index--;
+        if (vm.index >= 0 && vm.index < vm.total) {
+            vm.displayPhoto();
+        } else {
+            vm.index = vm.total - 1;
+            vm.displayPhoto();
+        }
+    };
+
+    // check if the item is array or not
+    vm.isArray = function (obj) {
+        if (Array.isArray(obj)) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+}]);
+
+angular.module('viewCustom').component('customViewComponent', {
+    bindings: { item: '<', services: '<', params: '<', parentCtrl: '<' },
+    controller: 'customViewComponentController',
+    controllerAs: 'vm',
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-view-component.html'
 });
 
 /**
@@ -1401,6 +1407,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                 if (obj.pnx.addata.mis1.length > 0) {
                     var xml = obj.pnx.addata.mis1[0];
                     var jsonData = serviceObj.parseXml(xml);
+
                     if (jsonData.work) {
                         // it has a single image
                         if (jsonData.work[0].surrogate) {
@@ -1435,12 +1442,22 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                         }
                     } else if (jsonData.group) {
                         // it has multiple images
-                        obj.mis1Data = jsonData.group[0].subwork;
-                        if (obj.mis1Data) {
+                        if (jsonData.group[0].subwork) {
+                            obj.mis1Data = jsonData.group[0].subwork;
                             for (var k = 0; k < obj.mis1Data.length; k++) {
                                 if (obj.mis1Data[k].image) {
                                     obj.restrictedImage = obj.mis1Data[k].image[0]._attr.restrictedImage._value;
                                 }
+                            }
+                        }
+                        if (jsonData.group[0].surrogate) {
+                            var j = obj.mis1Data.length;
+                            for (var k = 0; k < jsonData.group[0].surrogate.length; k++) {
+                                obj.mis1Data[j] = jsonData.group[0].surrogate[k];
+                                if (obj.mis1Data[j].image) {
+                                    obj.restrictedImage = obj.mis1Data[j].image[0]._attr.restrictedImage._value;
+                                }
+                                j++;
                             }
                         }
                     }
@@ -1556,6 +1573,53 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         return flag;
     };
 
+    // this handle multipe subtree
+    serviceObj.getXMLdata = function (str) {
+        var xmldata = '';
+        if (str) {
+            xmldata = serviceObj.parseXml(str);
+            if (xmldata.work) {
+                xmldata = xmldata.work[0];
+                if (!xmldata.surrogate && xmldata.image) {
+                    xmldata.surrogate = xmldata.image;
+                }
+                if (xmldata.subwork && xmldata.surrogate) {
+                    var k = xmldata.surrogate.length;
+                    for (var i = 0; i < xmldata.subwork.length; i++) {
+                        xmldata.surrogate[k] = xmldata.subwork[i];
+                        k++;
+                        if (xmldata.subwork[i].surrogate) {
+                            for (var j = 0; j < xmldata.subwork[i].surrogate.length; j++) {
+                                xmldata.surrogate[k] = xmldata.subwork[i].surrogate[j];
+                                k++;
+                            }
+                        }
+                    }
+                }
+            } else if (xmldata.group) {
+                xmldata = xmldata.group[0];
+                if (xmldata.subwork && xmldata.surrogate) {
+                    var j = xmldata.surrogate.length;
+                    for (var i = 0; i < xmldata.subwork.length; i++) {
+                        xmldata.surrogate[j] = xmldata.subwork[i];
+                        j++;
+                        if (xmldata.subwork[i].surrogate) {
+                            for (var k = 0; k < xmldata.subwork[i].surrogate.length; k++) {
+                                xmldata.surrogate[j] = xmldata.subwork[i].surrogate[k];
+                                j++;
+                            }
+                        }
+                    }
+                } else if (xmldata.subwork && !xmldata.surrogate) {
+                    // transfer subwork to surrogate
+                    xmldata.surrogate = xmldata.subwork;
+                    xmldata.subwork = null;
+                }
+            }
+        }
+        return xmldata;
+    };
+
     return serviceObj;
 }]);
 
@@ -1587,7 +1651,7 @@ angular.module('viewCustom').component('prmTopbarAfter', {
  * Created by samsan on 5/17/17.
  * This component is to insert images into online section
  */
-angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSearchService', '$mdDialog', '$timeout', '$window', '$location', '$state', function (prmSearchService, $mdDialog, $timeout, $window, $location, $state) {
+angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSearchService', '$mdDialog', '$timeout', '$window', '$location', function (prmSearchService, $mdDialog, $timeout, $window, $location) {
 
     var vm = this;
     var sv = prmSearchService;
@@ -1604,6 +1668,17 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
         // get item data from service
         itemData = sv.getItem();
         vm.item = itemData.item;
+        if (vm.item.pnx.addata) {
+            var data = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
+
+            if (data.surrogate && data.image) {
+                vm.item.mis1Data = data.surrogate;
+            } else if (data.image && !data.surrogate) {
+                vm.item.mis1Data = data.image;
+            } else if (data.surrogate && !data.image) {
+                vm.item.mis1Data = data.surrogate;
+            }
+        }
         vm.searchData = itemData.searchData;
         vm.searchData.sortby = vm.params.sortby;
         vm.pageInfo = sv.getPage();
@@ -1614,15 +1689,9 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
             }
         }
         if (vm.item.mis1Data) {
-            if (vm.item.mis1Data[0].image) {
-                if (vm.item.mis1Data.length === 1 && vm.item.mis1Data[0].image.length === 1) {
-                    vm.singleImageFlag = true;
-                } else {
-                    vm.viewAllComponetMetadataFlag = true;
-                }
-            } else if (vm.item.mis1Data.length === 1) {
+            if (vm.item.mis1Data.length == 1) {
                 vm.singleImageFlag = true;
-            } else if (vm.item.mis1Data.length > 1) {
+            } else {
                 vm.viewAllComponetMetadataFlag = true;
             }
         }
@@ -1630,11 +1699,7 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
 
     // view all component metadata
     vm.viewAllComponentMetaData = function () {
-
-        console.log('***** view all component metadata ***');
-        console.log(vm);
-
-        var url = '/primo-explore/viewallcomponentmetadata?vid=' + vm.params.vid + '&docid=' + vm.item.pnx.control.recordid[0];
+        var url = '/primo-explore/viewallcomponentmetadata/' + vm.item.context + '/' + vm.item.pnx.control.recordid[0] + '?vid=' + vm.params.vid;
         url += '&query=' + vm.params.query + '&sortby=' + vm.params.sortby + '&tab=' + vm.params.tab + '&search_scope=' + vm.params.search_scope;
         url += '&offset=' + vm.params.offset + '&lang=' + vm.params.lang;
         url += '&context=' + vm.item.context + '&adaptor=' + vm.item.adaptor;
@@ -1644,45 +1709,29 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     // show the pop up image
     vm.gotoFullPhoto = function ($event, item, index) {
         // go to full display page
-        var url = '/primo-explore/fulldisplay?docid=' + vm.item.pnx.control.recordid[0] + '&vid=' + vm.searchData.vid + '&context=' + vm.item.context + '&lang=' + vm.searchData.lang;
+        var url = '/primo-explore/viewcomponent/' + vm.item.context + '/' + vm.item.pnx.control.recordid[0] + '/' + index + '?vid=' + vm.searchData.vid + '&lang=' + vm.searchData.lang;
         if (vm.item.adaptor) {
             url += '&adaptor=' + vm.item.adaptor;
         } else {
             url += '&adaptor=' + (vm.searchData.adaptor ? vm.searchData.adaptor : '');
         }
-        if (vm.searchData.searchString) {
-            url += '&searchString=' + (vm.searchData.searchString ? vm.searchData.searchString : '');
-        } else {
-            url += '&searchString=';
-        }
-        url += '&sortby=' + (vm.searchData.sortby ? vm.searchData.sortby : 'rank');
-        url += '&q=' + (vm.searchData.q ? vm.searchData.q : '') + '&tab=' + (vm.searchData.tab ? vm.searchData.tab : '');
-        url += '&search_scope=' + vm.searchData.scope + '&singleimage=true&index=' + index;
-        if (vm.params.facet) {
-            if (Array.isArray(vm.params.facet)) {
-                for (var i = 0; i < vm.params.facet.length; i++) {
-                    url += '&facet=' + vm.params.facet[i];
-                }
-            } else {
-                url += '&facet=' + vm.params.facet;
-            }
-        }
-        var offset = vm.params.offset;
-        if (vm.pageInfo.userClick) {
-            offset = parseInt(vm.pageInfo.currentPage - 1) * vm.pageInfo.pageSize;
-        }
-
-        url += '&offset=' + (offset ? offset : 0);
         $window.open(url, '_blank');
     };
 }]);
 
 angular.module('viewCustom').config(function ($stateProvider) {
     $stateProvider.state('exploreMain.viewallcomponentdata', {
-        url: '/viewallcomponentmetadata',
+        url: '/viewallcomponentmetadata/:context/:docid',
         views: {
             '': {
                 template: '<custom-view-all-component-metadata parent-ctrl="$ctrl"></custom-view-all-component-metadata>'
+            }
+        }
+    }).state('exploreMain.viewcomponent', {
+        url: '/viewcomponent/:context/:docid/:index',
+        views: {
+            '': {
+                template: '<custom-view-component parent-ctrl="$ctrl" item="$ctrl.item" services="$ctrl.services" params="$ctrl.params"></custom-view-component>'
             }
         }
     });

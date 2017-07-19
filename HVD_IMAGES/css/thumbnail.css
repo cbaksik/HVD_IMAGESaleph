@@ -45,6 +45,7 @@
     display: inline-block;
     margin-top:10px;
     text-align: center;
+    cursor:default;
 
 }
 
@@ -143,4 +144,8 @@ a.thumbnail > img:focus {
 
 .nophoto:focus {
     border:1px solid #ff0000;
+}
+
+.noCursor {
+    cursor: default;
 }

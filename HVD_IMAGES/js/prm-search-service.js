@@ -79,6 +79,7 @@ angular.module('viewCustom')
                if (obj.pnx.addata.mis1.length > 0) {
                    var xml = obj.pnx.addata.mis1[0];
                    var jsonData = serviceObj.parseXml(xml);
+
                    if (jsonData.work) {
                        // it has a single image
                        if (jsonData.work[0].surrogate) {
@@ -115,12 +116,22 @@ angular.module('viewCustom')
 
                    } else if (jsonData.group) {
                        // it has multiple images
-                       obj.mis1Data = jsonData.group[0].subwork;
-                       if (obj.mis1Data) {
+                       if (jsonData.group[0].subwork) {
+                           obj.mis1Data=jsonData.group[0].subwork;
                            for (var k = 0; k < obj.mis1Data.length; k++) {
                                if (obj.mis1Data[k].image) {
                                    obj.restrictedImage = obj.mis1Data[k].image[0]._attr.restrictedImage._value;
                                }
+                           }
+                       }
+                       if(jsonData.group[0].surrogate) {
+                           var j=obj.mis1Data.length;
+                           for (var k = 0; k < jsonData.group[0].surrogate.length; k++) {
+                               obj.mis1Data[j]=jsonData.group[0].surrogate[k];
+                               if (obj.mis1Data[j].image) {
+                                   obj.restrictedImage = obj.mis1Data[j].image[0]._attr.restrictedImage._value;
+                               }
+                               j++;
                            }
                        }
                    }
@@ -236,6 +247,55 @@ angular.module('viewCustom')
           }
       }
       return flag;
+    };
+
+    // this handle multipe subtree
+    serviceObj.getXMLdata=function (str) {
+        var xmldata='';
+        if(str) {
+            xmldata = serviceObj.parseXml(str);
+            if(xmldata.work) {
+                xmldata=xmldata.work[0];
+                if(!xmldata.surrogate && xmldata.image) {
+                    xmldata.surrogate=xmldata.image;
+                }
+                if(xmldata.subwork && xmldata.surrogate) {
+                    var k=xmldata.surrogate.length;
+                    for(var i=0; i < xmldata.subwork.length; i++) {
+                        xmldata.surrogate[k]=xmldata.subwork[i];
+                        k++;
+                        if(xmldata.subwork[i].surrogate) {
+                            for(var j=0; j < xmldata.subwork[i].surrogate.length; j++) {
+                                xmldata.surrogate[k]=xmldata.subwork[i].surrogate[j];
+                                k++;
+                            }
+                        }
+                    }
+                }
+            } else if(xmldata.group) {
+                xmldata=xmldata.group[0];
+                if(xmldata.subwork && xmldata.surrogate){
+                    var j=xmldata.surrogate.length;
+                    for(var i=0; i < xmldata.subwork.length; i++) {
+                        xmldata.surrogate[j] = xmldata.subwork[i];
+                        j++;
+                        if(xmldata.subwork[i].surrogate) {
+                            for(var k=0; k < xmldata.subwork[i].surrogate.length; k++) {
+                                xmldata.surrogate[j]=xmldata.subwork[i].surrogate[k];
+                                j++;
+                            }
+                        }
+
+                    }
+                } else if(xmldata.subwork && !xmldata.surrogate) {
+                    // transfer subwork to surrogate
+                    xmldata.surrogate=xmldata.subwork;
+                    xmldata.subwork=null;
+                }
+            }
+
+        }
+        return xmldata;
     };
 
     return serviceObj;

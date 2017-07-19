@@ -6,7 +6,8 @@
     </div>
     <div layout="row">
         <div flex="grow">
-            <responsive-image src="item.image[0]._attr.href._value" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></responsive-image>
+            <responsive-image ng-if="!item.image" src="item._attr.href._value" imgtitle="item.pnx.display.title[0]" restricted="item._attr.restrictedImage._value"></responsive-image>
+            <responsive-image ng-if="item.image" src="item.image[0]._attr.href._value" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></responsive-image>
         </div>
     </div>
 </div>
