@@ -22,6 +22,7 @@ angular.module('viewCustom')
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
+
                 vm.localScope={'imgclass':'','hideLockIcon':false};
                 if(vm.dataitem.pnx.links.thumbnail) {
                     vm.imageUrl=sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);

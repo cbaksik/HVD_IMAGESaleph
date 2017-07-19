@@ -9,7 +9,8 @@
             <img ng-if="vm.dataitem.pnx.links.thumbnail" ng-src="{{vm.imageUrl}}" ng-click="vm.openDialog($event)" class="md-card-image {{vm.localScope.imgclass}}"
              alt="{{vm.dataitem.pnx.display.title[0]}}" aria-label="{{vm.dataitem.pnx.display.title[0]}}" tabindex="0"/>
             <div ng-if="!vm.dataitem.pnx.links.thumbnail" class="nophoto" ng-click="vm.openDialog($event)">
-                {{vm.dataitem.pnx.display.lds28[0]}}
+                <span ng-if="vm.dataitem.pnx.display.lds28[0]">{{vm.dataitem.pnx.display.lds28[0]}}</span>
+                <span ng-if="!vm.dataitem.pnx.display.lds28[0]">Image not digitized</span>
             </div>
             <div class="lockIcon" ng-if="vm.localScope.hideLockIcon">
                 <img src="custom/HVD_IMAGES/img/icon_lock25.png" class="md-avatar" alt="Lock icon" aria-label="Lock icon"/>
