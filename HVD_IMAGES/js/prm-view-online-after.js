@@ -22,10 +22,6 @@ angular.module('viewCustom')
            vm.item=itemData.item;
            if(vm.item.pnx.addata) {
                var data=sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
-
-               console.log('*** prm-view-online ***');
-               console.log(data);
-
                if(data.surrogate && data.image) {
                    vm.item.mis1Data=data.surrogate;
                } else if(data.image && !data.surrogate) {
@@ -38,10 +34,17 @@ angular.module('viewCustom')
            vm.searchData.sortby=vm.params.sortby;
            vm.pageInfo=sv.getPage();
 
-
            if(vm.isLoggedIn===false && vm.item.mis1Data.length===1) {
-               if(vm.item.mis1Data[0].image && vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
-                   vm.zoomButtonFlag=false;
+               if(vm.item.mis1Data[0].image) {
+                   if(vm.item.mis1Data[0].image[0]._attr.restrictedImage) {
+                       if(vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
+                           vm.zoomButtonFlag = false;
+                       }
+                   }
+               } else if(vm.item.mis1Data[0]._attr.restrictedImage) {
+                   if(vm.item.mis1Data[0]._attr.restrictedImage._value) {
+                       vm.zoomButtonFlag = false;
+                   }
                }
            }
            if(vm.item.mis1Data) {

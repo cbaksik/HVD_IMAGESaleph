@@ -25,9 +25,10 @@ angular.module('viewCustom')
           sv.getAjax(restUrl,params,'get')
               .then(function (result) {
                   vm.items=result.data;
-                  vm.xmldata = sv.getXMLdata(vm.items.pnx.addata.mis1[0]);
-
-                  console.log('**** vm.xmldata ****');
+                  if(vm.items.pnx.addata) {
+                      vm.xmldata = sv.getXMLdata(vm.items.pnx.addata.mis1[0]);
+                  }
+                  console.log('*** vm.xmldata 3 ****');
                   console.log(vm.xmldata);
                   console.log(vm.items)
 

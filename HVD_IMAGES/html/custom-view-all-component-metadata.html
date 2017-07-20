@@ -218,12 +218,12 @@
                </span>
         </div>
     </div>
-    <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.item.pnx.control.sourcerecordid">
+    <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.items.pnx.control.sourcerecordid">
         <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
             <label class="bold-text">HOLLIS Number</label>
         </div>
         <div flex class="flex">
-               <span ng-repeat="sourcerecordid in vm.item.pnx.control.sourcerecordid track by $index">
+               <span ng-repeat="sourcerecordid in vm.items.pnx.control.sourcerecordid track by $index">
                    {{sourcerecordid}}&nbsp;
                </span>
         </div>

@@ -35,16 +35,26 @@ angular.module('viewCustom')
             sv.getAjax(url,params,'get')
                 .then(function (result) {
                     vm.item=result.data;
+
+                    console.log('*** result.data ***');
+                    console.log(result.data);
+
                     // convert xml to json
                     if(vm.item.pnx.addata) {
                         vm.xmldata = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
 
                     }
+
+                    console.log('*** vm.xmldata 2 ***');
+                    console.log(vm.xmldata);
+
                     // show total of image
                     if(vm.xmldata.surrogate) {
                         vm.total=vm.xmldata.surrogate.length;
                     } else if(vm.xmldata.image) {
                         vm.total=vm.xmldata.image.length;
+                    } else if(vm.xmldata.length) {
+                        vm.total=vm.xmldata.length;
                     }
                     // display photo
                     vm.displayPhoto();
@@ -60,6 +70,9 @@ angular.module('viewCustom')
 
         vm.displayPhoto=function () {
             vm.isLoggedIn=sv.getLogInID();
+
+            console.log('** custom-view-component ***');
+            console.log(vm.xmldata);
 
             if (vm.xmldata.surrogate && !vm.xmldata.image) {
                 if(vm.xmldata.surrogate[vm.index].image) {
@@ -84,6 +97,11 @@ angular.module('viewCustom')
                     vm.imageNav=false;
                 }
             }
+
+            console.log('*** vm.photo ***');
+            console.log(vm.photo);
+            console.log(vm.imageNav);
+            console.log(vm.total);
 
         };
 

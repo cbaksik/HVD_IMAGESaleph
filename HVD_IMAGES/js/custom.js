@@ -144,9 +144,10 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
         params.adaptor = vm.params.adaptor;
         sv.getAjax(restUrl, params, 'get').then(function (result) {
             vm.items = result.data;
-            vm.xmldata = sv.getXMLdata(vm.items.pnx.addata.mis1[0]);
-
-            console.log('**** vm.xmldata ****');
+            if (vm.items.pnx.addata) {
+                vm.xmldata = sv.getXMLdata(vm.items.pnx.addata.mis1[0]);
+            }
+            console.log('*** vm.xmldata 3 ****');
             console.log(vm.xmldata);
             console.log(vm.items);
         }, function (err) {
@@ -218,15 +219,25 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         params.adaptor = vm.params.adaptor;
         sv.getAjax(url, params, 'get').then(function (result) {
             vm.item = result.data;
+
+            console.log('*** result.data ***');
+            console.log(result.data);
+
             // convert xml to json
             if (vm.item.pnx.addata) {
                 vm.xmldata = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
             }
+
+            console.log('*** vm.xmldata 2 ***');
+            console.log(vm.xmldata);
+
             // show total of image
             if (vm.xmldata.surrogate) {
                 vm.total = vm.xmldata.surrogate.length;
             } else if (vm.xmldata.image) {
                 vm.total = vm.xmldata.image.length;
+            } else if (vm.xmldata.length) {
+                vm.total = vm.xmldata.length;
             }
             // display photo
             vm.displayPhoto();
@@ -237,6 +248,9 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
 
     vm.displayPhoto = function () {
         vm.isLoggedIn = sv.getLogInID();
+
+        console.log('** custom-view-component ***');
+        console.log(vm.xmldata);
 
         if (vm.xmldata.surrogate && !vm.xmldata.image) {
             if (vm.xmldata.surrogate[vm.index].image) {
@@ -260,6 +274,11 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
                 vm.imageNav = false;
             }
         }
+
+        console.log('*** vm.photo ***');
+        console.log(vm.photo);
+        console.log(vm.imageNav);
+        console.log(vm.total);
     };
 
     vm.$onChanges = function () {
@@ -1408,59 +1427,24 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
             obj.restrictedImage = false;
             if (obj.pnx.addata.mis1) {
                 if (obj.pnx.addata.mis1.length > 0) {
-                    var xml = obj.pnx.addata.mis1[0];
-                    var jsonData = serviceObj.parseXml(xml);
-
-                    if (jsonData.work) {
-                        // it has a single image
-                        if (jsonData.work[0].surrogate) {
-                            obj.mis1Data = jsonData.work[0].surrogate;
-                            if (obj.mis1Data.length === 1) {
-                                if (obj.mis1Data[0].image) {
-                                    obj.restrictedImage = obj.mis1Data[0].image[0]._attr.restrictedImage._value;
-                                }
-                            } else {
-                                for (var j = 0; j < obj.mis1Data.length; j++) {
-                                    if (obj.mis1Data[j].image) {
-                                        if (obj.mis1Data[j].image[0]._attr.restrictedImage) {
-                                            obj.restrictedImage = true;
-                                        }
-                                    }
-                                }
-                            }
-                        } else if (jsonData.work.length == 1) {
-                            obj.mis1Data = jsonData.work;
-                            if (obj.mis1Data[0].image) {
-                                obj.restrictedImage = obj.mis1Data[0].image[0]._attr.restrictedImage._value;
-                            }
-                        } else {
-                            obj.mis1Data = jsonData.work;
-                            if (obj.mis1Data) {
-                                for (var c = 0; c < obj.mis1Data.length; c++) {
-                                    if (obj.mis1Data[c].image) {
-                                        obj.restrictedImage = obj.mis1Data[c].image[0]._attr.restrictedImage;
-                                    }
+                    var jsonObj = serviceObj.getXMLdata(obj.pnx.addata.mis1[0]);
+                    if (jsonObj.surrogate) {
+                        for (var k = 0; k < jsonObj.surrogate.length; k++) {
+                            if (jsonObj.surrogate[k]._attr.restrictedImage) {
+                                if (jsonObj.surrogate[k]._attr.restrictedImage._value) {
+                                    obj.restrictedImage = true;
+                                    k = jsonObj.surrogate.length;
                                 }
                             }
                         }
-                    } else if (jsonData.group) {
-                        // it has multiple images
-                        if (jsonData.group[0].subwork) {
-                            obj.mis1Data = jsonData.group[0].subwork;
-                            for (var k = 0; k < obj.mis1Data.length; k++) {
-                                if (obj.mis1Data[k].image) {
-                                    obj.restrictedImage = obj.mis1Data[k].image[0]._attr.restrictedImage._value;
+                    }
+                    if (jsonObj.image) {
+                        for (var k = 0; k < jsonObj.image.length; k++) {
+                            if (jsonObj.image[k]._attr.restrictedImage) {
+                                if (jsonObj.image[k]._attr.restrictedImage._value) {
+                                    obj.restrictedImage = true;
+                                    k = jsonObj.image.length;
                                 }
-                            }
-                        }
-                        if (jsonData.group[0].surrogate) {
-                            var j = obj.mis1Data.length;
-                            for (var k = 0; k < jsonData.group[0].surrogate.length; k++) {
-                                obj.mis1Data[j] = jsonData.group[0].surrogate[k];
-                                if (obj.mis1Data[j].image) {
-                                    obj.restrictedImage = obj.mis1Data[j].image[0]._attr.restrictedImage._value;
-                                }
-                                j++;
                             }
                         }
                     }
@@ -1581,32 +1565,97 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         var xmldata = '';
         if (str) {
             xmldata = serviceObj.parseXml(str);
-
-            console.log('** xmldata ***');
-            console.log(xmldata);
-
             if (xmldata.work) {
-                xmldata = xmldata.work[0];
-                if (!xmldata.surrogate && xmldata.image) {
-                    xmldata.surrogate = xmldata.image;
+                var listArray = [];
+                var work = xmldata.work[0];
+                if (!work.surrogate && work.image) {
+                    listArray = work.image;
+                } else if (work.image) {
+                    listArray = work.image;
                 }
-                if (xmldata.subwork && xmldata.surrogate) {
-                    var k = xmldata.surrogate.length;
-                    for (var i = 0; i < xmldata.subwork.length; i++) {
-                        xmldata.surrogate[k] = xmldata.subwork[i];
-                        k++;
-                        if (xmldata.subwork[i].surrogate) {
-                            for (var j = 0; j < xmldata.subwork[i].surrogate.length; j++) {
-                                xmldata.surrogate[k] = xmldata.subwork[i].surrogate[j];
-                                k++;
+
+                if (work.subwork && !work.surrogate) {
+                    for (var i = 0; i < work.subwork.length; i++) {
+                        var aSubwork = work.subwork[i];
+                        if (aSubwork.surrogate) {
+                            for (var j = 0; j < aSubwork.surrogate.length; j++) {
+                                var data = aSubwork.surrogate[j];
+                                listArray.push(data);
+                            }
+                        }
+                        if (aSubwork.image) {
+                            for (var k = 0; k < aSubwork.image.length; k++) {
+                                var data = aSubwork.image[k];
+                                listArray.push(data);
+                            }
+                        }
+                        if (!aSubwork.image && !aSubwork.surrogate) {
+                            listArray.push(aSubwork);
+                        }
+                    }
+                }
+                if (work.subwork && work.surrogate) {
+                    for (var i = 0; i < work.subwork.length; i++) {
+                        var aSubwork = work.subwork[i];
+                        if (aSubwork.surrogate) {
+                            for (var j = 0; j < aSubwork.surrogate.length; j++) {
+                                var data = aSubwork.surrogate[j];
+                                listArray.push(data);
+                            }
+                        }
+                        if (aSubwork.image) {
+                            for (var k = 0; k < aSubwork.image.length; k++) {
+                                var data = aSubwork.image[k];
+                                listArray.push(data);
+                            }
+                        }
+                    }
+                    for (var w = 0; w < work.surrogate.length; w++) {
+                        var aSurrogate = work.surrogate[w];
+                        if (aSurrogate.surrogate) {
+                            for (var j = 0; j < aSurrogate.surrogate.length; j++) {
+                                var data = aSurrogate.surrogate[j];
+                                listArray.push(data);
+                            }
+                        }
+                        if (aSurrogate.image) {
+                            for (var k = 0; k < aSurrogate.image.length; k++) {
+                                var data = aSurrogate.image[k];
+                                listArray.push(data);
                             }
                         }
                     }
                 }
+                if (work.surrogate && !work.subwork) {
+                    for (var w = 0; w < work.surrogate.length; w++) {
+                        var aSurrogate = work.surrogate[w];
+                        if (aSurrogate.surrogate) {
+                            for (var j = 0; j < aSurrogate.surrogate.length; j++) {
+                                var data = aSurrogate.surrogate[j];
+                                listArray.push(data);
+                            }
+                        }
+                        if (aSurrogate.image) {
+                            for (var k = 0; k < aSurrogate.image.length; k++) {
+                                var data = aSurrogate.image[k];
+                                listArray.push(data);
+                            }
+                        }
+                        if (!aSurrogate.image && !aSurrogate.surrogate) {
+                            listArray.push(aSurrogate);
+                        }
+                    }
+                }
+
+                xmldata = work;
+                if (listArray.length > 0) {
+                    xmldata.surrogate = listArray;
+                }
+
+                /* end work section ***/
             } else if (xmldata.group) {
                 xmldata = xmldata.group[0];
                 if (xmldata.subwork && xmldata.surrogate) {
-                    console.log('*** I am here one ');
                     var listArray = [];
                     var subwork = xmldata.subwork;
                     var surrogate = xmldata.surrogate;
@@ -1649,9 +1698,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                         }
                     }
                     xmldata.surrogate = listArray;
-                    console.log(xmldata);
                 } else if (xmldata.subwork && !xmldata.surrogate) {
-                    console.log('*** I am here two ');
                     // transfer subwork to surrogate
                     var surrogate = [];
                     var subwork = xmldata.subwork;
@@ -1669,7 +1716,6 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                     }
 
                     xmldata.surrogate = surrogate;
-                    console.log(xmldata);
                 }
             }
         }
@@ -1726,10 +1772,6 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
         vm.item = itemData.item;
         if (vm.item.pnx.addata) {
             var data = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
-
-            console.log('*** prm-view-online ***');
-            console.log(data);
-
             if (data.surrogate && data.image) {
                 vm.item.mis1Data = data.surrogate;
             } else if (data.image && !data.surrogate) {
@@ -1743,8 +1785,16 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
         vm.pageInfo = sv.getPage();
 
         if (vm.isLoggedIn === false && vm.item.mis1Data.length === 1) {
-            if (vm.item.mis1Data[0].image && vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
-                vm.zoomButtonFlag = false;
+            if (vm.item.mis1Data[0].image) {
+                if (vm.item.mis1Data[0].image[0]._attr.restrictedImage) {
+                    if (vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
+                        vm.zoomButtonFlag = false;
+                    }
+                }
+            } else if (vm.item.mis1Data[0]._attr.restrictedImage) {
+                if (vm.item.mis1Data[0]._attr.restrictedImage._value) {
+                    vm.zoomButtonFlag = false;
+                }
             }
         }
         if (vm.item.mis1Data) {
@@ -1988,7 +2038,7 @@ angular.module('viewCustom').component('thumbnail', {
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
 
-            vm.localScope = { 'imgclass': '', 'hideLockIcon': false };
+            vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'showImageLabel': false };
             if (vm.dataitem.pnx.links.thumbnail) {
                 vm.imageUrl = sv.getHttps(vm.dataitem.pnx.links.thumbnail[0]);
                 $timeout(function () {
