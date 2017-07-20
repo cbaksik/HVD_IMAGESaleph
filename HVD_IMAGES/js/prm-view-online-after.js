@@ -23,6 +23,9 @@ angular.module('viewCustom')
            if(vm.item.pnx.addata) {
                var data=sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
 
+               console.log('*** prm-view-online ***');
+               console.log(data);
+
                if(data.surrogate && data.image) {
                    vm.item.mis1Data=data.surrogate;
                } else if(data.image && !data.surrogate) {
@@ -55,9 +58,9 @@ angular.module('viewCustom')
         // view all component metadata
         vm.viewAllComponentMetaData=function () {
             var url='/primo-explore/viewallcomponentmetadata/'+vm.item.context+'/'+vm.item.pnx.control.recordid[0]+'?vid='+vm.params.vid;
-            url+='&query='+vm.params.query+'&sortby='+vm.params.sortby+'&tab='+vm.params.tab+'&search_scope='+vm.params.search_scope;
-            url+='&offset='+vm.params.offset+'&lang='+vm.params.lang;
-            url+='&context='+vm.item.context+'&adaptor='+vm.item.adaptor;
+            url+='&tab='+vm.params.tab+'&search_scope='+vm.params.search_scope;
+            url+='&lang='+vm.params.lang;
+            url+='&adaptor='+vm.item.adaptor;
             $window.open(url,'_blank');
 
         };

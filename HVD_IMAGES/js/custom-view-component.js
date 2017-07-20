@@ -67,6 +67,9 @@ angular.module('viewCustom')
                     // find out if the image is jp2 or not
                     vm.jp2=sv.findJP2(vm.photo);
 
+                } else {
+                    vm.photo = vm.xmldata.surrogate[vm.index];
+                    vm.jp2=sv.findJP2(vm.photo);
                 }
                 if(vm.xmldata.surrogate[vm.index].title) {
                     vm.imageTitle = vm.xmldata.surrogate[vm.index].title[0].textElement[0]._text;
@@ -76,7 +79,7 @@ angular.module('viewCustom')
                 vm.jp2=sv.findJP2(vm.photo);
             }
 
-            if(vm.photo._attr) {
+            if(vm.photo._attr && vm.photo._attr.restrictedImage) {
                 if(vm.photo._attr.restrictedImage._value && vm.isLoggedIn===false) {
                     vm.imageNav=false;
                 }

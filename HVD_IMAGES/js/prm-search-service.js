@@ -254,6 +254,10 @@ angular.module('viewCustom')
         var xmldata='';
         if(str) {
             xmldata = serviceObj.parseXml(str);
+
+            console.log('** xmldata ***');
+            console.log(xmldata);
+
             if(xmldata.work) {
                 xmldata=xmldata.work[0];
                 if(!xmldata.surrogate && xmldata.image) {
@@ -275,22 +279,73 @@ angular.module('viewCustom')
             } else if(xmldata.group) {
                 xmldata=xmldata.group[0];
                 if(xmldata.subwork && xmldata.surrogate){
-                    var j=xmldata.surrogate.length;
-                    for(var i=0; i < xmldata.subwork.length; i++) {
-                        xmldata.surrogate[j] = xmldata.subwork[i];
-                        j++;
-                        if(xmldata.subwork[i].surrogate) {
-                            for(var k=0; k < xmldata.subwork[i].surrogate.length; k++) {
-                                xmldata.surrogate[j]=xmldata.subwork[i].surrogate[k];
-                                j++;
+                    console.log('*** I am here one ');
+                    var listArray=[];
+                    var subwork=xmldata.subwork;
+                    var surrogate=xmldata.surrogate;
+                    // get all the surrogate under subwork
+                    for(var i=0; i < subwork.length; i++) {
+                        var aSubwork = subwork[i];
+                        if(aSubwork.surrogate) {
+                            for(var k=0; k < aSubwork.surrogate.length; k++) {
+                                var data=aSubwork.surrogate[k];
+                               listArray.push(data);
                             }
+                        }
+                        if(aSubwork.image) {
+                            for(var j=0; j < aSubwork.image.length; j++){
+                                var data=aSubwork.image[j];
+                                listArray.push(data);
+                            }
+                        }
+                        if(!aSubwork.surrogate && !aSubwork.image) {
+                            listArray.push(aSubwork);
                         }
 
                     }
+                    // get all surrogate
+                    for(var i=0; i < surrogate.length; i++) {
+                        var aSurrogate=surrogate[i];
+                        if(aSurrogate.surrogate) {
+                            for(var j=0; j < aSurrogate.surrogate.length; j++) {
+                                var data=aSurrogate.surrogate[j];
+                                listArray.push(data);
+                            }
+                        }
+                        if(aSurrogate.image) {
+                            for(var j=0; j < aSurrogate.image.length; j++) {
+                                var data=aSurrogate.image[j];
+                                listArray.push(data);
+                            }
+                        }
+                        if(!aSurrogate.surrogate && !aSurrogate.image) {
+                            listArray.push(aSurrogate);
+                        }
+                    }
+                    xmldata.surrogate=listArray;
+                    console.log(xmldata);
+
                 } else if(xmldata.subwork && !xmldata.surrogate) {
+                    console.log('*** I am here two ');
                     // transfer subwork to surrogate
-                    xmldata.surrogate=xmldata.subwork;
-                    xmldata.subwork=null;
+                    var surrogate=[];
+                    var subwork=xmldata.subwork;
+                    for(var i=0; i < subwork.length; i++) {
+                        if(subwork[i].surrogate) {
+                            for(var k=0; k < subwork[i].surrogate.length; k++) {
+                                surrogate.push(subwork[i].surrogate[k]);
+                            }
+                        }
+                        if(subwork[i].image) {
+                            for(var j=0; j < subwork[i].image.length; j++) {
+                                surrogate.push(subwork[i].image[j]);
+                            }
+                        }
+                    }
+
+                    xmldata.surrogate=surrogate;
+                    console.log(xmldata);
+
                 }
             }
 

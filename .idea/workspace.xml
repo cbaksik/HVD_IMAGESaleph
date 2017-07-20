@@ -3,9 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="4d829a8d-d100-4321-8baf-df3315c320be" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HVD_IMAGES/html/thumbnail.html" afterPath="$PROJECT_DIR$/HVD_IMAGES/html/thumbnail.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HVD_IMAGES/js/custom-view-component.js" afterPath="$PROJECT_DIR$/HVD_IMAGES/js/custom-view-component.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HVD_IMAGES/js/custom.js" afterPath="$PROJECT_DIR$/HVD_IMAGES/js/custom.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HVD_IMAGES/js/thumbnail.js" afterPath="$PROJECT_DIR$/HVD_IMAGES/js/thumbnail.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HVD_IMAGES/js/prm-search-service.js" afterPath="$PROJECT_DIR$/HVD_IMAGES/js/prm-search-service.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/HVD_IMAGES/js/prm-view-online-after.js" afterPath="$PROJECT_DIR$/HVD_IMAGES/js/prm-view-online-after.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -19,7 +20,48 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
-    <leaf />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="prm-view-online-after.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/prm-view-online-after.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="245">
+              <caret line="62" column="28" lean-forward="false" selection-start-line="62" selection-start-column="28" selection-end-line="62" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="prm-search-service.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/prm-search-service.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="373">
+              <caret line="321" column="55" lean-forward="false" selection-start-line="321" selection-start-column="55" selection-end-line="321" selection-end-column="55" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="custom-view-component.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/custom-view-component.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="284">
+              <caret line="80" column="0" lean-forward="false" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="prm-view-online-after.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/HVD_IMAGES/html/prm-view-online-after.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="135">
+              <caret line="9" column="131" lean-forward="false" selection-start-line="9" selection-start-column="131" selection-end-line="9" selection-end-column="131" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -59,14 +101,15 @@
         <option value="$PROJECT_DIR$/HVD_IMAGES/html/responsiveImage.html" />
         <option value="$PROJECT_DIR$/HVD_IMAGES/js/prm-search-results-after.js" />
         <option value="$PROJECT_DIR$/HVD_IMAGES/html/custom-view-all-component-metadata.html" />
-        <option value="$PROJECT_DIR$/HVD_IMAGES/js/prm-search-service.js" />
         <option value="$PROJECT_DIR$/HVD_IMAGES/html/prm-view-online-after.html" />
         <option value="$PROJECT_DIR$/HVD_IMAGES/html/custom-single-image.html" />
         <option value="$PROJECT_DIR$/HVD_IMAGES/js/custom-single-image.js" />
-        <option value="$PROJECT_DIR$/HVD_IMAGES/js/prm-view-online-after.js" />
         <option value="$PROJECT_DIR$/HVD_IMAGES/js/custom-view-all-component-metadata.js" />
         <option value="$PROJECT_DIR$/HVD_IMAGES/html/thumbnail.html" />
         <option value="$PROJECT_DIR$/HVD_IMAGES/js/thumbnail.js" />
+        <option value="$PROJECT_DIR$/HVD_IMAGES/js/prm-search-service.js" />
+        <option value="$PROJECT_DIR$/HVD_IMAGES/js/custom-view-component.js" />
+        <option value="$PROJECT_DIR$/HVD_IMAGES/js/prm-view-online-after.js" />
       </list>
     </option>
   </component>
@@ -167,8 +210,8 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -280,24 +323,27 @@
       <workItem from="1500401509220" duration="8440000" />
       <workItem from="1500470868150" duration="17459000" />
       <workItem from="1500495837386" duration="458000" />
+      <workItem from="1500497544924" duration="802000" />
+      <workItem from="1500557055611" duration="4784000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="46404000" />
+    <option name="totallyTimeSpent" value="51990000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="2" y="23" width="1247" height="709" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25180432" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2213312" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -498,21 +544,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/HVD_IMAGES/html/prm-view-online-after.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="131" lean-forward="false" selection-start-line="9" selection-start-column="131" selection-end-line="9" selection-end-column="131" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/prm-search-service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="228" column="37" lean-forward="true" selection-start-line="228" selection-start-column="37" selection-end-line="228" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/HVD_IMAGES/css/prm-full-view-after.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -522,13 +553,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/custom-single-image.js" />
     <entry file="file://$PROJECT_DIR$/HVD_IMAGES/html/custom-single-image.html" />
-    <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/prm-view-online-after.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1095">
-          <caret line="73" column="13" lean-forward="false" selection-start-line="73" selection-start-column="13" selection-end-line="73" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/custom-view-all-component-metadata.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
@@ -540,7 +564,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="185">
           <caret line="24" column="16" lean-forward="false" selection-start-line="24" selection-start-column="16" selection-end-line="24" selection-end-column="16" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -548,6 +571,45 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
           <caret line="11" column="61" lean-forward="false" selection-start-line="11" selection-start-column="61" selection-end-line="11" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HVD_IMAGES/html/prm-view-online-after.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="131" lean-forward="false" selection-start-line="9" selection-start-column="131" selection-end-line="9" selection-end-column="131" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HVD_IMAGES/html/custom-view-component.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/prm-search-service.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="373">
+          <caret line="321" column="55" lean-forward="false" selection-start-line="321" selection-start-column="55" selection-end-line="321" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/custom-view-component.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="284">
+          <caret line="80" column="0" lean-forward="false" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HVD_IMAGES/js/prm-view-online-after.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="62" column="28" lean-forward="false" selection-start-line="62" selection-start-column="28" selection-end-line="62" selection-end-column="28" />
           <folding />
         </state>
       </provider>
