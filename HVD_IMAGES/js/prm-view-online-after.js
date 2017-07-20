@@ -22,28 +22,38 @@ angular.module('viewCustom')
            vm.item=itemData.item;
            if(vm.item.pnx.addata) {
                var data=sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
+
                if(data.surrogate && data.image) {
                    vm.item.mis1Data=data.surrogate;
                } else if(data.image && !data.surrogate) {
                    vm.item.mis1Data=data.image;
                } else if(data.surrogate && !data.image) {
                    vm.item.mis1Data=data.surrogate;
+               } else {
+                   vm.item.mis1Data=[];
+                   vm.item.mis1Data.push(data);
                }
            }
            vm.searchData=itemData.searchData;
            vm.searchData.sortby=vm.params.sortby;
            vm.pageInfo=sv.getPage();
 
-           if(vm.isLoggedIn===false && vm.item.mis1Data.length===1) {
-               if(vm.item.mis1Data[0].image) {
-                   if(vm.item.mis1Data[0].image[0]._attr.restrictedImage) {
-                       if(vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
-                           vm.zoomButtonFlag = false;
+           console.log(vm.item);
+
+           if(vm.isLoggedIn===false && vm.item.mis1Data) {
+               if(vm.item.mis1Data.length===1) {
+                   if (vm.item.mis1Data[0].image) {
+                       if (vm.item.mis1Data[0].image[0]._attr.restrictedImage) {
+                           if (vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
+                               vm.zoomButtonFlag = false;
+                           }
                        }
-                   }
-               } else if(vm.item.mis1Data[0]._attr.restrictedImage) {
-                   if(vm.item.mis1Data[0]._attr.restrictedImage._value) {
-                       vm.zoomButtonFlag = false;
+                   } else if (vm.item.mis1Data[0]._attr) {
+                       if(vm.item.mis1Data[0]._attr.restrictedImage) {
+                           if (vm.item.mis1Data[0]._attr.restrictedImage._value) {
+                               vm.zoomButtonFlag = false;
+                           }
+                       }
                    }
                }
            }
@@ -53,8 +63,9 @@ angular.module('viewCustom')
              } else {
                  vm.viewAllComponetMetadataFlag=true;
              }
+           } else {
+               vm.singleImageFlag=true;
            }
-
 
         };
 
