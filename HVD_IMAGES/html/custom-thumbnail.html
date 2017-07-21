@@ -1,6 +1,6 @@
 <md-card class="hv-md-card">
     <md-card-content class="imageBox">
-        <a class="thumbnail" title="{{vm.imageTitle}}">
+        <a class="thumbnail" aria-label="{{vm.imageTitle}}"  title="{{vm.imageTitle}}">
             <img ng-if="vm.imageFlag" ng-src="{{vm.imageUrl}}"  class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.imageTitle}}" aria-label="{{vm.imageTitle}}" tabindex="0" />
             <div ng-if="!vm.imageFlag" class="nophoto">
                 Image not digitized

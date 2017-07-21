@@ -5,10 +5,10 @@
         </div>
     </div>
     <md-card-content class="imageBox" layout-align="center center">
-        <a  class="thumbnail" ng-click="$event.preventDefault()" href="{{vm.linkUrl}}" title="{{vm.dataitem.pnx.display.title[0]}}">
-            <img ng-if="vm.dataitem.pnx.links.thumbnail" ng-src="{{vm.imageUrl}}" ng-click="vm.openDialog($event)" class="md-card-image {{vm.localScope.imgclass}}"
-             alt="{{vm.dataitem.pnx.display.title[0]}}" aria-label="{{vm.dataitem.pnx.display.title[0]}}" tabindex="0"/>
-            <div ng-if="!vm.dataitem.pnx.links.thumbnail" class="nophoto" ng-click="vm.openDialog($event)">
+        <a  class="thumbnail" ng-click="$event.preventDefault()" href="{{vm.linkUrl}}" aria-label="{{vm.dataitem.pnx.display.title[0]}}" title="{{vm.dataitem.pnx.display.title[0]}}">
+            <img ng-if="vm.dataitem.pnx.links.thumbnail" ng-src="{{vm.imageUrl}}" ng-click="vm.openDialog($event)"  class="md-card-image {{vm.localScope.imgclass}}"
+             alt="{{vm.dataitem.pnx.display.title[0]}}" aria-label="{{vm.dataitem.pnx.display.title[0]}}" tabindex="0" title="{{vm.dataitem.pnx.display.title[0]}}"/>
+            <div ng-if="!vm.dataitem.pnx.links.thumbnail" class="nophoto" ng-click="vm.openDialog($event)" aria-label="{{vm.dataitem.pnx.display.title[0]}}" title="{{vm.dataitem.pnx.display.title[0]}}">
                 <span ng-if="vm.dataitem.pnx.display.lds28[0]">{{vm.dataitem.pnx.display.lds28[0]}}</span>
                 <span ng-if="!vm.dataitem.pnx.display.lds28[0]">Image not digitized</span>
             </div>

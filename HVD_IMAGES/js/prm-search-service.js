@@ -211,21 +211,77 @@ angular.module('viewCustom')
       return flag;
     };
 
-    // this handle multipe subtree
+    // convert xml data to json data by re-group them
     serviceObj.getXMLdata=function (str) {
         var xmldata='';
+        var listArray=[];
         if(str) {
             xmldata = serviceObj.parseXml(str);
             if(xmldata.work) {
-                var listArray=[];
+                listArray=[];
                 var work=xmldata.work[0];
                 if(!work.surrogate && work.image) {
-                    listArray=work.image;
-                } else if(work.image) {
-                    listArray=work.image;
+                    var data = work;
+                    if(work.image.length===1) {
+                        listArray = data;
+                    } else {
+                        listArray=[];
+                        var images=angular.copy(work.image);
+                        delete work.image;
+                        for(var i=0; i < images.length; i++){
+                            data=angular.copy(work);
+                            data.image=[];
+                            data.image[0]=images[i];
+                            data.thumbnail=images[i].thumbnail;
+                            data._attr=images[i]._attr;
+                            data.caption=images[i].caption;
+                            listArray.push(data);
+                        }
+                    }
+
+                } else if(work.surrogate && work.image) {
+                    var data = {};
+                    listArray=[];
+                    var images = angular.copy(work.image);
+                    var surrogate = angular.copy(work.surrogate);
+                    delete work.image;
+                    delete work.surrogate;
+                    for(var i=0; i < images.length; i++){
+                        data=angular.copy(work);
+                        data.image=[];
+                        data.image[0]=images[i];
+                        data.thumbnail=images[i].thumbnail;
+                        data._attr=images[i]._attr;
+                        data.caption=images[i].caption;
+                        listArray.push(data);
+                    }
+
+                    data={};
+                    for(var i=0; i < surrogate.length; i++){
+                        data=surrogate[i];
+                        if(surrogate[i].image) {
+                            for(var j=0; j < surrogate[i].image.length; j++) {
+                                data = angular.copy(surrogate[i]);
+                                if (surrogate[i].image[j]) {
+                                    data.image = [];
+                                    data.image[0] = surrogate[i].image[j];
+                                    data.thumbnail = surrogate[i].image[j].thumbnail;
+                                    data._attr = surrogate[i].image[j]._attr;
+                                    data.caption = surrogate[i].image[j].caption;
+                                }
+                                listArray.push(data);
+                            }
+                        } else {
+                            listArray.push(data);
+                        }
+
+
+                    }
+
                 }
 
                 if(work.subwork && !work.surrogate) {
+                    listArray=[];
                     for(var i=0; i < work.subwork.length; i++) {
                         var aSubwork=work.subwork[i];
                         if(aSubwork.surrogate) {
@@ -236,7 +292,10 @@ angular.module('viewCustom')
                         }
                         if(aSubwork.image) {
                             for(var k=0; k < aSubwork.image.length; k++) {
-                                var data=aSubwork.image[k];
+                                var data=aSubwork;
+                                data.thumbnail=aSubwork.image[k].thumbnail;
+                                data._attr=aSubwork.image[k]._attr;
+                                data.caption=aSubwork.image[k].caption;
                                 listArray.push(data);
                             }
                         }
@@ -246,6 +305,7 @@ angular.module('viewCustom')
                     }
                 }
                 if(work.subwork && work.surrogate) {
+                    listArray=[];
                     for(var i=0; i < work.subwork.length; i++) {
                         var aSubwork=work.subwork[i];
                         if(aSubwork.surrogate) {
@@ -256,7 +316,10 @@ angular.module('viewCustom')
                         }
                         if(aSubwork.image) {
                             for(var k=0; k < aSubwork.image.length; k++) {
-                                var data=aSubwork.image[k];
+                                var data=aSubwork;
+                                data.thumbnail=aSubwork.image[k].thumbnail;
+                                data._attr=aSubwork.image[k]._attr;
+                                data.caption=aSubwork.image[k].caption;
                                 listArray.push(data);
                             }
                         }
@@ -271,13 +334,17 @@ angular.module('viewCustom')
                         }
                         if(aSurrogate.image) {
                             for(var k=0; k < aSurrogate.image.length; k++) {
-                                var data=aSurrogate.image[k];
+                                var data=aSurrogate;
+                                data.thumbnail=aSurrogate.image[k].thumbnail;
+                                data._attr=aSurrogate.image[k]._attr;
+                                data.caption=aSurrogate.image[k].caption;
                                 listArray.push(data);
                             }
                         }
                     }
                 }
                 if(work.surrogate && !work.subwork) {
+                    listArray=[];
                     for(var w=0; w < work.surrogate.length; w++) {
                         var aSurrogate=work.surrogate[w];
                         if(aSurrogate.surrogate) {
@@ -288,7 +355,10 @@ angular.module('viewCustom')
                         }
                         if(aSurrogate.image) {
                             for(var k=0; k < aSurrogate.image.length; k++) {
-                                var data=aSurrogate.image[k];
+                                var data=aSurrogate;
+                                data.thumbnail=aSurrogate.image[k].thumbnail;
+                                data._attr=aSurrogate.image[k]._attr;
+                                data.caption=aSurrogate.image[k].caption;
                                 listArray.push(data);
                             }
                         }
@@ -305,6 +375,7 @@ angular.module('viewCustom')
 
                 /* end work section ***/
             } else if(xmldata.group) {
+                listArray=[];
                 xmldata=xmldata.group[0];
                 if(xmldata.subwork && xmldata.surrogate){
                     var listArray=[];
@@ -321,7 +392,10 @@ angular.module('viewCustom')
                         }
                         if(aSubwork.image) {
                             for(var j=0; j < aSubwork.image.length; j++){
-                                var data=aSubwork.image[j];
+                                var data=aSubwork;
+                                data.thumbnail=aSubwork.image[j].thumbnail;
+                                data._attr=aSubwork.image[j]._attr;
+                                data.caption=aSubwork.image[j].caption;
                                 listArray.push(data);
                             }
                         }
@@ -341,7 +415,10 @@ angular.module('viewCustom')
                         }
                         if(aSurrogate.image) {
                             for(var j=0; j < aSurrogate.image.length; j++) {
-                                var data=aSurrogate.image[j];
+                                var data=aSurrogate;
+                                data.thumbnail=aSurrogate.image[j].thumbnail;
+                                data._attr=aSurrogate.image[j]._attr;
+                                data.caption=aSurrogate.image[j].caption;
                                 listArray.push(data);
                             }
                         }
@@ -363,7 +440,11 @@ angular.module('viewCustom')
                         }
                         if(subwork[i].image) {
                             for(var j=0; j < subwork[i].image.length; j++) {
-                                surrogate.push(subwork[i].image[j]);
+                                var data=subwork[i];
+                                data.thumbnail=subwork[i].image[j].thumbnail;
+                                data._attr=subwork[i].image[j]._attr;
+                                data.caption=subwork[i].image[j].caption;
+                                surrogate.push(data);
                             }
                         }
                     }

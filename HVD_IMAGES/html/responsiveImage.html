@@ -1,8 +1,8 @@
 <div layout="column" layout-align="center center" ng-if="vm.showImage">
 <md-card class="hv-md-card">
-    <a class="noCursor">
-    <img ng-if="vm.src" ng-src="{{vm.src}}" class="md-card-image {{vm.localScope.imgClass}}" alt="{{vm.imgtitle}}" title="{{vm.imgtitle}}"/>
-    <div class="nophoto" ng-if="!vm.src">Image not digitized</div>
+    <a class="noCursor" aria-label="{{vm.imgtitle}}" title="{{vm.imgtitle}}">
+    <img ng-if="vm.src" ng-src="{{vm.src}}" class="md-card-image {{vm.localScope.imgClass}}" alt="{{vm.imgtitle}}" aria-label="{{vm.imgtitle}}" title="{{vm.imgtitle}}"/>
+    <div class="nophoto" ng-if="!vm.src" aria-label="{{vm.imgtitle}}"  title="{{vm.imgtitle}}">Image not digitized</div>
     <div class="lockIcon" tabindex="-1" ng-if="vm.localScope.hideLockIcon">
         <img src="custom/HVD_IMAGES/img/icon_lock25.png" alt="Lock" aria-label="Restricted image"/>
     </div>

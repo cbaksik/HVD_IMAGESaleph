@@ -14,7 +14,6 @@ angular.module('viewCustom')
 
         vm.xmldata=[];
         vm.items={};
-
         vm.getData=function () {
           var restUrl=vm.parentCtrl.searchService.cheetah.restUrl+'/'+vm.context+'/'+vm.docid;
           var params={'vid':'HVD_IMAGES','lang':'en_US','search_scope':'default_scope','adaptor':'Local Search Engine'}
@@ -28,9 +27,6 @@ angular.module('viewCustom')
                   if(vm.items.pnx.addata) {
                       vm.xmldata = sv.getXMLdata(vm.items.pnx.addata.mis1[0]);
                   }
-                  console.log('*** vm.xmldata 3 ****');
-                  console.log(vm.xmldata);
-                  console.log(vm.items)
 
               },function (err) {
                   console.log(err);

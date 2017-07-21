@@ -35,18 +35,11 @@ angular.module('viewCustom')
             sv.getAjax(url,params,'get')
                 .then(function (result) {
                     vm.item=result.data;
-
-                    console.log('*** result.data ***');
-                    console.log(result.data);
-
                     // convert xml to json
                     if(vm.item.pnx.addata) {
                         vm.xmldata = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
 
                     }
-
-                    console.log('*** vm.xmldata 2 ***');
-                    console.log(vm.xmldata);
 
                     // show total of image
                     if(vm.xmldata.surrogate) {
@@ -70,10 +63,6 @@ angular.module('viewCustom')
 
         vm.displayPhoto=function () {
             vm.isLoggedIn=sv.getLogInID();
-
-            console.log('** custom-view-component ***');
-            console.log(vm.xmldata);
-
             if (vm.xmldata.surrogate && !vm.xmldata.image) {
                 if(vm.xmldata.surrogate[vm.index].image) {
                     vm.photo = vm.xmldata.surrogate[vm.index].image[0];
@@ -90,6 +79,8 @@ angular.module('viewCustom')
             } else if(vm.xmldata.image) {
                 vm.photo=vm.xmldata.image[vm.index];
                 vm.jp2=sv.findJP2(vm.photo);
+            } else {
+                vm.photo=vm.xmldata[vm.index];
             }
 
             if(vm.photo._attr && vm.photo._attr.restrictedImage) {
@@ -98,10 +89,6 @@ angular.module('viewCustom')
                 }
             }
 
-            console.log('*** vm.photo ***');
-            console.log(vm.photo);
-            console.log(vm.imageNav);
-            console.log(vm.total);
 
         };
 

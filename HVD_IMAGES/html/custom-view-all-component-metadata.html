@@ -247,7 +247,7 @@
 <!--- display surrogate and subwork image -->
 
 <md-content id="componentMetadata"  ng-repeat="data in vm.xmldata.surrogate track by $index">
-<div layout="row" class="layout-row">
+<div layout="row" layout-xs="column" class="layout-row">
   <div flex="80">
     <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="data._attr.componentID">
         <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">

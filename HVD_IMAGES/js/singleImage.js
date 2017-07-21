@@ -26,6 +26,7 @@ angular.module('viewCustom')
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
+
                 vm.isLoggedIn=sv.getLogInID();
                 if(vm.restricted && !vm.isLoggedIn) {
                     vm.showImage=false;
@@ -50,6 +51,8 @@ angular.module('viewCustom')
                             }
                         },300);
                     }
+                } else {
+                    vm.imageUrl='';
                 }
 
                 vm.localScope.loading=false;

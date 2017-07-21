@@ -42,7 +42,11 @@ angular.module('viewCustom')
                         vm.restricted=vm.itemdata._attr.restrictedImage._value;
                     }
                 }
-                if(vm.itemdata.title) {
+
+
+                if(vm.itemdata.caption) {
+                    vm.imageTitle=vm.itemdata.caption[0]._text;
+                } else if(vm.itemdata.title) {
                     vm.imageTitle=vm.itemdata.title[0].textElement[0]._text;
                 }
                 if(vm.src && vm.imageFlag) {

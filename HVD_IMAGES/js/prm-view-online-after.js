@@ -22,23 +22,24 @@ angular.module('viewCustom')
            vm.item=itemData.item;
            if(vm.item.pnx.addata) {
                var data=sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
-
-               if(data.surrogate && data.image) {
+               if(data.surrogate) {
                    vm.item.mis1Data=data.surrogate;
-               } else if(data.image && !data.surrogate) {
-                   vm.item.mis1Data=data.image;
-               } else if(data.surrogate && !data.image) {
-                   vm.item.mis1Data=data.surrogate;
+               } else if(data.image) {
+                   if(data.image.length===1) {
+                       vm.item.mis1Data=[];
+                       vm.item.mis1Data.push(data);
+                   } else {
+                       vm.item.mis1Data=data.image;
+                   }
                } else {
                    vm.item.mis1Data=[];
                    vm.item.mis1Data.push(data);
                }
+
            }
            vm.searchData=itemData.searchData;
            vm.searchData.sortby=vm.params.sortby;
            vm.pageInfo=sv.getPage();
-
-           console.log(vm.item);
 
            if(vm.isLoggedIn===false && vm.item.mis1Data) {
                if(vm.item.mis1Data.length===1) {
