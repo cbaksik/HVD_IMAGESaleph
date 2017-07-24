@@ -1,5 +1,6 @@
 
 <div layout-align="start start" class="hvPanelFavorite bkWhite" ng-if="$ctrl.parentCtrl.favoritesService.favoritesTab==='items'">
+
     <ul class="hvInline bkWhite">
         <li role="thumbnail image" ng-repeat="item in $ctrl.favoriteItems track by $index"  aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
 
@@ -7,6 +8,9 @@
 
         </li>
     </ul>
+
+
+
 </div>
 
 <div layout="row" layout-align="start start"  ng-if="$ctrl.parentCtrl.favoritesService.favoritesTab==='search_history'">

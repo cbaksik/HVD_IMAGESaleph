@@ -40,33 +40,24 @@ angular.module('viewCustom').component('customThumbnail', {
         vm.localScope = { 'imgclass': '', 'hideLockIcon': false, 'hideTooltip': false };
         vm.imageUrl = '/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
         vm.src = '';
-        vm.imageTitle = '';
+        vm.imageCaption = '';
         vm.restricted = false;
         vm.imageFlag = false;
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-
             vm.localScope = { 'imgclass': '', 'hideLockIcon': false };
             if (vm.itemdata.image) {
                 vm.imageFlag = true;
                 if (vm.itemdata.image.length === 1) {
                     vm.src = vm.itemdata.image[0].thumbnail[0]._attr.href._value + '?width=150&height=150';
                     vm.restricted = vm.itemdata.image[0]._attr.restrictedImage._value;
-                }
-            } else if (vm.itemdata.thumbnail) {
-                vm.imageFlag = true;
-                if (vm.itemdata.thumbnail.length === 1) {
-                    vm.src = vm.itemdata.thumbnail[0]._attr.href._value + '?width=150&height=150';
-                    vm.imageTitle = vm.itemdata.thumbnail[0]._text[0];
-                }
-                if (vm.itemdata._attr) {
-                    vm.restricted = vm.itemdata._attr.restrictedImage._value;
+                    if (vm.itemdata.image[0].caption) {
+                        vm.imageCaption = vm.itemdata.image[0].caption[0]._text;
+                    }
                 }
             }
-            if (vm.itemdata.title) {
-                vm.imageTitle = vm.itemdata.title[0].textElement[0]._text;
-            }
+
             if (vm.src && vm.imageFlag) {
                 vm.imageUrl = sv.getHttps(vm.src);
                 $timeout(function () {
@@ -175,11 +166,15 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
             if (topbar) {
                 var divNode = document.createElement('div');
                 divNode.setAttribute('class', 'metadataHeader');
-                var textNode = document.createTextNode('FULL COMPONENT METADATA PAGE');
+                var textNode = document.createTextNode('FULL COMPONENT METADATA');
                 divNode.appendChild(textNode);
                 topbar.insertBefore(divNode, topbar.children[2]);
+                // remove pin and bookmark
+                topbar.children[3].remove();
+                // remove user login message
+                topbar.children[3].remove();
             }
-        }, 500);
+        }, 300);
 
         vm.getData();
     };
@@ -290,17 +285,22 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         if (el) {
             el.style.display = 'none';
         }
+
         // insert a header into black topbar
         $timeout(function (e) {
             var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
             if (topbar) {
                 var divNode = document.createElement('div');
                 divNode.setAttribute('class', 'metadataHeader');
-                var textNode = document.createTextNode('FULL COMPONENT METADATA PAGE');
+                var textNode = document.createTextNode('FULL IMAGE DETAIL');
                 divNode.appendChild(textNode);
                 topbar.insertBefore(divNode, topbar.children[2]);
+                // remove pin and bookmark
+                topbar.children[3].remove();
+                // remove user login message
+                topbar.children[3].remove();
             }
-        }, 500);
+        }, 300);
     };
 
     // next photo
@@ -754,18 +754,46 @@ angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSear
     var sv = prmSearchService;
     var vm = this;
     vm.favoriteItems = [];
+    vm.pinList = [];
     vm.searchData = {};
     vm.selectitem = null;
     vm.isOpenSideNav = false;
 
-    vm.$doCheck = function () {
+    vm.getDataList = function () {
+        var url = vm.parentCtrl.favoritesService.restBaseURLs.pnxBaseURL + '/U';
+        var param = { 'recordIds': '', 'vid': '' };
+        param.vid = vm.parentCtrl.vid;
+        param.recordIds = vm.parentCtrl.favoritesService.fullList.join();
+        sv.getAjax(url, param, 'get').then(function (result) {
+            vm.favoriteItems = sv.convertData(result.data);
+            console.log('**** result list ***');
+            console.log(vm.favoriteItems);
+        }, function (err) {
+            console.log('*** response error ****');
+            console.log(err);
+        });
+    };
+
+    // get favorite list
+    vm.getFavoriteList = function () {
+        var url = vm.parentCtrl.favoritesService.restBaseURLs.favoritesBaseURL;
+        var param = {};
+        sv.getAjax(url, param, 'get').then(function (result) {
+            vm.pinList = result.data;
+            console.log('*** pin list ***');
+            console.log(vm.pinList);
+        }, function (err) {
+            console.log('*** response error ****');
+            console.log(err);
+        });
+    };
+
+    vm.$onChanges = function () {
         // get data from parent controller
-        vm.favoriteItems = vm.parentCtrl.favoritesService.items;
-        if (vm.favoriteItems.length > 0) {
-            vm.favoriteItems = sv.convertData(vm.favoriteItems);
-            vm.searchData.vid = vm.parentCtrl.vid;
-            vm.selectitem = sv.getItem();
-        }
+        vm.getDataList();
+
+        console.log('**** prm-favorites-after ****');
+        console.log(vm);
     };
 }]);
 
@@ -851,35 +879,7 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
     vm.$onInit = function () {
 
         vm.params = $location.search();
-        // remove virtual browse shelf and more link
-        if (vm.params.singleimage && vm.params.index) {
-            vm.showSingImagePage();
-            // remove search box
-            var el = $element[0].parentNode.parentNode.parentNode.parentNode;
-            var children = el.children[0].children;
-            children[1].remove();
-
-            // remove back button breadcrumbs
-            var el2 = $element[0].parentNode.parentNode.parentNode.parentNode;
-            var children2 = el2.children;
-            var children1 = children2[0].children[0].children[1];
-            //remove bookmark
-            children1.children[2].remove();
-            // remove login
-            children1.children[2].remove();
-
-            // insert full image detail text
-            var span = document.createElement('div');
-            span.setAttribute('class', 'fullImageDetail');
-            var text = document.createTextNode('FULL IMAGE DETAIL');
-            span.appendChild(text);
-            children1.appendChild(span);
-
-            // remove breadcrumb
-            children2[1].remove();
-        } else {
-            vm.showFullViewPage();
-        }
+        vm.showFullViewPage();
     };
 }]);
 

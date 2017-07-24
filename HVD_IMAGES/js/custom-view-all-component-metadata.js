@@ -58,11 +58,15 @@ angular.module('viewCustom')
                 if(topbar) {
                     var divNode=document.createElement('div');
                     divNode.setAttribute('class','metadataHeader');
-                    var textNode=document.createTextNode('FULL COMPONENT METADATA PAGE');
+                    var textNode=document.createTextNode('FULL COMPONENT METADATA');
                     divNode.appendChild(textNode);
                     topbar.insertBefore(divNode,topbar.children[2]);
+                    // remove pin and bookmark
+                    topbar.children[3].remove();
+                    // remove user login message
+                    topbar.children[3].remove();
                 }
-            },500);
+            },300);
 
 
             vm.getData();

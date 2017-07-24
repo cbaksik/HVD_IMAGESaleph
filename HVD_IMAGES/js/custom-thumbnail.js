@@ -17,34 +17,25 @@ angular.module('viewCustom')
             vm.localScope={'imgclass':'','hideLockIcon':false,'hideTooltip':false};
             vm.imageUrl='/primo-explore/custom/HVD_IMAGES/img/icon_image.png';
             vm.src='';
-            vm.imageTitle='';
+            vm.imageCaption='';
             vm.restricted=false;
             vm.imageFlag=false;
 
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
-
                 vm.localScope={'imgclass':'','hideLockIcon':false};
                 if(vm.itemdata.image) {
                     vm.imageFlag=true;
                     if(vm.itemdata.image.length===1) {
                         vm.src=vm.itemdata.image[0].thumbnail[0]._attr.href._value + '?width=150&height=150';
                         vm.restricted=vm.itemdata.image[0]._attr.restrictedImage._value;
-                    }
-                } else if(vm.itemdata.thumbnail) {
-                    vm.imageFlag=true;
-                    if(vm.itemdata.thumbnail.length===1) {
-                       vm.src=vm.itemdata.thumbnail[0]._attr.href._value + '?width=150&height=150';
-                       vm.imageTitle=vm.itemdata.thumbnail[0]._text[0];
-                    }
-                    if(vm.itemdata._attr) {
-                        vm.restricted=vm.itemdata._attr.restrictedImage._value;
+                        if(vm.itemdata.image[0].caption) {
+                            vm.imageCaption = vm.itemdata.image[0].caption[0]._text;
+                        }
                     }
                 }
-                if(vm.itemdata.title) {
-                    vm.imageTitle=vm.itemdata.title[0].textElement[0]._text;
-                }
+
                 if(vm.src && vm.imageFlag) {
                     vm.imageUrl=sv.getHttps(vm.src);
                     $timeout(function () {

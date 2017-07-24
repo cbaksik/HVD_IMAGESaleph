@@ -107,17 +107,25 @@ angular.module('viewCustom')
             if(el) {
                 el.style.display = 'none';
             }
+
+
             // insert a header into black topbar
             $timeout(function (e) {
                 var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
                 if(topbar) {
                     var divNode=document.createElement('div');
                     divNode.setAttribute('class','metadataHeader');
-                    var textNode=document.createTextNode('FULL COMPONENT METADATA PAGE');
+                    var textNode=document.createTextNode('FULL IMAGE DETAIL');
                     divNode.appendChild(textNode);
                     topbar.insertBefore(divNode,topbar.children[2]);
+                    // remove pin and bookmark
+                    topbar.children[3].remove();
+                    // remove user login message
+                    topbar.children[3].remove();
                 }
-            },500);
+
+
+            },300);
 
         };
 

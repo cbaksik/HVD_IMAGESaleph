@@ -49,6 +49,22 @@
 
 }
 
+.imageCaption {
+    width:185px;
+    height:40px;
+    line-height:15px;
+    font-size:100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: inherit;
+    display: inline-block;
+    margin-top:10px;
+    text-align: center;
+    font-size:10px;
+    cursor:default;
+
+}
+
 .hv-image-card {
     padding-top: 0px !important;
     margin-top:0px !important;
