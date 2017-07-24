@@ -3,7 +3,7 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService','$window','$stateParams', function ($sce, $element,$location, prmSearchService, $window, $stateParams) {
+    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService','$window','$stateParams','$timeout', function ($sce, $element,$location, prmSearchService, $window, $stateParams, $timeout) {
 
         var vm = this;
         var sv=prmSearchService;
@@ -51,6 +51,19 @@ angular.module('viewCustom')
             if(el) {
                 el.style.display = 'none';
             }
+
+            // insert a header into black topbar
+            $timeout(function (e) {
+                var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
+                if(topbar) {
+                    var divNode=document.createElement('div');
+                    divNode.setAttribute('class','metadataHeader');
+                    var textNode=document.createTextNode('FULL COMPONENT METADATA PAGE');
+                    divNode.appendChild(textNode);
+                    topbar.insertBefore(divNode,topbar.children[2]);
+                }
+            },500);
+
 
             vm.getData();
 

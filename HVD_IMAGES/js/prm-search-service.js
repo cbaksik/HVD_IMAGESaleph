@@ -80,10 +80,12 @@ angular.module('viewCustom')
                    var jsonObj=serviceObj.getXMLdata(obj.pnx.addata.mis1[0]);
                    if(jsonObj.surrogate) {
                        for (var k = 0; k < jsonObj.surrogate.length; k++) {
-                            if(jsonObj.surrogate[k]._attr.restrictedImage) {
-                                if(jsonObj.surrogate[k]._attr.restrictedImage._value) {
-                                    obj.restrictedImage=true;
-                                    k=jsonObj.surrogate.length;
+                            if(jsonObj.surrogate[k].image) {
+                                if(jsonObj.surrogate[k].image[0]._attr) {
+                                    if (jsonObj.surrogate[k].image[0]._attr.restrictedImage._value) {
+                                        obj.restrictedImage = true;
+                                        k = jsonObj.surrogate.length;
+                                    }
                                 }
                             }
                        }
@@ -232,9 +234,6 @@ angular.module('viewCustom')
                             data=angular.copy(work);
                             data.image=[];
                             data.image[0]=images[i];
-                            data.thumbnail=images[i].thumbnail;
-                            data._attr=images[i]._attr;
-                            data.caption=images[i].caption;
                             listArray.push(data);
                         }
                     }
@@ -250,9 +249,6 @@ angular.module('viewCustom')
                         data=angular.copy(work);
                         data.image=[];
                         data.image[0]=images[i];
-                        data.thumbnail=images[i].thumbnail;
-                        data._attr=images[i]._attr;
-                        data.caption=images[i].caption;
                         listArray.push(data);
                     }
 
@@ -355,10 +351,8 @@ angular.module('viewCustom')
                         }
                         if(aSurrogate.image) {
                             for(var k=0; k < aSurrogate.image.length; k++) {
-                                var data=aSurrogate;
-                                data.thumbnail=aSurrogate.image[k].thumbnail;
-                                data._attr=aSurrogate.image[k]._attr;
-                                data.caption=aSurrogate.image[k].caption;
+                                var data=angular.copy(aSurrogate);
+                                data.image[0]=aSurrogate.image[k];
                                 listArray.push(data);
                             }
                         }
@@ -366,6 +360,7 @@ angular.module('viewCustom')
                             listArray.push(aSurrogate);
                         }
                     }
+
                 }
 
                 xmldata=work;
@@ -431,26 +426,41 @@ angular.module('viewCustom')
                 } else if(xmldata.subwork && !xmldata.surrogate) {
                     // transfer subwork to surrogate
                     var surrogate=[];
-                    var subwork=xmldata.subwork;
+                    listArray=[];
+                    var subwork=angular.copy(xmldata.subwork);
+                    delete xmldata.subwork;
                     for(var i=0; i < subwork.length; i++) {
                         if(subwork[i].surrogate) {
-                            for(var k=0; k < subwork[i].surrogate.length; k++) {
-                                surrogate.push(subwork[i].surrogate[k]);
+                            surrogate=angular.copy(subwork[i].surrogate);
+                            delete subwork[i].surrogate;
+                            for(var k=0; k < surrogate.length; k++) {
+                                if(surrogate[k].image) {
+                                    var images = angular.copy(surrogate[k].image);
+                                    delete surrogate[k].image;
+                                    for (var c = 0; c < images.length; c++) {
+                                        var data = surrogate[k];
+                                        data.image = [];
+                                        data.image[0] = images[c];
+                                        listArray.push(data);
+                                    }
+                                } else {
+                                    listArray.push(surrogate[k]);
+                                }
                             }
                         }
                         if(subwork[i].image) {
-                            for(var j=0; j < subwork[i].image.length; j++) {
+                            var images = angular.copy(subwork[i].image);
+                            delete subwork[i].image;
+                            for(var j=0; j < images.length; j++) {
                                 var data=subwork[i];
-                                data.thumbnail=subwork[i].image[j].thumbnail;
-                                data._attr=subwork[i].image[j]._attr;
-                                data.caption=subwork[i].image[j].caption;
-                                surrogate.push(data);
+                                data.image=[];
+                                data.image[0]=images[j];
+                                listArray.push(data);
                             }
                         }
                     }
 
-                    xmldata.surrogate=surrogate;
-
+                    xmldata.surrogate=listArray
                 }
             }
 

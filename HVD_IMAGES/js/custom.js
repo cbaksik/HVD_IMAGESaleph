@@ -123,7 +123,7 @@ angular.module('viewCustom').component('customTopMenu', {
  * Created by samsan on 7/17/17.
  */
 
-angular.module('viewCustom').controller('customViewAllComponentMetadataController', ['$sce', '$element', '$location', 'prmSearchService', '$window', '$stateParams', function ($sce, $element, $location, prmSearchService, $window, $stateParams) {
+angular.module('viewCustom').controller('customViewAllComponentMetadataController', ['$sce', '$element', '$location', 'prmSearchService', '$window', '$stateParams', '$timeout', function ($sce, $element, $location, prmSearchService, $window, $stateParams, $timeout) {
 
     var vm = this;
     var sv = prmSearchService;
@@ -169,6 +169,18 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
             el.style.display = 'none';
         }
 
+        // insert a header into black topbar
+        $timeout(function (e) {
+            var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
+            if (topbar) {
+                var divNode = document.createElement('div');
+                divNode.setAttribute('class', 'metadataHeader');
+                var textNode = document.createTextNode('FULL COMPONENT METADATA PAGE');
+                divNode.appendChild(textNode);
+                topbar.insertBefore(divNode, topbar.children[2]);
+            }
+        }, 500);
+
         vm.getData();
     };
 }]);
@@ -185,7 +197,7 @@ angular.module('viewCustom').component('customViewAllComponentMetadata', {
  * This component is for a single image full display when a user click on thumbnail from a full display page
  */
 
-angular.module('viewCustom').controller('customViewComponentController', ['$sce', '$mdMedia', 'prmSearchService', '$location', '$stateParams', '$element', function ($sce, $mdMedia, prmSearchService, $location, $stateParams, $element) {
+angular.module('viewCustom').controller('customViewComponentController', ['$sce', '$mdMedia', 'prmSearchService', '$location', '$stateParams', '$element', '$timeout', function ($sce, $mdMedia, prmSearchService, $location, $stateParams, $element, $timeout) {
 
     var vm = this;
     var sv = prmSearchService;
@@ -275,7 +287,20 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         vm.getData();
         // hide search bar
         var el = $element[0].parentNode.parentNode.children[0].children[2];
-        el.style.display = 'none';
+        if (el) {
+            el.style.display = 'none';
+        }
+        // insert a header into black topbar
+        $timeout(function (e) {
+            var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
+            if (topbar) {
+                var divNode = document.createElement('div');
+                divNode.setAttribute('class', 'metadataHeader');
+                var textNode = document.createTextNode('FULL COMPONENT METADATA PAGE');
+                divNode.appendChild(textNode);
+                topbar.insertBefore(divNode, topbar.children[2]);
+            }
+        }, 500);
     };
 
     // next photo
@@ -489,23 +514,16 @@ angular.module('viewCustom').component('multipleThumbnail', {
                 if (vm.itemdata.image.length === 1) {
                     vm.src = vm.itemdata.image[0].thumbnail[0]._attr.href._value + '?width=150&height=150';
                     vm.restricted = vm.itemdata.image[0]._attr.restrictedImage._value;
+                    if (vm.itemdata.image[0].caption) {
+                        vm.imageTitle = vm.itemdata.image[0].caption[0]._text;
+                    } else {
+                        vm.imageTitle = vm.itemdata.title[0].textElement[0]._text;
+                    }
                 }
-            } else if (vm.itemdata.thumbnail) {
-                vm.imageFlag = true;
-                if (vm.itemdata.thumbnail.length === 1) {
-                    vm.src = vm.itemdata.thumbnail[0]._attr.href._value + '?width=150&height=150';
-                    vm.imageTitle = vm.itemdata.thumbnail[0]._text[0];
-                }
-                if (vm.itemdata._attr) {
-                    vm.restricted = vm.itemdata._attr.restrictedImage._value;
-                }
-            }
-
-            if (vm.itemdata.caption) {
-                vm.imageTitle = vm.itemdata.caption[0]._text;
-            } else if (vm.itemdata.title) {
+            } else {
                 vm.imageTitle = vm.itemdata.title[0].textElement[0]._text;
             }
+
             if (vm.src && vm.imageFlag) {
                 vm.imageUrl = sv.getHttps(vm.src);
                 $timeout(function () {
@@ -1415,10 +1433,12 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                     var jsonObj = serviceObj.getXMLdata(obj.pnx.addata.mis1[0]);
                     if (jsonObj.surrogate) {
                         for (var k = 0; k < jsonObj.surrogate.length; k++) {
-                            if (jsonObj.surrogate[k]._attr.restrictedImage) {
-                                if (jsonObj.surrogate[k]._attr.restrictedImage._value) {
-                                    obj.restrictedImage = true;
-                                    k = jsonObj.surrogate.length;
+                            if (jsonObj.surrogate[k].image) {
+                                if (jsonObj.surrogate[k].image[0]._attr) {
+                                    if (jsonObj.surrogate[k].image[0]._attr.restrictedImage._value) {
+                                        obj.restrictedImage = true;
+                                        k = jsonObj.surrogate.length;
+                                    }
                                 }
                             }
                         }
@@ -1566,9 +1586,6 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                             data = angular.copy(work);
                             data.image = [];
                             data.image[0] = images[i];
-                            data.thumbnail = images[i].thumbnail;
-                            data._attr = images[i]._attr;
-                            data.caption = images[i].caption;
                             listArray.push(data);
                         }
                     }
@@ -1583,9 +1600,6 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                         data = angular.copy(work);
                         data.image = [];
                         data.image[0] = images[i];
-                        data.thumbnail = images[i].thumbnail;
-                        data._attr = images[i]._attr;
-                        data.caption = images[i].caption;
                         listArray.push(data);
                     }
 
@@ -1685,10 +1699,8 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                         }
                         if (aSurrogate.image) {
                             for (var k = 0; k < aSurrogate.image.length; k++) {
-                                var data = aSurrogate;
-                                data.thumbnail = aSurrogate.image[k].thumbnail;
-                                data._attr = aSurrogate.image[k]._attr;
-                                data.caption = aSurrogate.image[k].caption;
+                                var data = angular.copy(aSurrogate);
+                                data.image[0] = aSurrogate.image[k];
                                 listArray.push(data);
                             }
                         }
@@ -1759,25 +1771,41 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                 } else if (xmldata.subwork && !xmldata.surrogate) {
                     // transfer subwork to surrogate
                     var surrogate = [];
-                    var subwork = xmldata.subwork;
+                    listArray = [];
+                    var subwork = angular.copy(xmldata.subwork);
+                    delete xmldata.subwork;
                     for (var i = 0; i < subwork.length; i++) {
                         if (subwork[i].surrogate) {
-                            for (var k = 0; k < subwork[i].surrogate.length; k++) {
-                                surrogate.push(subwork[i].surrogate[k]);
+                            surrogate = angular.copy(subwork[i].surrogate);
+                            delete subwork[i].surrogate;
+                            for (var k = 0; k < surrogate.length; k++) {
+                                if (surrogate[k].image) {
+                                    var images = angular.copy(surrogate[k].image);
+                                    delete surrogate[k].image;
+                                    for (var c = 0; c < images.length; c++) {
+                                        var data = surrogate[k];
+                                        data.image = [];
+                                        data.image[0] = images[c];
+                                        listArray.push(data);
+                                    }
+                                } else {
+                                    listArray.push(surrogate[k]);
+                                }
                             }
                         }
                         if (subwork[i].image) {
-                            for (var j = 0; j < subwork[i].image.length; j++) {
+                            var images = angular.copy(subwork[i].image);
+                            delete subwork[i].image;
+                            for (var j = 0; j < images.length; j++) {
                                 var data = subwork[i];
-                                data.thumbnail = subwork[i].image[j].thumbnail;
-                                data._attr = subwork[i].image[j]._attr;
-                                data.caption = subwork[i].image[j].caption;
-                                surrogate.push(data);
+                                data.image = [];
+                                data.image[0] = images[j];
+                                listArray.push(data);
                             }
                         }
                     }
 
-                    xmldata.surrogate = surrogate;
+                    xmldata.surrogate = listArray;
                 }
             }
         }

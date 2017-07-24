@@ -36,6 +36,7 @@ angular.module('viewCustom')
                    vm.item.mis1Data.push(data);
                }
 
+
            }
            vm.searchData=itemData.searchData;
            vm.searchData.sortby=vm.params.sortby;

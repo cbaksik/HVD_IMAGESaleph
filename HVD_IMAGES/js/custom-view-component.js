@@ -4,7 +4,7 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element) {
+    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element','$timeout', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element, $timeout) {
 
         let vm = this;
         var sv=prmSearchService;
@@ -104,7 +104,20 @@ angular.module('viewCustom')
             vm.getData();
             // hide search bar
             var el=$element[0].parentNode.parentNode.children[0].children[2];
-            el.style.display='none';
+            if(el) {
+                el.style.display = 'none';
+            }
+            // insert a header into black topbar
+            $timeout(function (e) {
+                var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
+                if(topbar) {
+                    var divNode=document.createElement('div');
+                    divNode.setAttribute('class','metadataHeader');
+                    var textNode=document.createTextNode('FULL COMPONENT METADATA PAGE');
+                    divNode.appendChild(textNode);
+                    topbar.insertBefore(divNode,topbar.children[2]);
+                }
+            },500);
 
         };
 

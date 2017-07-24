@@ -31,24 +31,17 @@ angular.module('viewCustom')
                     if(vm.itemdata.image.length===1) {
                         vm.src=vm.itemdata.image[0].thumbnail[0]._attr.href._value + '?width=150&height=150';
                         vm.restricted=vm.itemdata.image[0]._attr.restrictedImage._value;
+                        if(vm.itemdata.image[0].caption) {
+                            vm.imageTitle = vm.itemdata.image[0].caption[0]._text;
+                        } else {
+                            vm.imageTitle=vm.itemdata.title[0].textElement[0]._text;
+                        }
                     }
-                } else if(vm.itemdata.thumbnail) {
-                    vm.imageFlag=true;
-                    if(vm.itemdata.thumbnail.length===1) {
-                       vm.src=vm.itemdata.thumbnail[0]._attr.href._value + '?width=150&height=150';
-                       vm.imageTitle=vm.itemdata.thumbnail[0]._text[0];
-                    }
-                    if(vm.itemdata._attr) {
-                        vm.restricted=vm.itemdata._attr.restrictedImage._value;
-                    }
-                }
-
-
-                if(vm.itemdata.caption) {
-                    vm.imageTitle=vm.itemdata.caption[0]._text;
-                } else if(vm.itemdata.title) {
+                } else {
                     vm.imageTitle=vm.itemdata.title[0].textElement[0]._text;
                 }
+
+
                 if(vm.src && vm.imageFlag) {
                     vm.imageUrl=sv.getHttps(vm.src);
                     $timeout(function () {

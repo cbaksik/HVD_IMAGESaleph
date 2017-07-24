@@ -650,6 +650,17 @@ prm-search-result-list-after{
     background: #ffffff;
     color:#000000;
 }
+
+.metadataHeader {
+    display: inline-block;
+    font-size:120%;
+    white-space: nowrap;
+    color:#e4e4e4;
+    line-height:50px;
+    margin-left:10px;
+    font-weight: normal;
+    text-transform: uppercase;
+}
 prm-logo {
 	display: flex;
 	flex-direction: row;
