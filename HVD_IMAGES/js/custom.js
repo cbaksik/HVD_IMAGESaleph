@@ -5,19 +5,95 @@
 angular.module('viewCustom', ['angularLoad', 'cl.paging']);
 
 /**
+ * Created by samsan on 7/26/17.
+ */
+
+angular.module('viewCustom').controller('customFavoriteActionDialogController', ['items', 'position', '$mdDialog', function (items, position, $mdDialog) {
+    // local variables
+    var vm = this;
+    vm.item = items;
+    vm.position = position;
+    //vm.position.top=0;
+    vm.position.width = vm.position.width + 40;
+    vm.selectedAction = position.action;
+    vm.activeAction = position.action;
+    vm.displayCloseIcon = false;
+
+    vm.openTab = function ($event, action) {
+        vm.selectedAction = action;
+        vm.activeAction = action;
+    };
+
+    vm.closeDialog = function () {
+        $mdDialog.hide();
+    };
+}]);
+
+/**
  * Created by samsan on 7/25/17.
  */
 
-angular.module('viewCustom').controller('customFavoriteListController', ['prmSearchService', function (prmSearchService) {
+angular.module('viewCustom').controller('customFavoriteListController', ['prmSearchService', '$mdDialog', '$element', function (prmSearchService, $mdDialog, $element) {
 
     var sv = prmSearchService;
     var vm = this;
     vm.searchdata = {};
     vm.chooseAll = false;
+    vm.itemList = []; // store pin favorite list
 
-    vm.unpin = function (index, item) {
-        console.log(index);
-        console.log(item);
+    // unpin each item
+    vm.unpin = function (index, recordid) {
+        console.log(vm.parentCtrl);
+        var url = vm.parentCtrl.favoritesService.restBaseURLs.favoritesBaseURL;
+        var param = { 'delete': { 'records': [{ 'recordId': '' }] } };
+        param.delete.records[0].recordId = recordid;
+        sv.postAjax(url, param).then(function (result) {
+            if (result.status === 200) {
+                vm.itemList.splice(index, 1);
+            } else {
+                console.log('*** It cannot unpin this item because it is problem with DB server ***');
+            }
+        }, function (err) {
+            console.log(err);
+        });
+    };
+
+    vm.unpinAll = function () {
+        console.log(vm.parentCtrl);
+        var url = vm.parentCtrl.favoritesService.restBaseURLs.favoritesBaseURL;
+        var param = { 'delete': { 'records': [{ 'recordId': '' }] } };
+        var recordids = [];
+        var k = 0;
+        // add all checked items into recordids so it can send all of them as post
+        for (var i = 0; i < vm.itemList.length; i++) {
+            if (vm.itemList[i].checked) {
+                recordids[k] = { 'recordId': 0 };
+                if (vm.itemList[i].pnx.control) {
+                    recordids[k].recordId = vm.itemList[i].pnx.control.recordid[0];
+                    k++;
+                }
+            }
+        }
+        param.delete.records = recordids;
+
+        console.log('** param ***');
+        console.log(param);
+
+        sv.postAjax(url, param).then(function (result) {
+            if (result.status === 200) {
+                // remove item from the list if the delete is successfully
+                for (var i = 0; i < vm.itemList.length; i++) {
+                    if (vm.itemList[i].checked) {
+                        vm.itemList.splice(i, 1);
+                    }
+                }
+                vm.chooseAll = false;
+            } else {
+                console.log('*** It cannot unpin this item because it is problem with DB server ***');
+            }
+        }, function (err) {
+            console.log(err);
+        });
     };
 
     vm.checkAll = function () {
@@ -36,8 +112,92 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
         }
     };
 
+    // get the data from parent favorite item
     vm.$doCheck = function () {
         vm.itemList = vm.parentCtrl.favoritesService.items;
+    };
+
+    // open modal dialog when click on thumbnail image
+    vm.openDialog = function ($event, item) {
+        // set data to build full display page
+        var itemData = { 'item': '', 'searchData': '' };
+        itemData.item = item;
+        itemData.searchData = vm.searchdata;
+        sv.setItem(itemData);
+
+        // modal dialog pop up here
+        $mdDialog.show({
+            title: 'Full View Details',
+            target: $event,
+            clickOutsideToClose: true,
+            focusOnOpen: true,
+            escapeToClose: true,
+            bindToController: true,
+            templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
+            controller: 'customFullViewDialogController',
+            controllerAs: 'vm',
+            fullscreen: true,
+            multiple: false,
+            openFrom: { left: 0 },
+            locals: {
+                items: itemData
+            },
+            onComplete: function onComplete(scope, element) {
+                sv.setDialogFlag(true);
+            },
+            onRemoving: function onRemoving(element, removePromise) {
+                sv.setDialogFlag(false);
+            }
+        });
+        return false;
+    };
+
+    // When a user press enter by using tab key
+    vm.openDialog2 = function (e, item) {
+        if (e.which === 13 || e.which === 1) {
+            vm.openDialog(e, item);
+        }
+    };
+
+    vm.openActionDialog = function ($event, item, divid, index, action) {
+        var el = angular.element(document.querySelector('#' + divid));
+
+        var position = { 'width': 0, 'height': 0, 'top': 0, 'left': 0, index: index, 'action': 'none' };
+        if (el) {
+            position.width = el[0].clientWidth;
+            position.height = el[0].clientHeight + 100;
+            position.left = el[0].offsetLeft;
+            if ($event.clientY) {
+                position.top = $event.y - 38;
+            } else if ($event.y) {
+                position.top = $event.y - 38;
+            }
+        }
+        position.action = action;
+
+        $mdDialog.show({
+            title: 'Action dialog',
+            target: $event,
+            clickOutsideToClose: true,
+            focusOnOpen: true,
+            escapeToClose: true,
+            bindToController: true,
+            templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-favorite-action-dialog.html',
+            controller: 'customFavoriteActionDialogController',
+            controllerAs: 'vm',
+            fullscreen: true,
+            hasBackdrop: true,
+            multiple: false,
+            disableParentScroll: true,
+            openFrom: { 'id': '#' + divid },
+            locals: {
+                items: item,
+                position: position
+            },
+            onComplete: function onComplete(scope, element) {},
+            onRemoving: function onRemoving(element, removePromise) {}
+        });
+        return false;
     };
 
     vm.$onChanges = function () {
@@ -175,6 +335,7 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
 
     vm.xmldata = [];
     vm.items = {};
+    // ajax call to get data
     vm.getData = function () {
         var restUrl = vm.parentCtrl.searchService.cheetah.restUrl + '/' + vm.context + '/' + vm.docid;
         var params = { 'vid': 'HVD_IMAGES', 'lang': 'en_US', 'search_scope': 'default_scope', 'adaptor': 'Local Search Engine' };
@@ -194,7 +355,6 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
 
     // show the pop up image
     vm.gotoFullPhoto = function (index) {
-
         // go to full display page
         var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '/' + index + '?vid=' + vm.params.vid + '&lang=' + vm.params.lang;
         if (vm.params.adaptor) {
@@ -566,11 +726,11 @@ angular.module('viewCustom').component('multipleThumbnail', {
                     vm.restricted = vm.itemdata.image[0]._attr.restrictedImage._value;
                     if (vm.itemdata.image[0].caption) {
                         vm.imageTitle = vm.itemdata.image[0].caption[0]._text;
-                    } else {
+                    } else if (vm.itemdata.title) {
                         vm.imageTitle = vm.itemdata.title[0].textElement[0]._text;
                     }
                 }
-            } else {
+            } else if (vm.itemdata.title) {
                 vm.imageTitle = vm.itemdata.title[0].textElement[0]._text;
             }
 
@@ -810,8 +970,10 @@ angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSear
         vm.isFavorites = true;
         vm.isSearchHistory = true;
         vm.isSavedQuery = true;
-        vm.savedQueryItems = vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
-        vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
+        if (vm.dataList.favoritesService) {
+            vm.savedQueryItems = vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
+            vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
+        }
     };
 }]);
 
@@ -1401,6 +1563,14 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
             'method': methodType,
             'url': url,
             'params': param
+        });
+    };
+
+    serviceObj.postAjax = function (url, jsonObj) {
+        return $http({
+            'method': 'post',
+            'url': url,
+            'data': jsonObj
         });
     };
 

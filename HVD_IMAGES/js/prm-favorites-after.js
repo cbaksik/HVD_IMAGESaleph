@@ -15,9 +15,10 @@ angular.module('viewCustom')
             vm.isFavorites=true;
             vm.isSearchHistory=true;
             vm.isSavedQuery=true;
-            vm.savedQueryItems=vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
-            vm.historyItem=vm.dataList.favoritesService.searchService.searchHistoryService.items;
-
+            if(vm.dataList.favoritesService) {
+                vm.savedQueryItems = vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
+                vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
+            }
 
         };
 

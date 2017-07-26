@@ -28,6 +28,14 @@ angular.module('viewCustom')
       })
     };
 
+    serviceObj.postAjax=function (url,jsonObj) {
+        return $http({
+            'method':'post',
+            'url':url,
+            'data':jsonObj
+        })
+    };
+
     // default page info
     serviceObj.page = {'pageSize':50,'totalItems':0,'currentPage':1,'query':'','searchString':'','totalPages':0,'offset':0,'userClick':false};
     // getter for page info

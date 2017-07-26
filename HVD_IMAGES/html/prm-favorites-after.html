@@ -4,19 +4,19 @@
 <md-content class="main _md md-primoExplore-theme layout-align-center-start layout-row flex" layout="row" layout-align="center start">
     <div flex class="flex">
 
-        <div ng-if="$ctrl.dataList.favoritesService.favoritesTab==='items'">
+        <div ng-if="$ctrl.dataList.favoritesService.favoritesTab==='items'" class="results-container md-primoExplore-theme layout-column">
              <custom-favorite-list parent-ctrl="$ctrl.dataList"></custom-favorite-list>
         </div>
 
         <!-- saved searches -->
-        <div ng-if="$ctrl.dataList.favoritesService.favoritesTab==='queries'">
+        <div ng-if="$ctrl.dataList.favoritesService.favoritesTab==='queries'" class="results-container md-primoExplore-theme layout-column">
 
             <prm-saved-queries-list [(itemlist)]="$ctrl.savedQueryItems" [(is-search-history)]="$ctrl.isSearchHistory"></prm-saved-queries-list>
 
         </div>
 
         <!-- search history -->
-        <div ng-if="$ctrl.dataList.favoritesService.favoritesTab==='search_history'">
+        <div ng-if="$ctrl.dataList.favoritesService.favoritesTab==='search_history'" class="results-container md-primoExplore-theme layout-column">
 
             <prm-saved-queries-list [(itemlist)]="$ctrl.historyItem" [(is-search-history)]="$ctrl.isSearchHistory"></prm-saved-queries-list>
 

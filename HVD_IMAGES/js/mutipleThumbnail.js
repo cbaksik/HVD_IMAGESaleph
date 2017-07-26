@@ -33,11 +33,11 @@ angular.module('viewCustom')
                         vm.restricted=vm.itemdata.image[0]._attr.restrictedImage._value;
                         if(vm.itemdata.image[0].caption) {
                             vm.imageTitle = vm.itemdata.image[0].caption[0]._text;
-                        } else {
+                        } else if(vm.itemdata.title) {
                             vm.imageTitle=vm.itemdata.title[0].textElement[0]._text;
                         }
                     }
-                } else {
+                } else if(vm.itemdata.title) {
                     vm.imageTitle=vm.itemdata.title[0].textElement[0]._text;
                 }
 

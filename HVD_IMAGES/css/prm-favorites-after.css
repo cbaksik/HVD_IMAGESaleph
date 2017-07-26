@@ -28,6 +28,7 @@ md-sidenav.md-closed.md-locked-open-add-active {
 .tinyPhoto {
     width:75px;
     height: auto;
+    cursor: pointer;
 }
 
 .tinyNoPhoto {
@@ -35,6 +36,7 @@ md-sidenav.md-closed.md-locked-open-add-active {
     height:75px;
     background:#e4e4e4;
     border:1px solid #000000;
+    cursor: pointer;
 }
 
 .favoriteBox {
@@ -42,8 +44,24 @@ md-sidenav.md-closed.md-locked-open-add-active {
     color:#000000;
     border-bottom:1px solid #e4e4e4;
     margin-bottom:10px;
-    margin-left:5px;
-    margin-right:5px;
+    margin-left:15px;
+    margin-right:15px;
     padding:10px;
 
+}
+
+
+.itemNumber {
+    position: absolute;
+    padding-left:5px;
+    font-size:80%;
+}
+
+.itemCenter {
+    text-align:left;
+}
+
+.moveDialog {
+    position: fixed !important;
+    width:100%;
 }

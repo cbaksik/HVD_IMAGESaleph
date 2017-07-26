@@ -14,6 +14,7 @@ angular.module('viewCustom')
 
         vm.xmldata=[];
         vm.items={};
+        // ajax call to get data
         vm.getData=function () {
           var restUrl=vm.parentCtrl.searchService.cheetah.restUrl+'/'+vm.context+'/'+vm.docid;
           var params={'vid':'HVD_IMAGES','lang':'en_US','search_scope':'default_scope','adaptor':'Local Search Engine'}
@@ -36,7 +37,6 @@ angular.module('viewCustom')
 
         // show the pop up image
         vm.gotoFullPhoto=function (index) {
-
             // go to full display page
             var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid+'/'+index+'?vid='+vm.params.vid+'&lang='+vm.params.lang;
             if(vm.params.adaptor) {
