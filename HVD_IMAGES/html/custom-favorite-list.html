@@ -1,0 +1,42 @@
+<div class="favoriteBox">
+    <md-checkbox class="md-primoExplore-theme flex-5" ng-model="vm.chooseAll" ng-click="vm.checkAll()"></md-checkbox>
+</div>
+<div layout="row" class="favoriteBox" ng-repeat="item in vm.itemList track by $index">
+
+    <div flex="5">
+        <md-checkbox class="md-primoExplore-theme flex-5" ng-model="item.checked">
+           <span>{{$index+1}}</span>
+        </md-checkbox>
+    </div>
+    <div flex="10">
+        <div class="media-thumbnail">
+            <img ng-if="item.pnx.links.thumbnail" src="{{item.pnx.links.thumbnail|urlFilter}}" class="md-avatar tinyPhoto"/>
+            <div ng-if="!item.pnx.links.thumbnail" class="tinyNoPhoto"></div>
+        </div>
+    </div>
+    <div flex="65" class="md-list-item-text md-primoExplore-theme">
+        <p class="item-title">{{item.pnx.display.title[0]}}</p>
+    </div>
+    <div flex="20">
+
+        <md-button class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Unpin this item">
+            <md-icon md-svg-icon="primo-actions:email" class="md-primoExplore-theme">
+
+            </md-icon>
+        </md-button>
+
+        <md-button class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Unpin this item">
+           <md-icon md-svg-icon="primo-ui:prm_unpin" class="md-primoExplore-theme">
+
+           </md-icon>
+        </md-button>
+
+        <md-button class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Unpin this item">
+            <md-icon md-svg-icon="navigation:ic_more_horiz_24px" class="md-primoExplore-theme">
+
+            </md-icon>
+        </md-button>
+    </div>
+
+</div>
+

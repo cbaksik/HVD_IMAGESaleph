@@ -7,57 +7,16 @@ angular.module('viewCustom')
     .controller('prmFavoritesAfterController', ['prmSearchService',function (prmSearchService) {
 
         var sv=prmSearchService;
-        let vm = this;
-        vm.favoriteItems=[];
-        vm.pinList=[];
-        vm.searchData={};
-        vm.selectitem=null;
-        vm.isOpenSideNav=false;
+        var vm = this;
+        vm.dataList = vm.parentCtrl;
 
-        vm.getDataList=function () {
-            var url=vm.parentCtrl.favoritesService.restBaseURLs.pnxBaseURL+'/U';
-            var param={'recordIds':'','vid':''};
-            param.vid=vm.parentCtrl.vid;
-            param.recordIds=vm.parentCtrl.favoritesService.fullList.join();
-            sv.getAjax(url,param,'get')
-                .then(function (result) {
-                        vm.favoriteItems=sv.convertData(result.data);
-                        console.log('**** result list ***');
-                        console.log(vm.favoriteItems);
-                    },
-                    function (err) {
-                        console.log('*** response error ****');
-                        console.log(err);
-                    }
-                )
-        };
-
-        // get favorite list
-        vm.getFavoriteList=function () {
-          var url=vm.parentCtrl.favoritesService.restBaseURLs.favoritesBaseURL;
-          var param={};
-          sv.getAjax(url,param,'get')
-              .then(function (result) {
-                  vm.pinList=result.data;
-                      console.log('*** pin list ***');
-                      console.log(vm.pinList);
-              },
-                function (err) {
-                    console.log('*** response error ****');
-                    console.log(err);
-                }
-              )
-
-        };
-
-
-        vm.$onChanges=function() {
-            // get data from parent controller
-            vm.getDataList();
-
-            console.log('**** prm-favorites-after ****');
-            console.log(vm);
-
+        vm.$doCheck=function() {
+            vm.dataList = vm.parentCtrl;
+            vm.isFavorites=true;
+            vm.isSearchHistory=true;
+            vm.isSavedQuery=true;
+            vm.savedQueryItems=vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
+            vm.historyItem=vm.dataList.favoritesService.searchService.searchHistoryService.items;
 
 
         };

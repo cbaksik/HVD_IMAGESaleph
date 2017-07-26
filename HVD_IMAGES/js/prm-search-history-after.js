@@ -63,7 +63,7 @@ angular.module('viewCustom')
 
 
 angular.module('viewCustom')
-    .component('prmSearchHistoryAfter', {
+    .component('prmSearchHistoryAfter2', {
         bindings: {parentCtrl: '<'},
         controller: 'prmSearchHistoryAfterController',
         controllerAs:'vm',

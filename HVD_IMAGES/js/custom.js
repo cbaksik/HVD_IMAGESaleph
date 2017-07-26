@@ -5,6 +5,56 @@
 angular.module('viewCustom', ['angularLoad', 'cl.paging']);
 
 /**
+ * Created by samsan on 7/25/17.
+ */
+
+angular.module('viewCustom').controller('customFavoriteListController', ['prmSearchService', function (prmSearchService) {
+
+    var sv = prmSearchService;
+    var vm = this;
+    vm.searchdata = {};
+    vm.chooseAll = false;
+
+    vm.unpin = function (index, item) {
+        console.log(index);
+        console.log(item);
+    };
+
+    vm.checkAll = function () {
+        if (vm.chooseAll === false) {
+            for (var i = 0; i < vm.itemList.length; i++) {
+                vm.itemList[i].checked = true;
+            }
+        } else {
+            vm.unCheckAll();
+        }
+    };
+
+    vm.unCheckAll = function () {
+        for (var i = 0; i < vm.itemList.length; i++) {
+            vm.itemList[i].checked = false;
+        }
+    };
+
+    vm.$doCheck = function () {
+        vm.itemList = vm.parentCtrl.favoritesService.items;
+    };
+
+    vm.$onChanges = function () {
+        vm.unCheckAll();
+        console.log('**** custom-favorite-list ****');
+        console.log(vm);
+    };
+}]);
+
+angular.module('viewCustom').component('customFavoriteList', {
+    bindings: { parentCtrl: '<' },
+    controller: 'customFavoriteListController',
+    controllerAs: 'vm',
+    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-favorite-list.html'
+});
+
+/**
  * Created by samsan on 5/17/17.
  * A custom modal dialog when a user click on thumbnail on search result list page
  */
@@ -753,47 +803,15 @@ angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSear
 
     var sv = prmSearchService;
     var vm = this;
-    vm.favoriteItems = [];
-    vm.pinList = [];
-    vm.searchData = {};
-    vm.selectitem = null;
-    vm.isOpenSideNav = false;
+    vm.dataList = vm.parentCtrl;
 
-    vm.getDataList = function () {
-        var url = vm.parentCtrl.favoritesService.restBaseURLs.pnxBaseURL + '/U';
-        var param = { 'recordIds': '', 'vid': '' };
-        param.vid = vm.parentCtrl.vid;
-        param.recordIds = vm.parentCtrl.favoritesService.fullList.join();
-        sv.getAjax(url, param, 'get').then(function (result) {
-            vm.favoriteItems = sv.convertData(result.data);
-            console.log('**** result list ***');
-            console.log(vm.favoriteItems);
-        }, function (err) {
-            console.log('*** response error ****');
-            console.log(err);
-        });
-    };
-
-    // get favorite list
-    vm.getFavoriteList = function () {
-        var url = vm.parentCtrl.favoritesService.restBaseURLs.favoritesBaseURL;
-        var param = {};
-        sv.getAjax(url, param, 'get').then(function (result) {
-            vm.pinList = result.data;
-            console.log('*** pin list ***');
-            console.log(vm.pinList);
-        }, function (err) {
-            console.log('*** response error ****');
-            console.log(err);
-        });
-    };
-
-    vm.$onChanges = function () {
-        // get data from parent controller
-        vm.getDataList();
-
-        console.log('**** prm-favorites-after ****');
-        console.log(vm);
+    vm.$doCheck = function () {
+        vm.dataList = vm.parentCtrl;
+        vm.isFavorites = true;
+        vm.isSearchHistory = true;
+        vm.isSavedQuery = true;
+        vm.savedQueryItems = vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
+        vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
     };
 }]);
 
@@ -1089,7 +1107,7 @@ angular.module('viewCustom').controller('prmSearchHistoryAfterController', ['prm
     };
 }]);
 
-angular.module('viewCustom').component('prmSearchHistoryAfter', {
+angular.module('viewCustom').component('prmSearchHistoryAfter2', {
     bindings: { parentCtrl: '<' },
     controller: 'prmSearchHistoryAfterController',
     controllerAs: 'vm',
@@ -1303,6 +1321,11 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             vm.flexSize.size2 = 100;
             vm.flexSize.class = '';
         }
+
+        console.log('*** prm-search-result-list-after *****');
+        console.log(vm);
+        // set data to pass into favorite list controller
+        sv.setData(vm.parentCtrl);
     };
 
     vm.$doCheck = function () {

@@ -680,6 +680,7 @@ div.hollis-logo a:hover {
 	
 .bkWhite {
     background:#ffffff;
+    color:#000000;
 }
 
 .hvPanelFavorite {
@@ -702,6 +703,29 @@ md-sidenav.md-closed.md-locked-open-add-active {
     min-width: 90% !important;
     width: 90% !important;
     max-width: 90% !important;
+}
+
+.tinyPhoto {
+    width:75px;
+    height: auto;
+}
+
+.tinyNoPhoto {
+    width:75px;
+    height:75px;
+    background:#e4e4e4;
+    border:1px solid #000000;
+}
+
+.favoriteBox {
+    background:#ffffff;
+    color:#000000;
+    border-bottom:1px solid #e4e4e4;
+    margin-bottom:10px;
+    margin-left:5px;
+    margin-right:5px;
+    padding:10px;
+
 }
 .closeBox {
     display: block;

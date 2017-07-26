@@ -188,6 +188,11 @@ angular.module('viewCustom')
             vm.flexSize.size2=100;
             vm.flexSize.class='';
         }
+
+        console.log('*** prm-search-result-list-after *****');
+        console.log(vm);
+        // set data to pass into favorite list controller
+        sv.setData(vm.parentCtrl);
     };
 
     vm.$doCheck=function() {
