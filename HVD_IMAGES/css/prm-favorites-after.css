@@ -26,17 +26,25 @@ md-sidenav.md-closed.md-locked-open-add-active {
 }
 
 .tinyPhoto {
-    width:75px;
+    width:100px;
     height: auto;
     cursor: pointer;
 }
 
 .tinyNoPhoto {
-    width:75px;
-    height:75px;
-    background:#e4e4e4;
-    border:1px solid #000000;
+    width:100px;
+    height:100px;
+    border:1px solid #c3c3c3;
     cursor: pointer;
+    text-align: center;
+    background:#efefef;
+    z-index: 0;
+    margin: auto;
+    display: inline-block;
+    font-size:80%;
+    white-space: normal;
+    padding:5px;
+    padding-top:30px;
 }
 
 .favoriteBox {
@@ -48,6 +56,10 @@ md-sidenav.md-closed.md-locked-open-add-active {
     margin-right:15px;
     padding:10px;
 
+}
+
+.marginBottom200 {
+    margin-bottom: 300px;
 }
 
 
@@ -64,4 +76,30 @@ md-sidenav.md-closed.md-locked-open-add-active {
 .moveDialog {
     position: fixed !important;
     width:100%;
+    left:0px;
 }
+
+.favoriteMarginBottom {
+    margin-bottom:0px;
+}
+
+
+@media only screen and (max-width: 800px) {
+    .favoriteBox {
+        background:#ffffff;
+        color:#000000;
+        border-bottom:1px solid #e4e4e4;
+        margin-bottom:10px;
+        margin-left:5px;
+        margin-right:5px;
+        padding:5px;
+
+    }
+
+    .favoriteMarginBottom {
+        margin-bottom:10px;
+    }
+
+}
+
+

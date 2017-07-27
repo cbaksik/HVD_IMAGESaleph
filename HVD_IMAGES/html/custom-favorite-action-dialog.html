@@ -1,26 +1,32 @@
-<md-dialog flex="100" class="moveDialog">
-<md-card>
-    <div layout="row">
-
-        <div flex="5">
+<md-dialog flex="100" class="moveDialog" ng-style="{top:vm.position.top}">
+<md-card class="list-item-wrapper favoriteBox">
+    <div layout="row" layout-xs="column">
+        <div flex="{{vm.flexSize.col1}}" class="itemCenter favoriteMarginBottom">
             <span class="itemNumber">{{vm.position.index+1}}</span>
             <md-checkbox class="md-primoExplore-theme flex-5" ng-model="vm.item.checked">
             </md-checkbox>
         </div>
-        <div flex="10">
-            <div class="media-thumbnail pointer" ng-click="vm.openDialog($event,vm.item)" tabindex="0" ng-keypress="vm.openDialog2($event,vm.item)">
-                <img ng-if="vm.item.pnx.links.thumbnail" src="{{vm.item.pnx.links.thumbnail|urlFilter}}" class="md-avatar tinyPhoto"/>
-                <div ng-if="!vm.item.pnx.links.thumbnail" class="tinyNoPhoto"></div>
+        <div flex="{{vm.flexSize.col2}}" class="favoriteMarginBottom">
+            <div class="pointer" ng-click="vm.openDialog($event,vm.item)" tabindex="0" ng-keypress="vm.openDialog2($event,vm.item)">
+                <img ng-show="vm.imageUrl" ng-src="{{vm.imageUrl}}" class="md-avatar tinyPhoto"/>
+                <div ng-show="!vm.item.pnx.links.thumbnail" class="tinyNoPhoto"></div>
             </div>
         </div>
-        <div flex="65" class="md-list-item-text md-primoExplore-theme pointer" ng-click="vm.openDialog($event,vm.item)">
+        <div flex="{{vm.flexSize.col3}}" class="md-primoExplore-theme pointer favoriteMarginBottom" ng-click="vm.openDialog($event,vm.item)">
             <a ng-click="$event.preventDefault()" href="/primo-explore/fulldisplay?docid={{vm.item.pnx.control.recordid[0]}}&vid={{vm.parentCtrl.vid}}">
         <span class="item-title" ng-repeat="title in vm.item.pnx.display.title track by $index">
             {{title}}
         </span>&nbsp;
             </a>
         </div>
-        <div flex="20">
+        <div flex="{{vm.flexSize.col4}}" class="favoriteMarginBottom">
+
+            <md-button ng-click="vm.openTab($event,'Citation')" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Citation">
+                <md-icon md-svg-icon="primo-actions:citation" class="md-primoExplore-theme">
+
+                </md-icon>
+            </md-button>
+
 
             <md-button ng-click="vm.openTab($event,'E-mail')" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Unpin this item">
                 <md-icon md-svg-icon="primo-actions:email" class="md-primoExplore-theme">
@@ -28,7 +34,7 @@
                 </md-icon>
             </md-button>
 
-            <md-button ng-click="vm.unpin($index,item.pnx.control.recordid[0])" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Unpin this item">
+            <md-button ng-click="vm.unpin(vm.position.index,vm.item.pnx.control.recordid[0])" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Unpin this item">
                 <md-icon md-svg-icon="primo-ui:prm_unpin" class="md-primoExplore-theme">
 
                 </md-icon>
