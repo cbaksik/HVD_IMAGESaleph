@@ -3,15 +3,19 @@
  */
 
 angular.module('viewCustom')
-    .controller('customFavoriteListController', ['prmSearchService','$mdDialog','$mdMedia',function (prmSearchService,$mdDialog,$mdMedia) {
+    .controller('customFavoriteListController', ['prmSearchService','$mdDialog','$mdMedia','$location',function (prmSearchService,$mdDialog,$mdMedia,$location) {
 
         var sv=prmSearchService;
         let vm = this;
         vm.searchdata={};
         vm.chooseAll=false;
         vm.itemList=[]; // store pin favorite list
-        vm.flexSize={'col1':5,'col2':10,'col3':65,'col4':20};
+        vm.pinItems=[]; // origin pin items
+        vm.rightLabelClick=false;
+        vm.flexSize={'col1':5,'col2':15,'col3':55,'col4':25};
         vm.records=[];
+        vm.params=$location.search();
+
 
         // ajax call to get favorite data list
         vm.getData=function () {
@@ -20,33 +24,39 @@ angular.module('viewCustom')
                 var param = {'recordIds': ''};
                 param.recordIds = vm.parentCtrl.favoritesService.recordsId.join();
                 vm.records = vm.parentCtrl.favoritesService.records;
-                sv.getAjax(url, param, 'get').then(function (result) {
-                        if (result.status === 200) {
-                            vm.itemList = sv.convertData(result.data);
-                        } else {
-                            console.log('*** It cannot get favorite item list data because it has problem with DB server ***');
+                if(vm.records.length > 0) {
+                    sv.getAjax(url, param, 'get').then(function (result) {
+                            if (result.status === 200) {
+                                if(result.data.length > 0) {
+                                    vm.itemList = sv.convertData(result.data);
+                                    vm.pinItems = angular.copy(vm.itemList); // make copy data to avoid using binding data
+                                    vm.unCheckAll();
+                                }
+                            } else {
+                                console.log('**** It cannot get favorite item list data because it has problem with DB server ***');
+                            }
+                        },
+                        function (err) {
+                            console.log(err);
                         }
-                    },
-                    function (err) {
-                        console.log(err);
-                    }
-                );
-            }
-        };
-
-        // check to see if user write label
-        vm.isLabel=function (index,recordid) {
-            var flag=false;
-            for(var i=0; i < vm.records.length; i++) {
-                if(recordid === vm.records[i].recordId) {
-                    if(vm.records[i].labels.length > 0) {
-                        flag=true;
-                    }
+                    );
                 }
             }
-
-            return flag;
         };
+
+
+        //check if there is a label base on the records
+        vm.isLabel=function (recordid) {
+          var flag=false;
+          for(var i=0; i < vm.records.length; i++) {
+            if(vm.records[i].recordId===recordid) {
+                flag=true;
+                i=vm.records.length;
+            }
+          }
+          return flag;
+        };
+
 
         // unpin each item
         vm.unpin=function (index, recordid) {
@@ -55,8 +65,12 @@ angular.module('viewCustom')
             param.delete.records[0].recordId=recordid;
             sv.postAjax(url,param).
                 then(function (result) {
+                    console.log('*** unpin ****');
+                    console.log(result);
+
                     if(result.status===200) {
                         vm.itemList.splice(index, 1);
+                        vm.pinItems.splice(index,1);
                     } else {
                         console.log('*** It cannot unpin this item because it has problem with DB server ***');
                     }
@@ -95,9 +109,10 @@ angular.module('viewCustom')
                             }
                         }
                         vm.itemList=unCheckItems;
+                        vm.pinItems=angular.copy(unCheckItems);
                         vm.chooseAll=false;
                     } else {
-                        console.log('*** It cannot unpin these items because it has problem with DB server ***');
+                        console.log('**** It cannot unpin these items because it has problem with DB server ***');
                     }
 
                 },
@@ -172,16 +187,17 @@ angular.module('viewCustom')
             var el=angular.element(document.querySelector('#'+divid));
             vm.position={'width':0,'height':0,'top':0,'left':0,index:index,'action':'none','pin':false};
             if(el) {
-                vm.position.width = el[0].clientWidth;
+                vm.position.width = (el[0].clientWidth + 40) + 'px';
                 vm.position.height = el[0].clientHeight + 100;
                 vm.position.left = el[0].offsetLeft;
-                vm.position.top=($event.y - 40) + 'px';
+                vm.position.top=(el[0].offsetTop - 40) + 'px';
 
             }
 
             vm.position.action=action;
 
             $mdDialog.show({
+                parent: document.querySelector('#'+divid),
                 title:'Action dialog',
                 target:$event,
                 clickOutsideToClose: true,
@@ -193,13 +209,15 @@ angular.module('viewCustom')
                 controllerAs:'vm',
                 fullscreen:false,
                 hasBackdrop:false,
-                multiple:false,
-                disableParentScroll:true,
-                openFrom:el,
+                multiple:true,
+                disableParentScroll:false,
+                openFrom:{left:'100px'},
+                closeTo:{width:'100%'},
                 locals: {
                     items:item,
                     position:vm.position,
-                    flexsize:vm.flexSize
+                    flexsize:vm.flexSize,
+                    record:vm.records[index]
                 },
                 onShowing:function (scope, element) {
 
@@ -218,6 +236,14 @@ angular.module('viewCustom')
         vm.$doCheck=function() {
             if(vm.parentCtrl.favoritesService) {
                 vm.records=vm.parentCtrl.favoritesService.records;
+                if(vm.parentCtrl.favoritesService.selectedLabels.length > 0) {
+                    vm.itemList=sv.convertData(vm.parentCtrl.favoritesService.items);
+                    vm.rightLabelClick=true;
+                } else if(vm.itemList.length < vm.pinItems.length && vm.rightLabelClick) {
+                    vm.itemList=angular.copy(vm.pinItems);
+                    vm.rightLabelClick=false;
+                }
+
             }
         };
 
@@ -234,8 +260,9 @@ angular.module('viewCustom')
                 vm.flexSize.col3=50;
                 vm.flexSize.col4=25;
             }
+
             vm.getData();
-            vm.unCheckAll();
+
         }
 
 

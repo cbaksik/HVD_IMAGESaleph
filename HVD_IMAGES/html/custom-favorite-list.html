@@ -1,5 +1,5 @@
 <div flex id="favoriteList">
-    <div class="favoriteBox">
+    <div class="favoriteBoxTop">
         <md-checkbox class="md-primoExplore-theme flex-5" ng-model="vm.chooseAll" ng-click="vm.checkAll()">
         </md-checkbox>
         <span>{{vm.itemList.length}} items</span>
@@ -8,8 +8,11 @@
             </md-icon>
         </md-button>
     </div>
-<md-card ng-repeat="item in vm.itemList track by $index"  class="favoriteBox">
-<div layout="row" layout-xs="column" id="{{item.pnx.control.recordid[0]}}">
+    <md-card ng-repeat="item in vm.itemList track by $index"  class="favoriteBox" id="{{item.pnx.control.recordid[0]}}">
+    <!--
+    <div id="{{item.pnx.control.recordid[0]}}"></div>
+    -->
+    <div layout="row" layout-xs="column">
     <div flex="{{vm.flexSize.col1}}" class="itemCenter favoriteMarginBottom">
         <span class="itemNumber">{{$index+1}}</span>
         <md-checkbox class="md-primoExplore-theme flex-5" ng-model="item.checked">
@@ -17,7 +20,7 @@
     </div>
     <div flex="{{vm.flexSize.col2}}" class="favoriteMarginBottom">
         <div class="pointer" ng-click="vm.openDialog($event,item)" tabindex="0" ng-keypress="vm.openDialog2($event,item)">
-            <img ng-if="item.pnx.links.thumbnail" ng-src="{{item.pnx.links.thumbnail[0]}}" class="md-avatar tinyPhoto"/>
+            <img ng-if="item.pnx.links.thumbnail" src="{{item.pnx.links.thumbnail[0]}}" ng-src="{{item.pnx.links.thumbnail[0]}}" class="md-avatar tinyPhoto"/>
             <div ng-if="!item.pnx.links.thumbnail" class="tinyNoPhoto">Image not digitized</div>
         </div>
     </div>
@@ -29,8 +32,8 @@
         </a>
         <div><span ng-repeat="creationdate in item.pnx.display.creationdate track by $index">{{creationdate}}</span></div>
         <div layout="row">
-            <prm-favorites-record-labels [item]="item" ng-if="vm.records[$index].labels.length > 0"></prm-favorites-record-labels>
-            <prm-favorites-edit-labels-menu [item]="item" [is-section]="false" ng-if="vm.records[$index].labels.length==0"></prm-favorites-edit-labels-menu>
+            <prm-favorites-record-labels [item]="item" ng-if="vm.isLabel(item.pnx.control.recordid[0])"></prm-favorites-record-labels>
+            <prm-favorites-edit-labels-menu [item]="item" [is-section]="false" ng-if="!vm.isLabel(item.pnx.control.recordid[0])"></prm-favorites-edit-labels-menu>
         </div>
     </div>
     <div flex="{{vm.flexSize.col4}}" class="favoriteMarginBottom">
@@ -61,7 +64,6 @@
 
     </div>
 
-</div>
-</md-card>
-    <div class="marginBottom200">&nbsp;</div>
+    </div>
+    </md-card>
 </div>

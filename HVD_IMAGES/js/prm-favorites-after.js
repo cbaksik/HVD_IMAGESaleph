@@ -4,12 +4,14 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmFavoritesAfterController', ['prmSearchService',function (prmSearchService) {
+    .controller('prmFavoritesAfterController', ['prmSearchService','$element','$mdMedia',function (prmSearchService,$element,$mdMedia) {
 
         var sv=prmSearchService;
         var vm = this;
         vm.dataList = vm.parentCtrl;
+        vm.flexSize={'col1':80,'col2':20}; // set up grid size for different screen
 
+        // access ajax data from search component list of primo
         vm.$doCheck=function() {
             vm.dataList = vm.parentCtrl;
             vm.isFavorites=true;
@@ -22,7 +24,17 @@ angular.module('viewCustom')
 
         };
 
-
+        vm.$onChanges=function() {
+            // remove the above element
+            var el=$element[0].parentNode.children[1].children[1].children[1];
+            if(el) {
+                el.remove();
+            }
+            if($mdMedia('xs')){
+                vm.flexSize.col1=100;
+                vm.flexSize.col2=100;
+            }
+        }
 
 
 

@@ -47,7 +47,7 @@ md-sidenav.md-closed.md-locked-open-add-active {
     padding-top:30px;
 }
 
-.favoriteBox {
+.favoriteBoxTop {
     background:#ffffff;
     color:#000000;
     border-bottom:1px solid #e4e4e4;
@@ -58,8 +58,23 @@ md-sidenav.md-closed.md-locked-open-add-active {
 
 }
 
+.favoriteBox {
+    background:#ffffff;
+    color:#000000;
+    border-bottom:1px solid #e4e4e4;
+    margin-left:15px;
+    margin-right:15px;
+    padding:10px;
+
+}
+
+.favoriteBox:hover {
+    background:#efefef;
+    color:#000000;
+}
+
 .marginBottom200 {
-    margin-bottom: 300px;
+    margin-bottom: 380px;
 }
 
 
@@ -74,14 +89,14 @@ md-sidenav.md-closed.md-locked-open-add-active {
 }
 
 .moveDialog {
-    position: fixed !important;
-    width:100%;
+    position:absolute !important;
     left:0px;
 }
 
 .favoriteMarginBottom {
     margin-bottom:0px;
 }
+
 
 
 @media only screen and (max-width: 800px) {
@@ -99,6 +114,11 @@ md-sidenav.md-closed.md-locked-open-add-active {
     .favoriteMarginBottom {
         margin-bottom:10px;
     }
+
+    .marginBottom200 {
+        margin-bottom: 300px;
+    }
+
 
 }
 

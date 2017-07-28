@@ -8,21 +8,18 @@ angular.module('viewCustom', ['angularLoad', 'cl.paging']);
  * Created by samsan on 7/26/17.
  */
 
-angular.module('viewCustom').controller('customFavoriteActionDialogController', ['items', 'position', 'flexsize', '$mdDialog', function (items, position, flexsize, $mdDialog) {
+angular.module('viewCustom').controller('customFavoriteActionDialogController', ['items', 'position', 'flexsize', 'record', '$mdDialog', '$location', 'prmSearchService', function (items, position, flexsize, record, $mdDialog, $location, prmSearchService) {
     // local variables
     var vm = this;
+    var sv = prmSearchService;
     vm.imageUrl = '/primo-explore/custom/HVD_IMAGES/img/ajax-loader.gif';
     vm.item = items;
     vm.position = position;
     vm.flexSize = flexsize;
-    //vm.position.top=0;
-    vm.position.width = vm.position.width + 40;
     vm.selectedAction = position.action;
     vm.activeAction = position.action;
     vm.displayCloseIcon = false;
-
-    console.log('**** vm.item ***');
-    console.log(vm.item);
+    vm.searchdata = $location.search();
 
     if (vm.item.pnx.links.thumbnail) {
         vm.imageUrl = vm.item.pnx.links.thumbnail[0];
@@ -36,11 +33,49 @@ angular.module('viewCustom').controller('customFavoriteActionDialogController', 
     vm.unpin = function (index, recordid) {
         vm.position.pin = true;
         vm.position.recordId = recordid;
-
-        console.log('**** position ***');
-        console.log(vm.position);
-
         $mdDialog.hide();
+    };
+
+    // open modal dialog when click on thumbnail image
+    vm.openDialog = function ($event, item) {
+        // set data to build full display page
+        var itemData = { 'item': '', 'searchData': '' };
+        itemData.item = item;
+        itemData.searchData = vm.searchdata;
+        sv.setItem(itemData);
+
+        // modal dialog pop up here
+        $mdDialog.show({
+            title: 'Full View Details',
+            target: $event,
+            clickOutsideToClose: true,
+            focusOnOpen: true,
+            escapeToClose: true,
+            bindToController: true,
+            templateUrl: '/primo-explore/custom/HVD_IMAGES/html/custom-full-view-dialog.html',
+            controller: 'customFullViewDialogController',
+            controllerAs: 'vm',
+            fullscreen: true,
+            multiple: true,
+            openFrom: { left: 0 },
+            locals: {
+                items: itemData
+            },
+            onComplete: function onComplete(scope, element) {
+                sv.setDialogFlag(true);
+            },
+            onRemoving: function onRemoving(element, removePromise) {
+                sv.setDialogFlag(false);
+            }
+        });
+        return false;
+    };
+
+    // When a user press enter by using tab key
+    vm.openDialog2 = function (e, item) {
+        if (e.which === 13 || e.which === 1) {
+            vm.openDialog(e, item);
+        }
     };
 
     vm.closeDialog = function () {
@@ -52,15 +87,18 @@ angular.module('viewCustom').controller('customFavoriteActionDialogController', 
  * Created by samsan on 7/25/17.
  */
 
-angular.module('viewCustom').controller('customFavoriteListController', ['prmSearchService', '$mdDialog', '$mdMedia', function (prmSearchService, $mdDialog, $mdMedia) {
+angular.module('viewCustom').controller('customFavoriteListController', ['prmSearchService', '$mdDialog', '$mdMedia', '$location', function (prmSearchService, $mdDialog, $mdMedia, $location) {
 
     var sv = prmSearchService;
     var vm = this;
     vm.searchdata = {};
     vm.chooseAll = false;
     vm.itemList = []; // store pin favorite list
-    vm.flexSize = { 'col1': 5, 'col2': 10, 'col3': 65, 'col4': 20 };
+    vm.pinItems = []; // origin pin items
+    vm.rightLabelClick = false;
+    vm.flexSize = { 'col1': 5, 'col2': 15, 'col3': 55, 'col4': 25 };
     vm.records = [];
+    vm.params = $location.search();
 
     // ajax call to get favorite data list
     vm.getData = function () {
@@ -69,29 +107,33 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
             var param = { 'recordIds': '' };
             param.recordIds = vm.parentCtrl.favoritesService.recordsId.join();
             vm.records = vm.parentCtrl.favoritesService.records;
-            sv.getAjax(url, param, 'get').then(function (result) {
-                if (result.status === 200) {
-                    vm.itemList = sv.convertData(result.data);
-                } else {
-                    console.log('*** It cannot get favorite item list data because it has problem with DB server ***');
-                }
-            }, function (err) {
-                console.log(err);
-            });
+            if (vm.records.length > 0) {
+                sv.getAjax(url, param, 'get').then(function (result) {
+                    if (result.status === 200) {
+                        if (result.data.length > 0) {
+                            vm.itemList = sv.convertData(result.data);
+                            vm.pinItems = angular.copy(vm.itemList); // make copy data to avoid using binding data
+                            vm.unCheckAll();
+                        }
+                    } else {
+                        console.log('**** It cannot get favorite item list data because it has problem with DB server ***');
+                    }
+                }, function (err) {
+                    console.log(err);
+                });
+            }
         }
     };
 
-    // check to see if user write label
-    vm.isLabel = function (index, recordid) {
+    //check if there is a label base on the records
+    vm.isLabel = function (recordid) {
         var flag = false;
         for (var i = 0; i < vm.records.length; i++) {
-            if (recordid === vm.records[i].recordId) {
-                if (vm.records[i].labels.length > 0) {
-                    flag = true;
-                }
+            if (vm.records[i].recordId === recordid) {
+                flag = true;
+                i = vm.records.length;
             }
         }
-
         return flag;
     };
 
@@ -101,8 +143,12 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
         var param = { 'delete': { 'records': [{ 'recordId': '' }] } };
         param.delete.records[0].recordId = recordid;
         sv.postAjax(url, param).then(function (result) {
+            console.log('*** unpin ****');
+            console.log(result);
+
             if (result.status === 200) {
                 vm.itemList.splice(index, 1);
+                vm.pinItems.splice(index, 1);
             } else {
                 console.log('*** It cannot unpin this item because it has problem with DB server ***');
             }
@@ -137,9 +183,10 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
                     }
                 }
                 vm.itemList = unCheckItems;
+                vm.pinItems = angular.copy(unCheckItems);
                 vm.chooseAll = false;
             } else {
-                console.log('*** It cannot unpin these items because it has problem with DB server ***');
+                console.log('**** It cannot unpin these items because it has problem with DB server ***');
             }
         }, function (err) {
             console.log(err);
@@ -208,15 +255,16 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
         var el = angular.element(document.querySelector('#' + divid));
         vm.position = { 'width': 0, 'height': 0, 'top': 0, 'left': 0, index: index, 'action': 'none', 'pin': false };
         if (el) {
-            vm.position.width = el[0].clientWidth;
+            vm.position.width = el[0].clientWidth + 40 + 'px';
             vm.position.height = el[0].clientHeight + 100;
             vm.position.left = el[0].offsetLeft;
-            vm.position.top = $event.y - 40 + 'px';
+            vm.position.top = el[0].offsetTop - 40 + 'px';
         }
 
         vm.position.action = action;
 
         $mdDialog.show({
+            parent: document.querySelector('#' + divid),
             title: 'Action dialog',
             target: $event,
             clickOutsideToClose: true,
@@ -228,13 +276,15 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
             controllerAs: 'vm',
             fullscreen: false,
             hasBackdrop: false,
-            multiple: false,
-            disableParentScroll: true,
-            openFrom: el,
+            multiple: true,
+            disableParentScroll: false,
+            openFrom: { left: '100px' },
+            closeTo: { width: '100%' },
             locals: {
                 items: item,
                 position: vm.position,
-                flexsize: vm.flexSize
+                flexsize: vm.flexSize,
+                record: vm.records[index]
             },
             onShowing: function onShowing(scope, element) {},
             onRemoving: function onRemoving(element, removePromise) {
@@ -251,6 +301,13 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
     vm.$doCheck = function () {
         if (vm.parentCtrl.favoritesService) {
             vm.records = vm.parentCtrl.favoritesService.records;
+            if (vm.parentCtrl.favoritesService.selectedLabels.length > 0) {
+                vm.itemList = sv.convertData(vm.parentCtrl.favoritesService.items);
+                vm.rightLabelClick = true;
+            } else if (vm.itemList.length < vm.pinItems.length && vm.rightLabelClick) {
+                vm.itemList = angular.copy(vm.pinItems);
+                vm.rightLabelClick = false;
+            }
         }
     };
 
@@ -267,8 +324,8 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
             vm.flexSize.col3 = 50;
             vm.flexSize.col4 = 25;
         }
+
         vm.getData();
-        vm.unCheckAll();
     };
 }]);
 
@@ -1024,12 +1081,14 @@ angular.module('viewCustom').component('prmFacetAfter', {
  * This component is for favorite section when a user pin his or her favorite image.
  */
 
-angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSearchService', function (prmSearchService) {
+angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSearchService', '$element', '$mdMedia', function (prmSearchService, $element, $mdMedia) {
 
     var sv = prmSearchService;
     var vm = this;
     vm.dataList = vm.parentCtrl;
+    vm.flexSize = { 'col1': 80, 'col2': 20 }; // set up grid size for different screen
 
+    // access ajax data from search component list of primo
     vm.$doCheck = function () {
         vm.dataList = vm.parentCtrl;
         vm.isFavorites = true;
@@ -1038,6 +1097,18 @@ angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSear
         if (vm.dataList.favoritesService) {
             vm.savedQueryItems = vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
             vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
+        }
+    };
+
+    vm.$onChanges = function () {
+        // remove the above element
+        var el = $element[0].parentNode.children[1].children[1].children[1];
+        if (el) {
+            el.remove();
+        }
+        if ($mdMedia('xs')) {
+            vm.flexSize.col1 = 100;
+            vm.flexSize.col2 = 100;
         }
     };
 }]);
@@ -1716,7 +1787,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
             // remove the $$U infront of url
             if (obj.pnx.links.thumbnail) {
                 var imgUrl = $filter('urlFilter')(obj.pnx.links.thumbnail);
-                obj.pnx.links.thumbnail[0] = imgUrl;
+                obj.pnx.links.thumbnail[0] = serviceObj.getHttps(imgUrl);
             }
             newData[i] = obj;
         }

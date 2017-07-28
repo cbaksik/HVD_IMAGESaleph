@@ -113,7 +113,7 @@ angular.module('viewCustom')
            // remove the $$U infront of url
            if(obj.pnx.links.thumbnail) {
                var imgUrl = $filter('urlFilter')(obj.pnx.links.thumbnail);
-               obj.pnx.links.thumbnail[0]=imgUrl;
+               obj.pnx.links.thumbnail[0]=serviceObj.getHttps(imgUrl);
            }
            newData[i] = obj;
 
