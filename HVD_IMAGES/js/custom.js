@@ -87,9 +87,10 @@ angular.module('viewCustom').controller('customFavoriteActionDialogController', 
  * Created by samsan on 7/25/17.
  */
 
-angular.module('viewCustom').controller('customFavoriteListController', ['prmSearchService', '$mdDialog', '$mdMedia', '$location', function (prmSearchService, $mdDialog, $mdMedia, $location) {
+angular.module('viewCustom').controller('customFavoriteListController', ['prmSearchService', '$mdDialog', '$mdMedia', '$location', 'prmFavoriteWebSql', '$state', function (prmSearchService, $mdDialog, $mdMedia, $location, prmFavoriteWebSql, $state) {
 
     var sv = prmSearchService;
+    var websql = prmFavoriteWebSql;
     var vm = this;
     vm.searchdata = {};
     vm.chooseAll = false;
@@ -99,10 +100,12 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
     vm.flexSize = { 'col1': 5, 'col2': 15, 'col3': 55, 'col4': 25 };
     vm.records = [];
     vm.params = $location.search();
+    vm.logInID = sv.getLogInID();
+    vm.authInfo = sv.getAuth();
 
     // ajax call to get favorite data list
     vm.getData = function () {
-        if (vm.parentCtrl.favoritesService) {
+        if (vm.parentCtrl.favoritesService && vm.parentCtrl.favoritesService.recordsId) {
             var url = vm.parentCtrl.favoritesService.restBaseURLs.pnxBaseURL + '/U';
             var param = { 'recordIds': '' };
             param.recordIds = vm.parentCtrl.favoritesService.recordsId.join();
@@ -128,10 +131,12 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
     //check if there is a label base on the records
     vm.isLabel = function (recordid) {
         var flag = false;
-        for (var i = 0; i < vm.records.length; i++) {
-            if (vm.records[i].recordId === recordid) {
-                flag = true;
-                i = vm.records.length;
+        if (sv.getLogInID()) {
+            for (var i = 0; i < vm.records.length; i++) {
+                if (vm.records[i].recordId === recordid) {
+                    flag = true;
+                    i = vm.records.length;
+                }
             }
         }
         return flag;
@@ -139,22 +144,25 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
 
     // unpin each item
     vm.unpin = function (index, recordid) {
-        var url = vm.parentCtrl.favoritesService.restBaseURLs.favoritesBaseURL;
-        var param = { 'delete': { 'records': [{ 'recordId': '' }] } };
-        param.delete.records[0].recordId = recordid;
-        sv.postAjax(url, param).then(function (result) {
-            console.log('*** unpin ****');
-            console.log(result);
-
-            if (result.status === 200) {
-                vm.itemList.splice(index, 1);
-                vm.pinItems.splice(index, 1);
-            } else {
-                console.log('*** It cannot unpin this item because it has problem with DB server ***');
-            }
-        }, function (err) {
-            console.log(err);
-        });
+        if (sv.getLogInID()) {
+            var url = vm.parentCtrl.favoritesService.restBaseURLs.favoritesBaseURL;
+            var param = { 'delete': { 'records': [{ 'recordId': '' }] } };
+            param.delete.records[0].recordId = recordid;
+            sv.postAjax(url, param).then(function (result) {
+                if (result.status === 200) {
+                    vm.itemList.splice(index, 1);
+                    vm.pinItems = angular.copy(vm.itemList);
+                } else {
+                    console.log('*** It cannot unpin this item because it has problem with DB server ***');
+                }
+            }, function (err) {
+                console.log(err);
+            });
+        } else {
+            console.log('*** I am not login **');
+            // user not login, delete local web sql db
+            websql.removePinItem(index, vm.areaName, vm.callback);
+        }
     };
 
     vm.unpinAll = function () {
@@ -252,6 +260,7 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
     };
 
     vm.openActionDialog = function ($event, item, divid, index, action) {
+
         var el = angular.element(document.querySelector('#' + divid));
         vm.position = { 'width': 0, 'height': 0, 'top': 0, 'left': 0, index: index, 'action': 'none', 'pin': false };
         if (el) {
@@ -297,21 +306,47 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
         return false;
     };
 
+    // callback to get data when it access webSQL
+    vm.callbackOpenDB = function (db) {
+        if (vm.areaName) {
+            websql.getPinItem(vm.areaName, vm.callback);
+        }
+    };
+    vm.callback = function (data) {
+        vm.itemList = sv.convertData(data);
+        vm.pinItems = angular.copy(vm.itemList);
+    };
+
+    vm.$onInit = function () {
+        websql.init(vm.callbackOpenDB);
+    };
+
     // get update records when a user add labels
     vm.$doCheck = function () {
+        vm.logInID = sv.getLogInID();
         if (vm.parentCtrl.favoritesService) {
-            vm.records = vm.parentCtrl.favoritesService.records;
-            if (vm.parentCtrl.favoritesService.selectedLabels.length > 0) {
-                vm.itemList = sv.convertData(vm.parentCtrl.favoritesService.items);
-                vm.rightLabelClick = true;
-            } else if (vm.itemList.length < vm.pinItems.length && vm.rightLabelClick) {
-                vm.itemList = angular.copy(vm.pinItems);
-                vm.rightLabelClick = false;
+            if (sv.getLogInID()) {
+                vm.records = vm.parentCtrl.favoritesService.records;
+                if (vm.parentCtrl.favoritesService.selectedLabels) {
+                    if (vm.parentCtrl.favoritesService.selectedLabels.length > 0) {
+                        vm.itemList = sv.convertData(vm.parentCtrl.favoritesService.items);
+                        vm.rightLabelClick = true;
+                    }
+                } else if (vm.itemList.length < vm.pinItems.length && vm.rightLabelClick) {
+                    vm.itemList = angular.copy(vm.pinItems);
+                    vm.rightLabelClick = false;
+                }
             }
         }
     };
 
     vm.$onChanges = function () {
+
+        vm.authInfo = sv.getAuth();
+        if (vm.authInfo.authenticationService.userSessionManagerService) {
+            vm.areaName = vm.authInfo.authenticationService.userSessionManagerService.areaName;
+        }
+
         // format the size to fit smaller screen
         if ($mdMedia('xs')) {
             vm.flexSize.col1 = 100;
@@ -324,8 +359,12 @@ angular.module('viewCustom').controller('customFavoriteListController', ['prmSea
             vm.flexSize.col3 = 50;
             vm.flexSize.col4 = 25;
         }
+        if (sv.getLogInID()) {
+            vm.getData();
+        }
 
-        vm.getData();
+        console.log('**** custom-favorite-list ***');
+        console.log(vm);
     };
 }]);
 
@@ -1077,6 +1116,86 @@ angular.module('viewCustom').component('prmFacetAfter', {
 });
 
 /**
+ * Created by samsan on 7/31/17.
+ * The web sql is stored on user browser when a user is not login
+ */
+angular.module('viewCustom').service('prmFavoriteWebSql', ['$window', function ($window) {
+
+    var websql = {};
+
+    var items = [];
+    websql.setItem = function (data) {
+        items = data;
+    };
+    websql.getItem = function () {
+        return items;
+    };
+
+    var db, request, objectStore, query;
+    websql.init = function (callback) {
+        request = $window.indexedDB.open('lf', 2);
+        request.onerror = function (err) {
+            console.log(err);
+        };
+        // for update or create new record
+        request.onupgradeneeded = function (e) {
+            console.log(e);
+        };
+
+        request.onsuccess = function (e) {
+            db = request.result;
+            callback(db);
+        };
+    };
+
+    // remote item from web sql base on userID
+    websql.removePinItem = function (index, userID, callback) {
+        var myKey = userID;
+        var myIndex = parseInt(index);
+        var objectStore = db.transaction(['keyvaluepairs'], "readwrite").objectStore('keyvaluepairs');
+        var query = objectStore.get(myKey);
+
+        query.onerror = function (err) {
+            console.log(err);
+        };
+
+        query.onsuccess = function (e) {
+            var result = query.result;
+            var dataList = [];
+            var k = 0;
+            for (var i = 0; i < result.length; i++) {
+                if (i !== myIndex) {
+                    dataList[k] = result[i];
+                    k++;
+                }
+            }
+
+            // update web sql record base
+            objectStore.put(dataList, myKey);
+            callback(dataList);
+        };
+    };
+
+    websql.getPinItem = function (userID, callback) {
+        var myKey = userID;
+
+        var objectStore = db.transaction(['keyvaluepairs'], "readwrite").objectStore('keyvaluepairs');
+        var query = objectStore.get(myKey);
+
+        query.onerror = function (err) {
+            console.log(err);
+        };
+
+        query.onsuccess = function (e) {
+            var result = query.result;
+            callback(result);
+        };
+    };
+
+    return websql;
+}]);
+
+/**
  * Created by samsan on 7/7/17.
  * This component is for favorite section when a user pin his or her favorite image.
  */
@@ -1087,16 +1206,28 @@ angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSear
     var vm = this;
     vm.dataList = vm.parentCtrl;
     vm.flexSize = { 'col1': 80, 'col2': 20 }; // set up grid size for different screen
+    vm.logInID = sv.getLogInID();
+    vm.selectedIndex = 0;
+
+    vm.selectTab = function (tab) {
+        if (sv.getLogInID()) {}
+    };
 
     // access ajax data from search component list of primo
     vm.$doCheck = function () {
+        vm.logInID = sv.getLogInID();
         vm.dataList = vm.parentCtrl;
         vm.isFavorites = true;
         vm.isSearchHistory = true;
         vm.isSavedQuery = true;
         if (vm.dataList.favoritesService) {
-            vm.savedQueryItems = vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
-            vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
+            if (sv.getLogInID()) {
+                vm.savedQueryItems = vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
+                vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
+            } else {
+                vm.savedQueryItems = [];
+                vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
+            }
         }
     };
 
@@ -1106,6 +1237,12 @@ angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSear
         if (el) {
             el.remove();
         }
+        // remove the old tab menu
+        var el2 = $element[0].parentNode.children[1];
+        if (el2) {
+            el2.remove();
+        }
+
         if ($mdMedia('xs')) {
             vm.flexSize.col1 = 100;
             vm.flexSize.col2 = 100;

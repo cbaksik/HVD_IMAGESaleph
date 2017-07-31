@@ -1,35 +1,44 @@
 
 
 <!-- saved record favorite list -->
-<md-content class="main _md md-primoExplore-theme" infinite-scroll="$ctrl.favoritesService.nextResults()" infinite-scroll-distance="0" infinite-scroll-immediate-check="false">
-
+<md-content class="main _md md-primoExplore-theme" >
+<md-tabs md-dynamic-height md-border-bottom md-swipe-content="true" md-autoselect md-selected="$ctrl.selectedIndex">
+    <md-tab label="Saved Records" md-on-select="$ctrl.selectTab('items')" >
     <!-- list all pin favorite items -->
-    <div ng-if="$ctrl.dataList.favoritesService.favoritesTab==='items'" layout="row" layout-xs="column" layout-align="start start">
+    <md-content  ng-if="$ctrl.dataList.favoritesService.favoritesTab==='items'" layout="row" layout-xs="column" layout-align="start start">
         <div flex="80"  class="flex">
-            <custom-favorite-list parent-ctrl="$ctrl.dataList"></custom-favorite-list>
+            <div infinite-scroll="$ctrl.favoritesService.nextResults()" infinite-scroll-distance="0" infinite-scroll-immediate-check="false">
+                <custom-favorite-list parent-ctrl="$ctrl.dataList"></custom-favorite-list>
+            </div>
         </div>
 
         <!-- display label on the right side of the page -->
-        <div flex="20" class="flex">
+        <div flex="20" class="flex" ng-if="$ctrl.logInID">
+
             <prm-favorites-labels class="layout-full-width"></prm-favorites-labels>
+
         </div>
 
-    </div>
+    </md-content>
     <div class="marginBottom200" ng-if="$ctrl.dataList.favoritesService.favoritesTab==='items'">&nbsp;</div>
+    </md-tab>
     <!-- saved searches -->
-    <div layout="row" layout-align="start start" ng-if="$ctrl.dataList.favoritesService.favoritesTab==='queries'">
+    <md-tab label="Saved Search" md-on-select="$ctrl.selectTab('queries')" ng-if="$ctrl.logInID">
+    <md-content layout="row" layout-align="start start" ng-if="$ctrl.savedQueryItems.length > 0">
         <div flex>
             <prm-saved-queries-list [(itemlist)]="$ctrl.savedQueryItems" [(is-search-history)]="$ctrl.isSearchHistory"></prm-saved-queries-list>
         </div>
-    </div>
-
+    </md-content>
+    </md-tab>
     <!-- search history -->
-    <div layout="row" layout-align="start start" ng-if="$ctrl.dataList.favoritesService.favoritesTab==='search_history'">
+    <md-tab label="Search History" md-on-select="$ctrl.selectTab('search_history')" >
+    <md-content layout="row" layout-align="start start"  ng-if="$ctrl.historyItem.length > 0">
         <div flex>
             <prm-saved-queries-list [(itemlist)]="$ctrl.historyItem" [(is-search-history)]="$ctrl.isSearchHistory"></prm-saved-queries-list>
         </div>
-    </div>
-
+    </md-content>
+    </md-tab>
+</md-tabs>
 </md-content>
 
 

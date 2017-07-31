@@ -9,9 +9,6 @@
         </md-button>
     </div>
     <md-card ng-repeat="item in vm.itemList track by $index"  class="favoriteBox" id="{{item.pnx.control.recordid[0]}}">
-    <!--
-    <div id="{{item.pnx.control.recordid[0]}}"></div>
-    -->
     <div layout="row" layout-xs="column">
     <div flex="{{vm.flexSize.col1}}" class="itemCenter favoriteMarginBottom">
         <span class="itemNumber">{{$index+1}}</span>
@@ -31,7 +28,7 @@
         </span>&nbsp;
         </a>
         <div><span ng-repeat="creationdate in item.pnx.display.creationdate track by $index">{{creationdate}}</span></div>
-        <div layout="row">
+        <div layout="row" ng-if="vm.logInID">
             <prm-favorites-record-labels [item]="item" ng-if="vm.isLabel(item.pnx.control.recordid[0])"></prm-favorites-record-labels>
             <prm-favorites-edit-labels-menu [item]="item" [is-section]="false" ng-if="!vm.isLabel(item.pnx.control.recordid[0])"></prm-favorites-edit-labels-menu>
         </div>
