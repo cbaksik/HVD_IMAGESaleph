@@ -1,0 +1,34 @@
+<md-button hide-xs hide-sm class="md-icon-button close-button icon-button-large md-button md-primoExplore-theme md-ink-ripple closeButton" aria-label="Close full display" ng-if="$ctrl.modalDialogFlag" (click)="$ctrl.closeDialog()">
+    <prm-icon icon-type="svg" svg-icon-set="primo-ui" icon-definition="close">
+        <md-icon md-svg-icon="primo-ui:close" aria-label="Close icon" class="md-primoExplore-theme" tabindex="0"></md-icon>
+    </prm-icon>
+</md-button>
+<div layout-align="start start" ng-cloak class="hvPanel" ng-if="$ctrl.searchInProgress===false">
+    <div layout="row" layout-align="start start" class="resultTopDisplay">
+        <label flex ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
+             {{$ctrl.searchInfo.totalItems|number}} results
+        </label>
+    </div>
+    <div class="hvfullsize">
+     <ul class="hvInline">
+     <li role="thumbnail image" ng-repeat="item in $ctrl.items track by $index"  aria-label="View full image. It has {{item.pnx.display.lds28[0]|countFilter}}">
+
+         <thumbnail dataitem="item" searchdata="$ctrl.searchData"></thumbnail>
+
+     </li>
+     </ul>
+        <!-- NO result show this message -->
+        <no-results-found itemlength="$ctrl.items.length"></no-results-found>
+    </div>
+
+    <!-- pagination start here -->
+    <div layout="row" layout-align="center center" layout-xs="column" class="{{$ctrl.flexSize.class}}">
+        <label flex="{{$ctrl.flexSize.size1}}" ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
+            {{$ctrl.pageCounter.min|number}} - {{$ctrl.pageCounter.max|number}} of {{$ctrl.searchInfo.totalItems|number}}
+        </label>
+        <div flex="{{$ctrl.flexSize.size2}}" ng-if="$ctrl.searchInfo.totalItems > $ctrl.searchInfo.pageSize" layout-align="center start">
+            <cl-paging flex cl-pages="$ctrl.searchInfo.totalPages" cl-steps="$ctrl.paginationNumber" cl-page-changed="$ctrl.pageChanged($ctrl.currentPage)" cl-align="start start" cl-current-page="$ctrl.currentPage"></cl-paging>
+        </div>
+    </div>
+    <!-- end pagination -->
+</div>

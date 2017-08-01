@@ -1,0 +1,16 @@
+<md-card class="hv-md-card">
+    <md-card-content class="imageBox">
+        <a class="thumbnail" title="{{vm.imageTitle}}">
+            <img ng-if="vm.imageFlag" ng-src="{{vm.imageUrl}}"  class="md-card-image {{vm.localScope.imgclass}}" alt="{{vm.imageTitle}}" aria-label="{{vm.imageTitle}}" title="{{vm.imageTitle}}" tabindex="0" />
+            <div ng-if="!vm.imageFlag" class="nophoto">
+                Image not digitized
+            </div>
+            <div class="lockIcon" ng-if="vm.localScope.hideLockIcon" tabindex="-1">
+                <img src="custom/HVD_IMAGES/img/icon_lock25.png" class="md-avatar" alt="Lock icon" aria-label="Lock icon"/>
+            </div>
+        </a>
+    </md-card-content>
+    <md-card-footer class="nospace">
+        <div class="imageTitle">{{vm.imageTitle|truncatefilter}}</div>
+    </md-card-footer>
+</md-card>

@@ -1,0 +1,66 @@
+<div flex id="favoriteList">
+    <div class="favoriteBoxTop">
+        <md-checkbox class="md-primoExplore-theme flex-5" ng-model="vm.chooseAll" ng-click="vm.checkAll()">
+        </md-checkbox>
+        <span>{{vm.itemList.length}} items</span>
+        <md-button ng-if="vm.chooseAll" ng-click="vm.unpinAll()" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Unpin this item">
+            <md-icon md-svg-icon="primo-ui:prm_unpin" class="md-primoExplore-theme">
+            </md-icon>
+        </md-button>
+    </div>
+    <md-card ng-repeat="item in vm.itemList track by $index"  class="favoriteBox" id="{{item.pnx.control.recordid[0]}}">
+    <div layout="row" layout-xs="column">
+    <div flex="{{vm.flexSize.col1}}" class="itemCenter favoriteMarginBottom">
+        <span class="itemNumber">{{$index+1}}</span>
+        <md-checkbox class="md-primoExplore-theme flex-5" ng-model="item.checked">
+        </md-checkbox>
+    </div>
+    <div flex="{{vm.flexSize.col2}}" class="favoriteMarginBottom">
+        <div class="pointer" ng-click="vm.openDialog($event,item)" tabindex="0" ng-keypress="vm.openDialog2($event,item)">
+            <img ng-if="item.pnx.links.thumbnail" src="{{item.pnx.links.thumbnail[0]}}" ng-src="{{item.pnx.links.thumbnail[0]}}" class="md-avatar tinyPhoto"/>
+            <div ng-if="!item.pnx.links.thumbnail" class="tinyNoPhoto">Image not digitized</div>
+        </div>
+    </div>
+    <div flex="{{vm.flexSize.col3}}" class="md-primoExplore-theme pointer favoriteMarginBottom" ng-click="vm.openDialog($event,item)">
+        <a ng-click="$event.preventDefault()" href="/primo-explore/fulldisplay?docid={{item.pnx.control.recordid[0]}}&vid={{vm.parentCtrl.vid}}">
+        <span class="item-title" ng-repeat="title in item.pnx.display.title track by $index">
+            {{title}}
+        </span>&nbsp;
+        </a>
+        <div><span ng-repeat="creationdate in item.pnx.display.creationdate track by $index">{{creationdate}}</span></div>
+        <div layout="row" ng-if="vm.logInID">
+            <prm-favorites-record-labels [item]="item" ng-if="vm.isLabel(item.pnx.control.recordid[0])"></prm-favorites-record-labels>
+            <prm-favorites-edit-labels-menu [item]="item" [is-section]="false" ng-if="!vm.isLabel(item.pnx.control.recordid[0])"></prm-favorites-edit-labels-menu>
+        </div>
+    </div>
+    <div flex="{{vm.flexSize.col4}}" class="favoriteMarginBottom">
+
+        <md-button ng-click="vm.openActionDialog($event,item,item.pnx.control.recordid[0],$index,'Citation')" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Citation">
+            <md-icon md-svg-icon="primo-actions:citation" class="md-primoExplore-theme">
+
+            </md-icon>
+        </md-button>
+
+        <md-button ng-click="vm.openActionDialog($event,item,item.pnx.control.recordid[0],$index,'E-mail')" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Email">
+            <md-icon md-svg-icon="primo-actions:email" class="md-primoExplore-theme">
+
+            </md-icon>
+        </md-button>
+
+        <md-button ng-click="vm.unpin($index,item.pnx.control.recordid[0])" class="md-icon-button custom-button unpin-button md-button md-primoExplore-theme md-ink-ripple un-pinned" aria-label="Unpin this item">
+           <md-icon md-svg-icon="primo-ui:prm_unpin" class="md-primoExplore-theme">
+
+           </md-icon>
+        </md-button>
+
+        <md-button ng-click="vm.openActionDialog($event,item,item.pnx.control.recordid[0],$index,'none')" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="More actions">
+            <md-icon md-svg-icon="navigation:ic_more_horiz_24px" class="md-primoExplore-theme">
+
+            </md-icon>
+        </md-button>
+
+    </div>
+
+    </div>
+    </md-card>
+</div>

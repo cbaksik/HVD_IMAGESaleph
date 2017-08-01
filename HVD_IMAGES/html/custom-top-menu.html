@@ -1,0 +1,10 @@
+<div layout="row" class="layout-row customTopMenu padding15">
+    <div flex="40">
+        <a href="http://library.harvard.edu" aria-label="Go to home page" title="Go to home page">
+            <img src="/primo-explore/custom/HVD_IMAGES/img/harvard_library_logo.png" aria-label="Harvard Library Logo"/>
+        </a>
+    </div>
+    <div flex="60" class="customMenu hide-xs">
+        <a class="noTopMargin hv-menu" ng-repeat="m in vm.topRightMenus track by $index" href="{{m.url}}" title="{{m.label}}" aria-label="{{m.label}}">{{m.title}}</a>
+    </div>
+</div>

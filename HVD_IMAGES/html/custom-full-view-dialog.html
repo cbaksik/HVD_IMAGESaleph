@@ -1,0 +1,18 @@
+<div layout="row" class="layout-row" tabindex="-1">
+    <md-dialog aria-label="Full Display" class="md-dialog-full prm-full-view-dialog  _md md-primoExplore-theme md-dialog-fullscreen _md-transition-out" role="dialog" tabindex="-1">
+        <md-button class="md-raised hide-gt-sm md-icon-button md-warn closeButton2"  ng-click="vm.closeDialog()" tabIndex="0" aria-label="Close button">
+            <prm-icon icon-type="svg" svg-icon-set="primo-ui" icon-definition="close">
+                <md-icon md-svg-icon="primo-ui:close" aria-label="Close icon" class="bigCloseIcon2" tabindex="0"></md-icon>
+            </prm-icon>
+        </md-button>
+        <md-dialog-content layout="row" class="layout-row" id="dialogContent_450">
+            <sticky-scroll flex="100" class="flex-100" style="overflow-y: scroll">
+
+                <prm-full-view id="fullView" ng-if="vm.item" [item]="vm.item" flex class="flex" tabindex="-1">
+
+                </prm-full-view>
+
+            </sticky-scroll>
+        </md-dialog-content>
+    </md-dialog>
+</div>

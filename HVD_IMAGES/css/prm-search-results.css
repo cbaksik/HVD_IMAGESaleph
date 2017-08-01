@@ -1,0 +1,224 @@
+
+.hvfullsize {
+  width: 100%;
+}
+
+
+.hvInline {list-style: none; margin-left:-45px; margin-top: -20px;}
+
+.hvInline > li { display: inline-table; text-align: left; cursor: pointer; display: -moz-inline-stack;
+  margin-bottom:5px; margin-right:10px; width: auto; height:240px; vertical-align: top; padding:0px;}
+
+
+.nobadge {color: #000000; padding:2px;
+  display:inline-block; z-index:1; }
+
+
+.hvbox {
+  text-align: right;
+  display: inline-block;
+}
+
+
+
+
+.row > .column {
+   display: inline-flex;
+}
+
+.prm-background {
+  background: #ffffff;
+  color:#000000;
+}
+
+body {
+  background: #ffffff;
+  color:#000000;
+}
+
+.main {
+  background: #ffffff !important;
+  padding-right:0px !important;
+  padding-left:0px !important;
+  padding-top:10px !important;
+  text-align: left !important;
+  color:#000000;
+}
+
+.disabled > a {
+  color:#efefef;
+}
+
+.disabled > a:hover {
+  background: transparent;
+  cursor: none;
+}
+
+ul.pagination > li > .disabled  {
+  background: transparent;
+}
+
+
+.hvtooltip {
+  background:#ffffff;
+  color:#000000;
+  padding:5px;
+  border:1px solid #c3c3c3;
+  border-radius:5px;
+  text-align:left;
+  height: auto;
+  width:150px;
+  white-space: normal;
+  line-height:normal;
+}
+
+
+.hv-md-card {
+  padding-top: 0px !important;
+  margin-top:0px !important;
+  margin-bottom:0px !important;
+  padding-bottom:0px !important;
+  padding-left:0px !important;
+  background: transparent !important;
+}
+
+md-tooltip ._md-content {
+  background:#ffffff !important;
+  color:#000000 !important;
+  text-align: left !important;
+  width:200px !important;
+  height: auto !important;
+  line-height: normal !important;
+  white-space: normal !important;
+}
+
+.md-tooltip .md-origin-bottom {
+  margin-top: -200px !important;
+}
+
+
+cl-paging > button.md-icon-button {
+  background:#f5f5f5;
+}
+
+.hvPanel {
+  margin-bottom:20px;
+  margin-left:15px;
+  text-align: left;
+}
+
+.bigCloseIcon {
+  width:40px !important;
+  height:40px !important;
+  fill:#FFF !important;
+  stroke:#FFF !important;
+  stroke-width: 2px !important;
+}
+
+.bigCloseIcon2 {
+  width:30px;
+  height:30px;
+  fill:red;
+  stroke:red;
+  stroke-width: 2px;
+}
+
+.block-icon {
+  display: inline-block;
+  position: absolute;
+}
+
+.bigCloseIcon:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+  transition:0.4s;
+  transition-timing-function: ease-out;
+}
+
+.bigCloseIcon:focus{
+  cursor: pointer;
+  transform: scale(1.05);
+  transition:0.4s;
+  transition-timing-function: ease-out;
+}
+
+.fullscreen {  height: 100vh; width: auto;}
+
+.responsiveImage {
+  width:600px;
+  height: auto;
+}
+
+.horizontal-line {border-bottom:1px solid #c3c3c3; height:1px; width:auto;}
+
+.closeButton {
+  display: block;
+  position: fixed;
+  left:30px;
+  top:50%;
+  cursor: pointer;
+  z-index: 100000000;
+  color: #ffffff;
+}
+
+.closeButton:hover {
+  color: #ffffff;
+}
+
+.closeButton2 {
+  display: block;
+  position: fixed;
+  left:10px;
+  top:5px;
+  cursor: pointer;
+  z-index: 100000000;
+  color: #ff0000;
+}
+
+.closeButton2:hover {
+  color: #ff0000;
+}
+
+.hvLogo {
+  font-family:Goudy Old Style,Georgia,serif;
+  font-size:175%;
+  white-space: nowrap;
+  color:#FFFFFF;
+  text-decoration: none !important;
+}
+
+a.hvLogo:hover {
+  text-decoration: none !important;
+  color:#ffffff;
+  cursor: pointer;
+}
+
+
+prm-topbar {
+  height:50px !important;
+}
+
+.product-logo{
+  display: none !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+prm-favorites {
+  background:#ffffff;
+}
+
+@media only screen and (max-width: 800px) {
+  .hvPanel {
+    padding-bottom:70px;
+    padding-left:15px;
+    text-align: left;
+  }
+
+  .hvInline {list-style: none; margin-left:-45px; margin-top: -20px;}
+
+  .hvInline > li { display: inline-table; text-align: left; cursor: pointer; display: -moz-inline-stack;
+    margin-bottom:1px; margin-right:1px; width: auto; height:240px; vertical-align: top; padding:0px;}
+
+}
+

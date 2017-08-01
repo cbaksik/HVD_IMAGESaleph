@@ -1,0 +1,19 @@
+
+<div class="md-subheader md-primoExplore-theme spaceLeft10">
+    {{vm.itemlist.length}} search queries
+</div>
+<md-list>
+    <md-list-item ng-repeat="item in vm.itemlist track by $index" class="space">
+        <label flex="5" tabindex="-1">{{$index+1}}.</label>
+        <div class="md-list-item-text layout-align-start-start layout-column flex-80" layout="column" flex="80">
+            <a href="{{item.deepLink}}" class="item-title">{{item.cheetahSearchData.searchString}}</a>
+            <div>SCOPE: {{item.cheetahSearchData.scope}} / Local Repository {{item.cheetahSearchData.vid}}</div>
+            <div>{{item.creationDate}}</div>
+        </div>
+        <button tabindex="0" class="md-icon-button md-button md-primoExplore-theme md-ink-ripple"  ng-click="vm.removeSearchHistoryItem(item.ID)">
+           <prm-icon icon-type="svg" svg-icon-set="action" icon-definition="ic_delete_24px" class="custom-button">
+               <md-icon md-svg-icon="action:ic_delete_24px" class="md-primoExplore-theme"></md-icon>
+           </prm-icon>
+        </button>
+    </md-list-item>
+</md-list>

@@ -1,0 +1,23 @@
+<div layout="column" layout-align="center center" ng-if="vm.showImage">
+<md-card class="hv-md-card">
+    <a class="noCursor" aria-label="{{vm.imgtitle}}" title="{{vm.imgtitle}}">
+    <img ng-if="vm.src" ng-src="{{vm.src}}" class="md-card-image {{vm.localScope.imgClass}}" alt="{{vm.imgtitle}}" aria-label="{{vm.imgtitle}}" title="{{vm.imgtitle}}"/>
+    <div class="nophoto" ng-if="!vm.src" aria-label="{{vm.imgtitle}}"  title="{{vm.imgtitle}}">Image not digitized</div>
+    <div class="lockIcon" tabindex="-1" ng-if="vm.localScope.hideLockIcon">
+        <img src="custom/HVD_IMAGES/img/icon_lock25.png" alt="Lock" aria-label="Restricted image"/>
+    </div>
+    </a>
+    <span ng-if="vm.localScope.loading"><img class="md-avatar" src="custom/HVD_IMAGES/img/ajax-loader.gif"/></span>
+</md-card>
+</div>
+
+<!-- show login for restrict image -->
+<div layout="row" class="bar alert-bar layout-align-center-center layout-row" ng-if="!vm.showImage">
+    <span class="bar-text">Please sign in to see larger image.</span>
+    <button ng-click="vm.signIn()" class="button-with-icon zero-margin md-button md-primoExplore-theme md-ink-ripple signInColor" type="button" aria-label="Sign in">
+        <prm-icon icon-type="svg" svg-icon-set="primo-ui" icon-definition="sign-in">
+            <md-icon md-svg-icon="primo-ui:sign-in" aria-label="icon-sign-in" class="md-primoExplore-theme"></md-icon>
+        </prm-icon>
+        <span class="signInColor">Sign in</span>
+    </button>
+</div>

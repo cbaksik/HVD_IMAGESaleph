@@ -1,0 +1,15 @@
+
+<md-dialog aria-label="Full display image" class="_md md-primoExplore-theme _md-transition-in" role="dialog" tabindex="-1">
+    <div>
+        <md-button class="md-raised md-icon-button md-primary closeBox"  ng-click="vm.closeImage()" ng-keypress="$ctrl.closeImage2($event)" aria-label="Close button">
+            <md-icon md-svg-icon="primo-ui:close" aria-label="Close icon" class="smallCloseIcon" tabindex="0"></md-icon>
+        </md-button>
+    </div>
+    <md-dialog-content layout="row" class="layout-row">
+        <sticky-scroll flex="100" class="flex-100">
+
+            <responsive-image src="vm.item._attr.href._value" imgtitle="vm.item.caption[0]._text" restricted="vm.item._attr.restrictedImage._value"></responsive-image>
+
+        </sticky-scroll>
+    </md-dialog-content>
+</md-dialog>

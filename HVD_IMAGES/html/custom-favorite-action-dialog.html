@@ -1,0 +1,62 @@
+<md-dialog flex="100" class="moveDialog" ng-style="{top:vm.position.top,width:vm.position.width}">
+<md-card class="list-item-wrapper favoriteBoxTop">
+    <div layout="row" layout-xs="column">
+        <div flex="{{vm.flexSize.col1}}" class="itemCenter favoriteMarginBottom">
+            <span class="itemNumber">{{vm.position.index+1}}</span>
+            <md-checkbox class="md-primoExplore-theme flex-5" ng-model="vm.item.checked">
+            </md-checkbox>
+        </div>
+        <div flex="{{vm.flexSize.col2}}" class="favoriteMarginBottom">
+            <div class="pointer" ng-click="vm.openDialog($event,vm.item)" tabindex="0" ng-keypress="vm.openDialog2($event,vm.item)">
+                <img ng-show="vm.imageUrl" ng-src="{{vm.imageUrl}}" class="md-avatar tinyPhoto"/>
+                <div ng-show="!vm.item.pnx.links.thumbnail" class="tinyNoPhoto"></div>
+            </div>
+        </div>
+        <div flex="{{vm.flexSize.col3}}" class="md-primoExplore-theme pointer favoriteMarginBottom" ng-click="vm.openDialog($event,vm.item)">
+            <a ng-click="$event.preventDefault()" href="/primo-explore/fulldisplay?docid={{vm.item.pnx.control.recordid[0]}}&vid={{vm.parentCtrl.vid}}">
+            <span class="item-title" ng-repeat="title in vm.item.pnx.display.title track by $index">
+                {{title}}
+            </span>&nbsp;
+            </a>
+            <div><span ng-repeat="creationdate in vm.item.pnx.display.creationdate track by $index">{{creationdate}}</span></div>
+            <div layout="row">
+                <prm-favorites-record-labels [item]="vm.item" ng-if="vm.record.labels.length > 0"></prm-favorites-record-labels>
+                <prm-favorites-edit-labels-menu [item]="vm.item" [is-section]="false" ng-if="vm.record.labels.length==0"></prm-favorites-edit-labels-menu>
+            </div>
+        </div>
+        <div flex="{{vm.flexSize.col4}}" class="favoriteMarginBottom">
+
+            <md-button ng-click="vm.openTab($event,'Citation')" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Citation">
+                <md-icon md-svg-icon="primo-actions:citation" class="md-primoExplore-theme">
+
+                </md-icon>
+            </md-button>
+
+
+            <md-button ng-click="vm.openTab($event,'E-mail')" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Unpin this item">
+                <md-icon md-svg-icon="primo-actions:email" class="md-primoExplore-theme">
+
+                </md-icon>
+            </md-button>
+
+            <md-button ng-click="vm.unpin(vm.position.index,vm.item.pnx.control.recordid[0])" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Unpin this item">
+                <md-icon md-svg-icon="primo-ui:prm_unpin" class="md-primoExplore-theme">
+
+                </md-icon>
+            </md-button>
+
+
+            <md-button ng-click="vm.closeDialog()" class="md-icon-button custom-button prm-primary md-button md-primoExplore-theme md-ink-ripple" aria-label="Close actions">
+                <md-icon md-svg-icon="primo-ui:close" class="md-primoExplore-theme">
+
+                </md-icon>
+            </md-button>
+
+        </div>
+
+    </div>
+    <!--- action list -->
+    <prm-action-list [item]="vm.item" [display-all]="true" [display-close-icon]="false" [(selected-action)]="vm.selectedAction"
+                     (close-modal)="vm.closeOpenTabs($event)" class="visible"></prm-action-list>
+</md-card>
+</md-dialog>

@@ -1,0 +1,15 @@
+<md-toolbar class="default-toolbar zero-padding _md md-primoExplore-theme" ng-if="vm.params.q && vm.params.searchString">
+    <div class="md-toolbar-tools zero-padding layout-row spaceLeft10">
+        <button class="back-button has-text md-button md-primoExplore-theme md-ink-ripple" aria-label="Back to result list" (click)="vm.goToSearch()">
+            <prm-icon icon-type="svg" svg-icon-set="primo-ui" icon-definition="back-to-search">
+            </prm-icon>
+            <span>Back to results list</span>
+        </button>
+
+        <button ng-if="vm.params.singleimage && vm.photo.pnx.display.title[0]" class="back-button has-text md-button md-primoExplore-theme md-ink-ripple" (click)="vm.goToImages()" aria-label="{{vm.photo.pnx.display.title[0]}}">
+            <prm-icon icon-type="svg" svg-icon-set="primo-ui" md-svg-icon="primo-ui:chevron-left"  icon-definition="chevron-left"></prm-icon>
+            <div class="truncate">{{vm.photo.pnx.display.title[0]}}</div>
+        </button>
+
+    </div>
+</md-toolbar>

@@ -1,0 +1,58 @@
+prm-alert-bar {
+    display: none !important;
+}
+
+.top-nav-bar {
+    background:#000000 !important;
+    color:#ffffff !important;
+}
+
+prm-search-bar {
+    background:#383838;
+    color:#ffffff;
+    padding-left:15px;
+}
+
+prm-search-bar md-card {
+    color:#000000;
+}
+
+.hollisImage {
+    width:200px;
+    height: auto;
+}
+
+
+.boxHollis {
+    padding-top:5px;
+    margin-left:34px;
+}
+
+.betaIcon {
+    width:33px;
+    height:auto;
+}
+
+/* magnify glass search in search box */
+div.search-actions > .md-button.button-confirm {
+    color:#a51c30;
+}
+
+div.search-actions > .md-button.button-confirm:hover {
+    color:#a51c30;
+}
+
+
+@media only screen and (max-width: 600px) {
+    prm-search-bar {
+        background:#383838 !important;
+        color:#ffffff !important;
+        padding-left:0px;
+    }
+
+    .boxHollis {
+        padding-top:5px;
+        margin-left:10px;
+    }
+
+}

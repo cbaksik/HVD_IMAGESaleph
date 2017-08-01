@@ -1,0 +1,167 @@
+.imageLabel {
+    width:185px;
+    height:30px;
+}
+
+.badge {
+    position: absolute;
+    margin-left:160px;
+    margin-top:10px;
+    padding:0px;
+    z-index:1;
+    width:30px;
+    height:30px;
+    line-height:25px;
+    color:#ffffff;
+    font-size:80%;
+    text-align:center;
+    background: url('../img/icon_multipleAssets30.png') no-repeat;
+}
+
+.imageBox {
+    height:150px;
+    display: table-cell;
+    padding:0px;
+    margin-left:auto;
+    margin-right: auto ;
+    z-index:0;
+    text-align: center;
+}
+
+.imageBox > img {
+    margin-left:auto !important;
+    margin-right: auto !important;
+    display: block !important;
+}
+
+.imageTitle {
+    width:185px;
+    height:40px;
+    line-height:15px;
+    font-size:100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: inherit;
+    display: inline-block;
+    margin-top:10px;
+    text-align: center;
+    cursor:default;
+
+}
+
+.imageCaption {
+    width:185px;
+    height:40px;
+    line-height:15px;
+    font-size:100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: inherit;
+    display: inline-block;
+    margin-top:10px;
+    text-align: center;
+    font-size:10px;
+    cursor:default;
+
+}
+
+.hv-image-card {
+    padding-top: 0px !important;
+    margin-top:0px !important;
+    margin-bottom:0px !important;
+    padding-bottom:0px !important;
+    padding-left:0px !important;
+    background: transparent !important;
+    width:185px;
+    height:230px;
+    z-index:0 !important;
+}
+
+.nospace {
+    padding:0px !important;
+    margin-bottom:0px !important;
+    margin-top:5px !important;
+}
+
+.lockIcon {
+    display:block;
+    position: absolute;
+    margin-left:-11px;
+    margin-top:-20px;
+    z-index:5;
+    width:25px;
+    height:25px;
+}
+
+.lockIcon > img {
+    width:25px;
+    height:auto;
+}
+
+.thumbnail {
+    display: inline-block;
+    flex:1;
+    flex-direction: column;
+}
+
+a.thumbnail > img:hover {
+    cursor: pointer;
+    transform: scale(1.04);
+    transition:0.4s;
+    transition-timing-function: ease-out;
+    border:1px solid #ff0000;
+}
+
+
+a.thumbnail > img:focus {
+    cursor: pointer;
+    transform: scale(1.04);
+    transition:0.4s;
+    transition-timing-function: ease-out;
+    border:1px solid #ff0000;
+}
+
+.photo {
+    width:auto;
+    height:auto;
+    z-index: 0;
+}
+
+.responsivePhoto {
+    height:150px;
+    width: auto;
+}
+
+.responsivePhoto2 {
+    height:150px;
+    width: 180px;
+}
+
+.responsivePhoto3 {
+    height:auto;
+    width: 180px;
+}
+
+
+.nophoto {
+    width:148px;
+    height:148px;
+    text-align: center;
+    background:#efefef;
+    line-height:148px;
+    z-index: 0;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.nophoto:hover {
+    border:1px solid #ff0000;
+}
+
+.nophoto:focus {
+    border:1px solid #ff0000;
+}
+
+.noCursor {
+    cursor: default;
+}
