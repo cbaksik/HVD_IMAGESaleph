@@ -14,4 +14,20 @@ div.hollis-logo a {
 div.hollis-logo a:hover {
 	box-shadow: inset 0 -1px 0 0 #fff;
 }
-	
+/* home page body */
+body {background: url(/primo-explore/custom/HVD_IMAGES/img/home_feature.png) no-repeat center center fixed;
+-webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;"
+}
+.main {
+  background: transparent !important;
+}
+/**/
+prm-static[section="homepage"] md-card.default-card {
+	background: #000;
+    color: #ffffff;
+    opacity: 0.7;
+}	
+
