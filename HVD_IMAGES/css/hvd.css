@@ -14,4 +14,36 @@ div.hollis-logo a {
 div.hollis-logo a:hover {
 	box-shadow: inset 0 -1px 0 0 #fff;
 }
-	
+/* home page body */
+/*#primoExploreRoot body {background: url(/primo-explore/custom/HVD_IMAGES/img/home_feature.png) no-repeat center center fixed;
+-webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;"
+}*/
+
+@media only screen and (min-width: 768px) {
+#hvd_home_content { 
+  background: transparent url('/primo-explore/custom/HVD_IMAGES/img/home_feature.png') no-repeat center !important;
+  background-size: cover !important;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 13.6em;
+  position: fixed;  
+}
+#hvd_home_content > div.flex-60 {
+	max-width: 45%;
+    display: block;	
+    margin-left: 11%;
+	margin-top: 2%;
+}	
+}
+#hvd_home_content md-card.default-card {
+	background: #000;
+    color: #ffffff;
+    opacity: 0.7;
+}	
+#hvd_home_content a {
+	color:#6fe2f8;
+}
