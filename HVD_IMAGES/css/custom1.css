@@ -685,7 +685,7 @@ div.hollis-logo a:hover {
   background-size: cover;"
 }*/
 
-@media only screen and (min-width: 768px) {
+
 #hvd_home_content { 
   background: transparent url('/primo-explore/custom/HVD_IMAGES/img/home_feature.png') no-repeat center !important;
   background-size: cover !important;
@@ -697,11 +697,11 @@ div.hollis-logo a:hover {
 }
 #hvd_home_content > div.flex-60 {
 	max-width: 45%;
+	min-width: 300px;
     display: block;	
     margin-left: 11%;
 	margin-top: 2%;
 }	
-}
 #hvd_home_content md-card.default-card {
 	background: #000;
     color: #ffffff;
@@ -709,6 +709,22 @@ div.hollis-logo a:hover {
 }	
 #hvd_home_content a {
 	color:#6fe2f8;
+}
+@media only screen and (max-width: 960px) {
+	#hvd_home_content {top: 12.4em;}
+	#hvd_home_content > div.flex-60 {
+		min-width: 65%;	 	
+	}	
+}
+@media only screen and (min-width: 1300px) {
+	#hvd_home_content > div.flex-60 {
+		margin-left: 21%;
+	}	
+}
+@media only screen and (max-width: 640px) {
+	#hvd_home_content > div.flex-60 {
+		margin-left: 5%;
+	}	
 }
 .bkWhite {
     background:#ffffff;
