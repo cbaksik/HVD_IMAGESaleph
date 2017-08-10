@@ -6,7 +6,7 @@ angular.module('viewCustom')
     .controller('prmTopbarAfterController', ['$element', function ($element) {
 
         let vm = this;
-        vm.$onChanges=function() {
+        vm.$onInit=function() {
             // hide primo tab menu
             vm.parentCtrl.showMainMenu=false;
             // create new div for the top white menu

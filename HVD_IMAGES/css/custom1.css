@@ -1293,7 +1293,6 @@ prm-alert-bar {
 
 prm-search-bar {
     background:#383838;
-    color:#ffffff;
     padding-left:15px;
 }
 
@@ -1330,7 +1329,6 @@ div.search-actions > .md-button.button-confirm:hover {
 @media only screen and (max-width: 600px) {
     prm-search-bar {
         background:#383838 !important;
-        color:#ffffff !important;
         padding-left:0px;
     }
 

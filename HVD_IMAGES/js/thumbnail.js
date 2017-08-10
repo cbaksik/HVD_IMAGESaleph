@@ -97,8 +97,10 @@ angular.module('viewCustom')
                     vm.localScope.hideLockIcon = true;
                 }
                 // show image label number on the top right corner
-                if(vm.dataitem.pnx.display.lds20[0] > 1) {
-                    vm.localScope.showImageLabel=true;
+                if(vm.dataitem.pnx.display.lds20) {
+                    if (vm.dataitem.pnx.display.lds20[0] > 1) {
+                        vm.localScope.showImageLabel = true;
+                    }
                 }
                 // find the width and height of image after it is rendering
                 var image=$element.find('img')[0];
