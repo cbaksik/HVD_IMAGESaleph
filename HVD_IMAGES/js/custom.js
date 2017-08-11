@@ -2296,7 +2296,12 @@ angular.module('viewCustom').controller('prmTopbarAfterController', ['$element',
         var div = document.createElement('div');
         div.setAttribute('id', 'customTopMenu');
         div.setAttribute('class', 'topMenu');
-        el.prepend(div);
+        if (el.children[0].className !== 'topMenu') {
+            el.prepend(div);
+        }
+
+        console.log('*** prm-topbar-after ****');
+        console.log(el);
     };
 }]);
 
