@@ -3,18 +3,7 @@
  */
 angular.module('viewCustom')
     .controller('prmSearchResultListAfterController', [ '$sce', 'angularLoad','prmSearchService','$window','$timeout','$mdDialog','$element','$mdMedia', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog,$element, $mdMedia) {
-    // local variables
-    this.tooltip = {'flag':[]};
-    // show tooltip function when mouse over
-    this.showTooltip=function (index) {
-        this.tooltip.flag[index]=true;
-    };
-    // hide tooltip function when mouse out
-    this.hideTooltip=function () {
-      for(let i=0; i < this.searchInfo.pageSize; i++) {
-          this.tooltip.flag[i] = false;
-      }
-    };
+
     // call custom service from the injection
     let sv=prmSearchService;
     this.searchInfo = sv.getPage(); // get page info object
@@ -59,18 +48,31 @@ angular.module('viewCustom')
        }
 
        var params={'addfields':[],'offset':0,'limit':10,'lang':'en_US','inst':'HVD','getMore':0,'pcAvailability':true,'q':'','rtaLinks':true,
-       'sort':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':'','searchString':''};
+       'sort':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':'','searchString':'','mode':''};
        params.addfields=vm.parentCtrl.searchService.cheetah.searchData.addfields;
        params.qExclude=vm.parentCtrl.searchService.cheetah.searchData.qExclude;
        params.getMore=vm.parentCtrl.searchService.cheetah.searchData.getMore;
        params.pcAvailability=vm.parentCtrl.searchService.cheetah.searchData.pcAvailability;
        params.limit=limit;
-       params.q=vm.parentCtrl.$stateParams.query;
        params.lang=vm.parentCtrl.$stateParams.lang;
        params.vid=vm.parentCtrl.$stateParams.vid;
        params.sort=vm.parentCtrl.$stateParams.sortby;
        params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
        params.searchString=vm.parentCtrl.searchString;
+
+       // set up advance search
+        var queries=vm.parentCtrl.searchService.$stateParams.query;
+        if(vm.parentCtrl.searchService.$stateParams.mode && Array.isArray(queries)) {
+            params.mode='advanced';
+            var strq='';
+            for(var i=0; i < queries.length; i++) {
+                strq+=queries[i]+';'
+            }
+            strq=strq.replace(/\;$/,'');
+            params.q=strq;
+        } else {
+            params.q=vm.parentCtrl.$stateParams.query;
+        }
 
        for(var i=0; i < facets.length; i++){
            facetsParam+='facet_'+facets[i].name+','+facets[i].displayedType+','+facets[i].value+'|,|';
@@ -189,8 +191,6 @@ angular.module('viewCustom')
             vm.flexSize.class='';
         }
 
-        console.log('*** prm-search-result-list-after *****');
-        console.log(vm);
         // set data to pass into favorite list controller
         sv.setData(vm.parentCtrl);
     };

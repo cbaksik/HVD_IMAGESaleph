@@ -1576,18 +1576,7 @@ angular.module('viewCustom').component('prmSearchResultAvailabilityLineAfter', {
  This custom component is used for search result list which display all the images in thumbnail.
  */
 angular.module('viewCustom').controller('prmSearchResultListAfterController', ['$sce', 'angularLoad', 'prmSearchService', '$window', '$timeout', '$mdDialog', '$element', '$mdMedia', function ($sce, angularLoad, prmSearchService, $window, $timeout, $mdDialog, $element, $mdMedia) {
-    // local variables
-    this.tooltip = { 'flag': [] };
-    // show tooltip function when mouse over
-    this.showTooltip = function (index) {
-        this.tooltip.flag[index] = true;
-    };
-    // hide tooltip function when mouse out
-    this.hideTooltip = function () {
-        for (var i = 0; i < this.searchInfo.pageSize; i++) {
-            this.tooltip.flag[i] = false;
-        }
-    };
+
     // call custom service from the injection
     var sv = prmSearchService;
     this.searchInfo = sv.getPage(); // get page info object
@@ -1630,18 +1619,31 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         }
 
         var params = { 'addfields': [], 'offset': 0, 'limit': 10, 'lang': 'en_US', 'inst': 'HVD', 'getMore': 0, 'pcAvailability': true, 'q': '', 'rtaLinks': true,
-            'sort': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '', 'searchString': '' };
+            'sort': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '', 'searchString': '', 'mode': '' };
         params.addfields = vm.parentCtrl.searchService.cheetah.searchData.addfields;
         params.qExclude = vm.parentCtrl.searchService.cheetah.searchData.qExclude;
         params.getMore = vm.parentCtrl.searchService.cheetah.searchData.getMore;
         params.pcAvailability = vm.parentCtrl.searchService.cheetah.searchData.pcAvailability;
         params.limit = limit;
-        params.q = vm.parentCtrl.$stateParams.query;
         params.lang = vm.parentCtrl.$stateParams.lang;
         params.vid = vm.parentCtrl.$stateParams.vid;
         params.sort = vm.parentCtrl.$stateParams.sortby;
         params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
         params.searchString = vm.parentCtrl.searchString;
+
+        // set up advance search
+        var queries = vm.parentCtrl.searchService.$stateParams.query;
+        if (vm.parentCtrl.searchService.$stateParams.mode && Array.isArray(queries)) {
+            params.mode = 'advanced';
+            var strq = '';
+            for (var i = 0; i < queries.length; i++) {
+                strq += queries[i] + ';';
+            }
+            strq = strq.replace(/\;$/, '');
+            params.q = strq;
+        } else {
+            params.q = vm.parentCtrl.$stateParams.query;
+        }
 
         for (var i = 0; i < facets.length; i++) {
             facetsParam += 'facet_' + facets[i].name + ',' + facets[i].displayedType + ',' + facets[i].value + '|,|';
@@ -1757,8 +1759,6 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             vm.flexSize.class = '';
         }
 
-        console.log('*** prm-search-result-list-after *****');
-        console.log(vm);
         // set data to pass into favorite list controller
         sv.setData(vm.parentCtrl);
     };
@@ -2299,9 +2299,6 @@ angular.module('viewCustom').controller('prmTopbarAfterController', ['$element',
         if (el.children[0].className !== 'topMenu') {
             el.prepend(div);
         }
-
-        console.log('*** prm-topbar-after ****');
-        console.log(el);
     };
 }]);
 
@@ -2691,20 +2688,21 @@ angular.module('viewCustom').component('thumbnail', {
             }
             // find the width and height of image after it is rendering
             var image = $element.find('img')[0];
-            if (image.height > 150 && image.width < 185) {
-                vm.localScope.imgclass = 'responsivePhoto';
-                image.className = 'md-card-image ' + vm.localScope.imgclass;
-            } else if (image.height > 150 && image.width > 185) {
-                vm.localScope.imgclass = 'responsivePhoto2';
-                image.className = 'md-card-image ' + vm.localScope.imgclass;
-            } else if (image.width > 185) {
-                vm.localScope.imgclass = 'responsivePhoto3';
-                image.className = 'md-card-image ' + vm.localScope.imgclass;
+            if (image) {
+                if (image.clientHeight > 150 && image.clientWidth < 185) {
+                    vm.localScope.imgclass = 'responsivePhoto';
+                    image.className = 'md-card-image ' + vm.localScope.imgclass;
+                } else if (image.clientHeight > 150 && image.clientWidth > 185) {
+                    vm.localScope.imgclass = 'responsivePhoto2';
+                    image.className = 'md-card-image ' + vm.localScope.imgclass;
+                } else if (image.clientWidth > 185) {
+                    vm.localScope.imgclass = 'responsivePhoto3';
+                    image.className = 'md-card-image ' + vm.localScope.imgclass;
+                }
             }
-
             // line up the image label on the top of the image
             var divs = $element[0].children[0].children[0].children[0];
-            if (divs) {
+            if (divs && image) {
                 var margin = (185 - image.clientWidth) / 2;
                 var leftMargin = margin + image.clientWidth - 20 + 'px';
                 divs.style.marginLeft = leftMargin;

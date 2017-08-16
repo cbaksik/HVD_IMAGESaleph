@@ -104,20 +104,21 @@ angular.module('viewCustom')
                 }
                 // find the width and height of image after it is rendering
                 var image=$element.find('img')[0];
-                if(image.height > 150 && image.width < 185){
-                    vm.localScope.imgclass='responsivePhoto';
-                    image.className='md-card-image '+ vm.localScope.imgclass;
-                } else if(image.height > 150 && image.width > 185) {
-                    vm.localScope.imgclass='responsivePhoto2';
-                    image.className='md-card-image '+ vm.localScope.imgclass;
-                } else if(image.width > 185) {
-                    vm.localScope.imgclass='responsivePhoto3';
-                    image.className='md-card-image '+ vm.localScope.imgclass;
+                if(image) {
+                    if (image.clientHeight > 150 && image.clientWidth < 185) {
+                        vm.localScope.imgclass = 'responsivePhoto';
+                        image.className = 'md-card-image ' + vm.localScope.imgclass;
+                    } else if (image.clientHeight > 150 && image.clientWidth > 185) {
+                        vm.localScope.imgclass = 'responsivePhoto2';
+                        image.className = 'md-card-image ' + vm.localScope.imgclass;
+                    } else if (image.clientWidth > 185) {
+                        vm.localScope.imgclass = 'responsivePhoto3';
+                        image.className = 'md-card-image ' + vm.localScope.imgclass;
+                    }
                 }
-
                 // line up the image label on the top of the image
                 var divs=$element[0].children[0].children[0].children[0];
-                if(divs) {
+                if(divs && image) {
                     var margin= (185 - image.clientWidth) / 2;
                     var leftMargin=((margin + image.clientWidth) - 20) + 'px';
                     divs.style.marginLeft = leftMargin;
