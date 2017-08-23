@@ -107,6 +107,8 @@ cl-paging > button.md-icon-button {
   text-align: left;
 }
 
+
+
 .bigCloseIcon {
   width:40px !important;
   height:40px !important;
@@ -151,6 +153,8 @@ cl-paging > button.md-icon-button {
 
 .horizontal-line {border-bottom:1px solid #c3c3c3; height:1px; width:auto;}
 
+
+
 .closeButton {
   display: block;
   position: fixed;
@@ -159,6 +163,14 @@ cl-paging > button.md-icon-button {
   cursor: pointer;
   z-index: 100000000;
   color: #ffffff;
+  width: 96px !important;
+  height: 96px !important;
+}
+
+.xbigIcon {
+  width:76px !important;
+  height:76px !important;
+  fill:#FFFFFF !important;
 }
 
 .closeButton:hover {
@@ -172,12 +184,27 @@ cl-paging > button.md-icon-button {
   top:5px;
   cursor: pointer;
   z-index: 100000000;
-  color: #ff0000;
+  width:56px !important;
+  height:56px !important;
+  background:#c3c3c3;
+  color:#ffffff;
 }
 
-.closeButton2:hover {
-  color: #ff0000;
+
+.xbigIcon2 {
+  width:36px !important;
+  height:36px !important;
+  fill:#FFFFFF !important;
 }
+
+.xbigIcon2:hover {
+  width:36px !important;
+  height:36px !important;
+  fill:#FFFFFF !important;
+  stroke:#FFFFFF !important;
+  stroke-width:1px;
+}
+
 
 .hvLogo {
   font-family:Goudy Old Style,Georgia,serif;

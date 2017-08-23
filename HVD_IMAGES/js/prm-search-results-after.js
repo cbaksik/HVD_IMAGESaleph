@@ -139,6 +139,10 @@ angular.module('viewCustom')
             var el = $element[0].parentNode.parentNode.parentNode;
             el.children[0].remove();
 
+            // remove prm-result-list display item if the favorite page is false
+            var parentNode=$element[0].parentNode.children[0];
+            parentNode.remove();
+
             this.searchInfo = sv.getPage(); // get page info object
             // watch for new data change when a user search
 

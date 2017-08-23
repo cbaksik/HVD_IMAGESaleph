@@ -1116,147 +1116,6 @@ angular.module('viewCustom').component('prmFacetAfter', {
 });
 
 /**
- * Created by samsan on 7/31/17.
- * The web sql is stored on user browser when a user is not login
- */
-angular.module('viewCustom').service('prmFavoriteWebSql', ['$window', function ($window) {
-
-    var websql = {};
-
-    var items = [];
-    websql.setItem = function (data) {
-        items = data;
-    };
-    websql.getItem = function () {
-        return items;
-    };
-
-    var db, request, objectStore, query;
-    websql.init = function (callback) {
-        request = $window.indexedDB.open('lf', 2);
-        request.onerror = function (err) {
-            console.log(err);
-        };
-        // for update or create new record
-        request.onupgradeneeded = function (e) {
-            console.log(e);
-        };
-
-        request.onsuccess = function (e) {
-            db = request.result;
-            callback(db);
-        };
-    };
-
-    // remote item from web sql base on userID
-    websql.removePinItem = function (index, userID, callback) {
-        var myKey = userID;
-        var myIndex = parseInt(index);
-        var objectStore = db.transaction(['keyvaluepairs'], "readwrite").objectStore('keyvaluepairs');
-        var query = objectStore.get(myKey);
-
-        query.onerror = function (err) {
-            console.log(err);
-        };
-
-        query.onsuccess = function (e) {
-            var result = query.result;
-            var dataList = [];
-            var k = 0;
-            for (var i = 0; i < result.length; i++) {
-                if (i !== myIndex) {
-                    dataList[k] = result[i];
-                    k++;
-                }
-            }
-
-            // update web sql record base
-            objectStore.put(dataList, myKey);
-            callback(dataList);
-        };
-    };
-
-    websql.getPinItem = function (userID, callback) {
-        var myKey = userID;
-
-        var objectStore = db.transaction(['keyvaluepairs'], "readwrite").objectStore('keyvaluepairs');
-        var query = objectStore.get(myKey);
-
-        query.onerror = function (err) {
-            console.log(err);
-        };
-
-        query.onsuccess = function (e) {
-            var result = query.result;
-            callback(result);
-        };
-    };
-
-    return websql;
-}]);
-
-/**
- * Created by samsan on 7/7/17.
- * This component is for favorite section when a user pin his or her favorite image.
- */
-
-angular.module('viewCustom').controller('prmFavoritesAfterController', ['prmSearchService', '$element', '$mdMedia', function (prmSearchService, $element, $mdMedia) {
-
-    var sv = prmSearchService;
-    var vm = this;
-    vm.dataList = vm.parentCtrl;
-    vm.flexSize = { 'col1': 80, 'col2': 20 }; // set up grid size for different screen
-    vm.logInID = sv.getLogInID();
-    vm.selectedIndex = 0;
-
-    vm.selectTab = function (tab) {
-        if (sv.getLogInID()) {}
-    };
-
-    // access ajax data from search component list of primo
-    vm.$doCheck = function () {
-        vm.logInID = sv.getLogInID();
-        vm.dataList = vm.parentCtrl;
-        vm.isFavorites = true;
-        vm.isSearchHistory = true;
-        vm.isSavedQuery = true;
-        if (vm.dataList.favoritesService) {
-            if (sv.getLogInID()) {
-                vm.savedQueryItems = vm.dataList.favoritesService.searchService.searchHistoryService.savedQueriesService.items;
-                vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
-            } else {
-                vm.savedQueryItems = [];
-                vm.historyItem = vm.dataList.favoritesService.searchService.searchHistoryService.items;
-            }
-        }
-    };
-
-    vm.$onChanges = function () {
-        // remove the above element
-        var el = $element[0].parentNode.children[1].children[1].children[1];
-        if (el) {
-            el.remove();
-        }
-        // remove the old tab menu
-        var el2 = $element[0].parentNode.children[1];
-        if (el2) {
-            el2.remove();
-        }
-
-        if ($mdMedia('xs')) {
-            vm.flexSize.col1 = 100;
-            vm.flexSize.col2 = 100;
-        }
-    };
-}]);
-
-angular.module('viewCustom').component('prmFavoritesAfter', {
-    bindings: { parentCtrl: '<' },
-    controller: 'prmFavoritesAfterController',
-    'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-favorites-after.html'
-});
-
-/**
  * Created by samsan on 5/17/17.
  * This template is for direct access full view display link when a user send email to someone
  */
@@ -1707,6 +1566,10 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             // remove left margin on result list grid
             var el = $element[0].parentNode.parentNode.parentNode;
             el.children[0].remove();
+
+            // remove prm-result-list display item if the favorite page is false
+            var parentNode = $element[0].parentNode.children[0];
+            parentNode.remove();
 
             this.searchInfo = sv.getPage(); // get page info object
             // watch for new data change when a user search

@@ -22,9 +22,12 @@ prm-topbar {
 prm-topbar prm-logo {
     max-width: 380px;
 }
+
+/*
 .list-items-list{
     display: none;
 }
+*/
 
 /*prm-search-result-list{
 display: none;
