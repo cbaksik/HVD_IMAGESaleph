@@ -1,7 +1,5 @@
-<md-button hide-xs hide-sm class="md-icon-button close-button icon-button-large md-button md-primoExplore-theme md-ink-ripple closeButton" aria-label="Close full display" ng-if="$ctrl.modalDialogFlag" (click)="$ctrl.closeDialog()">
-    <prm-icon icon-type="svg" svg-icon-set="primo-ui" icon-definition="close">
-        <md-icon md-svg-icon="primo-ui:close" aria-label="Close icon" class="md-primoExplore-theme" tabindex="0"></md-icon>
-    </prm-icon>
+<md-button tabindex="0" hide-xs hide-sm class="md-icon-button close-button md-button md-primoExplore-theme md-ink-ripple  closeButton" aria-label="Close full display" ng-if="$ctrl.modalDialogFlag" (click)="$ctrl.closeDialog()">
+    <md-icon md-svg-icon="primo-ui:close" aria-label="icon-close" class="md-primoExplore-theme xbigIcon"></md-icon>
 </md-button>
 <div layout-align="start start" ng-cloak class="hvPanel" ng-if="$ctrl.searchInProgress===false">
     <div layout="row" layout-align="start start" class="resultTopDisplay">

@@ -3,6 +3,18 @@
 
        <!-- iframe component -->
 
+       <section layout="row" layout-align="center center" class="imageNav" layout-wrap ng-if="vm.total > 1 && vm.imageNav">
+           <md-button class="md-fab md-raised md-primary" (click)="vm.prevPhoto()" tabindex="0" aria-label="Previous photo button">
+               <md-icon md-svg-icon="primo-ui:chevron-left" aria-label="chevron-left-icon"></md-icon>
+           </md-button>
+           <label class="label">
+               {{vm.index + 1}} of {{vm.total}} images
+           </label>
+           <md-button class="md-fab md-raised md-primary" (click)="vm.nextPhoto()" tabindex="0" aria-label="Next photo button">
+               <md-icon md-svg-icon="primo-ui:chevron-right" aria-label="chevron-right-icon"></md-icon>
+           </md-button>
+       </section>
+
        <single-image src="vm.photo._attr.href._value" imgtitle="vm.imageTitle"
                      restricted="vm.photo._attr.restrictedImage._value" jp2="vm.jp2"></single-image>
        <div layout="row" class="spaceTop" layout-sm="column" ng-if="vm.xmldata.surrogate[vm.index].image[0].caption">
@@ -10,17 +22,6 @@
            <div flex="80"><span class="bold-text spaceRight">Caption:</span>  {{vm.xmldata.surrogate[vm.index].image[0].caption[0]._text}}</div>
        </div>
 
-       <section layout="row" layout-align="center center" class="imageNav" layout-wrap ng-if="vm.total > 1 && vm.imageNav">
-           <md-button class="md-fab md-raised md-primary" (click)="vm.prevPhoto()" tabindex="0" aria-label="Previous photo button">
-               <md-icon md-svg-icon="primo-ui:chevron-left" aria-label="chevron-left-icon"></md-icon>
-           </md-button>
-           <label class="label">
-                {{vm.index + 1}} of {{vm.total}} images
-           </label>
-           <md-button class="md-fab md-raised md-primary" (click)="vm.nextPhoto()" tabindex="0" aria-label="Next photo button">
-               <md-icon md-svg-icon="primo-ui:chevron-right" aria-label="chevron-right-icon"></md-icon>
-           </md-button>
-       </section>
        <!--- start display title and info from xml format -->
        <br/>
        <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space">
