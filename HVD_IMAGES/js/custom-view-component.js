@@ -40,7 +40,6 @@ angular.module('viewCustom')
                         vm.xmldata = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
 
                     }
-
                     // show total of image
                     if(vm.xmldata.surrogate) {
                         vm.total=vm.xmldata.surrogate.length;
