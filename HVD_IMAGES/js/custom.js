@@ -394,6 +394,97 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['item
 }]);
 
 /**
+ * Created by samsan on 9/5/17.
+ */
+
+angular.module('viewCustom').controller('customPrintPageCtrl', ['$element', '$stateParams', 'customService', '$timeout', '$window', function ($element, $stateParams, customService, $timeout, $window) {
+    var vm = this;
+    vm.item = {};
+    var cs = customService;
+    // get item data to display on full view page
+    vm.getItem = function () {
+        var url = vm.parentCtrl.searchService.cheetah.restBaseURLs.pnxBaseURL + '/' + vm.context + '/' + vm.docid;
+        url += '?vid=' + vm.vid;
+        cs.getAjax(url, '', 'get').then(function (result) {
+            vm.item = result.data;
+        }, function (error) {
+            console.log(error);
+        });
+    };
+
+    vm.$onInit = function () {
+        // capture the parameter from UI-Router
+        vm.docid = $stateParams.docid;
+        vm.context = $stateParams.context;
+        vm.vid = $stateParams.vid;
+        vm.getItem();
+
+        $timeout(function () {
+            // remove top menu and search bar
+            var el = $element[0].parentNode.parentNode;
+            if (el) {
+                el.children[0].remove();
+            }
+
+            var topMenu = document.getElementById('customTopMenu');
+            if (topMenu) {
+                topMenu.remove();
+            }
+
+            // remove action list
+            var actionList = document.getElementById('action_list');
+            if (actionList) {
+                actionList.remove();
+            }
+        }, 500);
+    };
+
+    vm.$postLink = function () {
+        $timeout(function () {
+            $window.print();
+        }, 3000);
+    };
+}]);
+
+angular.module('viewCustom').component('customPrintPage', {
+    bindings: { parentCtrl: '<' },
+    controller: 'customPrintPageCtrl',
+    controllerAs: 'vm',
+    templateUrl: '/primo-explore/custom/HVD2/html/custom-print-page.html'
+});
+
+/**
+ * Created by samsan on 9/5/17.
+ */
+
+angular.module('viewCustom').controller('customPrintCtrl', ['$window', '$stateParams', function ($window, $stateParams) {
+    var vm = this;
+    var params = $stateParams;
+
+    vm.print = function () {
+        var url = '/primo-explore/printPage/' + vm.parentCtrl.context + '/' + vm.parentCtrl.pnx.control.recordid;
+        url += '?vid=' + params.vid;
+        $window.open(url, '_blank');
+    };
+}]);
+
+angular.module('viewCustom').config(function ($stateProvider) {
+    $stateProvider.state('exploreMain.printPage', {
+        url: '/printPage/:context/:docid',
+        views: {
+            '': {
+                template: '<custom-print-page parent-ctrl="$ctrl"></custom-print-page>'
+            }
+        }
+    });
+}).component('customPrint', {
+    bindings: { parentCtrl: '<' },
+    controller: 'customPrintCtrl',
+    controllerAs: 'vm',
+    templateUrl: '/primo-explore/custom/HVD2/html/custom-print.html'
+});
+
+/**
  * Created by samsan on 5/23/17.
  * If image has height that is greater than 150 px, then it will resize it. Otherwise, it just display what it is.
  */
@@ -949,6 +1040,75 @@ angular.module('viewCustom').component('noResultsFound', {
             }
         };
     }]
+});
+
+/**
+ * Created by samsan on 8/15/17.
+ * This component will insert textsms and its icon into the action list
+ */
+
+angular.module('viewCustom').controller('prmActionListAfterCtrl', ['$element', '$compile', '$scope', '$timeout', 'customService', function ($element, $compile, $scope, $timeout, customService) {
+    var vm = this;
+    var cisv = customService;
+    vm.$onInit = function () {
+        // if holding location is existed, then insert Text call # into action list
+        if (vm.parentCtrl.item.delivery.holding.length > 0) {
+            // insert  textsms into existing action list
+            vm.parentCtrl.actionLabelNamesMap.textsms = 'Text call #';
+            vm.parentCtrl.actionListService.actionsToIndex.textsms = vm.parentCtrl.requiredActionsList.length + 1;
+            if (vm.parentCtrl.actionListService.requiredActionsList.indexOf('textsms') === -1) {
+                vm.parentCtrl.actionListService.requiredActionsList.push('textsms');
+            }
+        }
+    };
+
+    vm.$onChanges = function () {
+        $timeout(function () {
+            // if holding location is existed, then insert sms text call icon
+            if (vm.parentCtrl.item.delivery.holding.length > 0) {
+                var el = document.getElementById('textsms');
+                if (el) {
+                    //remove prm-icon
+                    var prmIcon = el.children[0].children[0].children[0].children[0];
+                    prmIcon.remove();
+                    // insert new icon
+                    var childNode = el.children[0].children[0].children[0];
+                    var mdIcon = document.createElement('md-icon');
+                    mdIcon.setAttribute('md-svg-src', '/primo-explore/custom/HVD2/img/ic_textsms_black_24px.svg');
+                    childNode.prepend(mdIcon);
+                    $compile(childNode)($scope); // refresh the dom
+                }
+            } else {
+                var el = document.getElementById('textsms');
+                if (el) {
+                    el.remove();
+                }
+            }
+
+            // print
+            var printEl = document.getElementById('Print');
+            if (printEl) {
+                printEl.children[0].remove();
+                var printTag = document.createElement('custom-print');
+                printTag.setAttribute('parent-ctrl', 'vm.parentCtrl.item');
+                printEl.appendChild(printTag);
+                $compile(printEl.children[0])($scope);
+            }
+        }, 2000);
+    };
+
+    vm.$doCheck = function () {
+        // pass active action to prm-action-container-after
+        if (vm.parentCtrl.activeAction) {
+            cisv.setActionName(vm.parentCtrl.activeAction);
+        }
+    };
+}]);
+
+angular.module('viewCustom').component('prmActionListAfter', {
+    bindings: { parentCtrl: '<' },
+    controller: 'prmActionListAfterCtrl',
+    controllerAs: 'vm'
 });
 
 /**
