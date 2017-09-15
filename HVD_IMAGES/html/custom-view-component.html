@@ -364,6 +364,7 @@
            <div flex class="flex">
                <span ng-repeat="topic in vm.xmldata.surrogate[vm.index].topic track by $index">
                    <span ng-repeat="term in topic.term track by $index">{{term._text}}</span>
+                   <span ng-if="$index < vm.xmldata.surrogate[vm.index].topic.length-1">&nbsp;;&nbsp;</span>
                </span>
            </div>
        </div>

@@ -17,6 +17,12 @@ angular.module('viewCustom')
             var el2=$element[0].parentNode;
             el2.children[0].remove();
 
+            // remove prm-skip-to
+            var el3=$element[0].parentNode.parentNode;
+            if(el3) {
+                el3.children[0].remove();
+            }
+            
         };
 
 

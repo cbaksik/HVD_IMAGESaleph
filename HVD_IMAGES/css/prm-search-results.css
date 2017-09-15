@@ -1,13 +1,11 @@
 
 .hvfullsize {
   width: 100%;
+  word-break:break-all;
+  height: auto;
 }
 
 
-.hvInline {list-style: none; margin-left:-45px; margin-top: -20px;}
-
-.hvInline > li { display: inline-table; text-align: left; cursor: pointer; display: -moz-inline-stack;
-  margin-bottom:5px; margin-right:10px; width: auto; height:240px; vertical-align: top; padding:0px;}
 
 
 .nobadge {color: #000000; padding:2px;
@@ -72,15 +70,6 @@ ul.pagination > li > .disabled  {
   line-height:normal;
 }
 
-
-.hv-md-card {
-  padding-top: 0px !important;
-  margin-top:0px !important;
-  margin-bottom:0px !important;
-  padding-bottom:0px !important;
-  padding-left:0px !important;
-  background: transparent !important;
-}
 
 md-tooltip ._md-content {
   background:#ffffff !important;
@@ -233,19 +222,5 @@ prm-topbar {
 
 prm-favorites {
   background:#ffffff;
-}
-
-@media only screen and (max-width: 800px) {
-  .hvPanel {
-    padding-bottom:70px;
-    padding-left:15px;
-    text-align: left;
-  }
-
-  .hvInline {list-style: none; margin-left:-45px; margin-top: -20px;}
-
-  .hvInline > li { display: inline-table; text-align: left; cursor: pointer; display: -moz-inline-stack;
-    margin-bottom:1px; margin-right:1px; width: auto; height:240px; vertical-align: top; padding:0px;}
-
 }
 
