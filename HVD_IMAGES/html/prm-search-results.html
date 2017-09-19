@@ -24,7 +24,7 @@
         <label flex="{{$ctrl.flexSize.size1}}" ng-if="$ctrl.searchInfo.totalItems > 0" title="{{$ctrl.pageCounter.min}} - {{$ctrl.pageCounter.max}} of {{$ctrl.searchInfo.totalItems}}" layout-align="center end">
             {{$ctrl.pageCounter.min|number}} - {{$ctrl.pageCounter.max|number}} of {{$ctrl.searchInfo.totalItems|number}}
         </label>
-        <div flex="{{$ctrl.flexSize.size2}}" ng-if="$ctrl.searchInfo.totalItems > $ctrl.searchInfo.pageSize" layout-align="center start">
+        <div flex="{{$ctrl.flexSize.size2}}" ng-if="$ctrl.searchInfo.totalItems > $ctrl.searchInfo.pageSize" layout-align="start start">
             <cl-paging flex cl-pages="$ctrl.searchInfo.totalPages" cl-steps="$ctrl.paginationNumber" cl-page-changed="$ctrl.pageChanged($ctrl.currentPage)" cl-align="start start" cl-current-page="$ctrl.currentPage"></cl-paging>
         </div>
     </div>

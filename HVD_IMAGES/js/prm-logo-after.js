@@ -22,7 +22,7 @@ angular.module('viewCustom')
             if(el3) {
                 el3.children[0].remove();
             }
-            
+
         };
 
 

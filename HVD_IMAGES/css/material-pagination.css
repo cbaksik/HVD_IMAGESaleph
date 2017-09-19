@@ -1,0 +1,26 @@
+.mp-text-center {
+    text-align:center;
+}
+
+.mp-ul {
+    list-style: none;
+    margin-left:-10px;
+    padding-left:0px;
+}
+
+.mp-ul > li {
+    display: inline-block;
+    margin-left:0px;
+    padding-left:0px;
+}
+
+.mp-ul > md-button {
+   padding:0px !important;
+   margin:0px !important;
+}
+
+.mp-move-down {
+    position:absolute;
+    margin-bottom: -35px;
+    padding-left:10px;
+}

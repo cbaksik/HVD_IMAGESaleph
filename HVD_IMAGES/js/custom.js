@@ -1094,7 +1094,7 @@ angular.module('viewCustom').controller('customViewImageDialogController', ['ite
             },
             controller: ClPagingController,
             controllerAs: 'vm',
-            template: ['<md-button class="md-icon-button md-raised md-warn" aria-label="First" ng-click="vm.gotoFirst()">{{ vm.first }}</md-button>', '<md-button class="md-icon-button md-raised" aria-label="Previous" ng-click="vm.gotoPrev()" ng-show="vm.index - 1 >= 0">&#8230;</md-button>', '<md-button class="md-icon-button md-raised" aria-label="Go to page {{i+1}}" ng-repeat="i in vm.stepInfo"', ' ng-click="vm.goto(vm.index + i)" ng-show="vm.page[vm.index + i]" ', ' ng-class="{\'md-primary\': vm.page[vm.index + i] == clCurrentPage}">', ' {{ vm.page[vm.index + i] }}', '</md-button>', '<md-button class="md-icon-button md-raised" aria-label="Next" ng-click="vm.gotoNext()" ng-show="vm.index + vm.clSteps < clPages">&#8230;</md-button>', '<md-button class="md-icon-button md-raised md-warn" aria-label="Last" ng-click="vm.gotoLast()">{{ vm.last }}</md-button>'].join('')
+            template: ['<ul class="mp-ul">', '<li>', '<md-button class="md-icon-button md-raised md-warn" aria-label="First" ng-click="vm.gotoFirst()">{{ vm.first }}</md-button>', '<div class="mp-move-down">First</div>', '</li>', '<li>', '<md-button class="md-icon-button md-raised " aria-label="Previous Page" ng-click="vm.gotoPrevPage()">{{vm.prev}}</md-button>', '</li>', '<li hide-xs>', '<md-button class="md-icon-button md-raised" aria-label="Previous" ng-click="vm.gotoPrev()" ng-show="vm.index - 1 >= 0">&#8230;</md-button>', '</li>', '<li ng-repeat="i in vm.stepInfo track by $index">', '<md-button class="md-icon-button md-raised" aria-label="Go to page {{i+1}}" ', ' ng-click="vm.goto(vm.index + i)" ng-show="vm.page[vm.index + i]" ', ' ng-class="{\'md-primary\': vm.page[vm.index + i] == clCurrentPage}">', ' {{ vm.page[vm.index + i] }}', '</md-button>', '</li>', '<li hide-xs>', '<md-button class="md-icon-button md-raised" aria-label="Next" ng-click="vm.gotoNext()" ng-show="vm.index + vm.clSteps < clPages">&#8230;</md-button>', '</li>', '<li>', '<md-button class="md-icon-button md-raised " aria-label="Next page" ng-click="vm.gotoNextPage()">{{vm.next}}</md-button>', '</li>', '<li>', '<md-button class="md-icon-button md-raised md-warn" aria-label="Last" ng-click="vm.gotoLast()">{{ vm.last }}</md-button>', '<div class="mp-move-down">Last</div>', '</li>', '</ul>'].join('')
         };
     }
 
@@ -1102,12 +1102,34 @@ angular.module('viewCustom').controller('customViewImageDialogController', ['ite
     function ClPagingController($scope, $location, $anchorScroll) {
         var vm = this;
 
+        vm.prev = '<';
+        vm.next = '>';
         vm.first = '<<';
         vm.last = '>>';
 
         vm.index = 0;
-
         vm.clSteps = $scope.clSteps;
+
+        // modify go to next page
+        vm.gotoNextPage = function () {
+            if ($scope.clCurrentPage < $scope.clPages) {
+                vm.index++;
+                $scope.clCurrentPage++;
+                // customize scroll up
+                $location.hash('searchResultList');
+                $anchorScroll();
+            }
+        };
+
+        vm.gotoPrevPage = function () {
+            if ($scope.clCurrentPage > 1) {
+                vm.index--;
+                $scope.clCurrentPage--;
+                // customize scroll up
+                $location.hash('searchResultList');
+                $anchorScroll();
+            }
+        };
 
         vm.goto = function (index) {
             $scope.clCurrentPage = vm.page[index];
@@ -1594,6 +1616,30 @@ angular.module('viewCustom').component('prmLogoAfter', {
 });
 
 /**
+ * Created by samsan on 9/18/17.
+ */
+
+angular.module('viewCustom').controller('prmPermalinkAfterCtrl', ['$scope', function ($scope) {
+    var vm = this;
+    vm.$onInit = function () {
+        // change perm a link to correct url
+        $scope.$watch('vm.parentCtrl.permalink', function () {
+            if (vm.parentCtrl.item) {
+                if (vm.parentCtrl.item.pnx.display.lds03[0]) {
+                    vm.parentCtrl.permalink = vm.parentCtrl.item.pnx.display.lds03[0];
+                }
+            }
+        });
+    };
+}]);
+
+angular.module('viewCustom').component('prmPermalinkAfter', {
+    bindings: { parentCtrl: '<' },
+    controller: 'prmPermalinkAfterCtrl',
+    controllerAs: 'vm'
+});
+
+/**
  * Created by samsan on 5/22/17.
  * Access search box json data. Then change the number item per page. See prm-search-service.js file
  */
@@ -1986,6 +2032,8 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
             vm.flexSize.size1 = 100;
             vm.flexSize.size2 = 100;
             vm.flexSize.class = '';
+        } else if ($mdMedia('sm')) {
+            vm.paginationNumber = 4;
         }
 
         // set data to pass into favorite list controller

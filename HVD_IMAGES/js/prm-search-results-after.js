@@ -193,6 +193,8 @@ angular.module('viewCustom')
             vm.flexSize.size1=100;
             vm.flexSize.size2=100;
             vm.flexSize.class='';
+        } else if($mdMedia('sm')) {
+            vm.paginationNumber=4;
         }
 
         // set data to pass into favorite list controller
