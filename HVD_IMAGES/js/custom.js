@@ -817,8 +817,21 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
     vm.context = $stateParams.context;
     vm.docid = $stateParams.docid;
 
+    vm.toggleData = { 'icon': 'ic_remove_black_24px.svg', 'flag': false };
     vm.xmldata = [];
+    vm.keys = [];
     vm.items = {};
+
+    vm.toggle = function () {
+        if (vm.toggleData.flag) {
+            vm.toggleData.icon = 'ic_remove_black_24px.svg';
+            vm.toggleData.flag = false;
+        } else {
+            vm.toggleData.icon = 'ic_add_black_24px.svg';
+            vm.toggleData.flag = true;
+        }
+    };
+
     // ajax call to get data
     vm.getData = function () {
         var restUrl = vm.parentCtrl.searchService.cheetah.restUrl + '/' + vm.context + '/' + vm.docid;
@@ -830,11 +843,113 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
         sv.getAjax(restUrl, params, 'get').then(function (result) {
             vm.items = result.data;
             if (vm.items.pnx.addata) {
-                vm.xmldata = sv.getXMLdata(vm.items.pnx.addata.mis1[0]);
+                var result = sv.parseXml(vm.items.pnx.addata.mis1[0]);
+                if (result.work) {
+                    vm.xmldata = result.work[0];
+                    var keys = Object.keys(vm.xmldata);
+                    var index = keys.indexOf('component');
+                    if (index !== -1) {
+                        keys.splice(index, 1);
+                    }
+                    index = keys.indexOf('image');
+                    if (index !== -1) {
+                        keys.splice(index, 1);
+                    }
+                    vm.keys = keys;
+
+                    console.log('** component **');
+                    console.log(vm.xmldata.component);
+                }
             }
         }, function (err) {
             console.log(err);
         });
+    };
+
+    // get json key
+    vm.getKeys = function (obj) {
+        var keys = Object.keys(obj);
+        var index = keys.indexOf('image');
+        if (index !== -1) {
+            // remove image from the list
+            keys.splice(index, 1);
+        }
+        return keys;
+    };
+
+    // get json value base on dynamic key
+    vm.getValue = function (obj, keyType) {
+        var text = '';
+        var keys = Object.keys(obj);
+        for (var k = 0; k < keys.length; k++) {
+            var key = keys[k];
+            var data = obj[key];
+            if (Array.isArray(key)) {
+                for (var i = 0; i < key.length; i++) {
+                    var subkey = key[i];
+                    var subdata = data[subkey];
+                    console.log('**** subdata ***');
+                    console.log(subdata);
+                    console.log(subkey);
+
+                    if (Array.isArray(subkey)) {
+                        for (var j = 0; j < subkey.length; j++) {
+                            var subkey2 = subkey[j];
+                            var subdata2 = subdata[subkey2];
+                            if (Array.isArray(subdata2)) {
+                                for (var d = 0; d < subdata2.length; d++) {
+                                    text += subdata2[d] + '&nbsp;';
+                                }
+                            } else {
+                                text += subdata2;
+                            }
+                        }
+                    } else {
+                        text += subdata;
+                    }
+                }
+            } else if (Array.isArray(data)) {
+                for (var i = 0; i < data.length; i++) {
+                    var objdata = data[i];
+                    var subkeys = Object.keys(objdata);
+                    if (Array.isArray(subkeys)) {
+                        for (var w = 0; w < subkeys.length; w++) {
+                            var subkey2 = subkeys[w];
+                            var subdatas = objdata[subkey2];
+                            if (Array.isArray(subdatas)) {
+                                for (var c = 0; c < subdatas.length; c++) {
+                                    var subdata3 = subdatas[c];
+                                    var subkey3 = Object.keys(subdata3);
+                                    if (Array.isArray(subkey3)) {
+                                        for (var h = 0; h < subkey3.length; h++) {
+                                            var subkey4 = subkey3[h];
+                                            var subdata4 = subdata3[subkey4];
+                                            if (Array.isArray(subdata4)) {
+                                                for (var b = 0; b < subdata4.length; b++) {
+                                                    text += subdata4[b] + '&nbsp;';
+                                                }
+                                            } else {
+                                                text += subdata4 + '&nbsp;';
+                                            }
+                                        }
+                                    } else {
+                                        text += subdata3 + '&nbsp;';
+                                    }
+                                }
+                            } else {
+                                text += subdatas + '&nbsp;';
+                            }
+                        }
+                    } else {
+                        text += objdata + '&nbsp;';
+                    }
+                }
+            } else {
+                text += data + '&nbsp;';
+            }
+        }
+
+        return $sce.trustAsHtml(text);
     };
 
     // show the pop up image
@@ -847,7 +962,7 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
         $window.open(url, '_blank');
     };
 
-    vm.$onChanges = function () {
+    vm.$onInit = function () {
         // hide search box
         var el = $element[0].parentNode.parentNode.children[0].children[2];
         if (el) {
@@ -864,11 +979,11 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
                 divNode.appendChild(textNode);
                 topbar.insertBefore(divNode, topbar.children[2]);
                 // remove pin and bookmark
-                topbar.children[3].remove();
-                // remove user login message
-                topbar.children[3].remove();
+                if (topbar.children.length > 2) {
+                    topbar.children[1].remove();
+                }
             }
-        }, 300);
+        }, 1000);
 
         vm.getData();
     };
@@ -918,16 +1033,15 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
             vm.item = result.data;
             // convert xml to json
             if (vm.item.pnx.addata) {
-                vm.xmldata = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
+                var result = sv.parseXml(vm.item.pnx.addata.mis1[0]);
+                if (result.work) {
+                    vm.xmldata = result.work[0];
+                    if (vm.xmldata.component) {
+                        vm.total = vm.xmldata.component.length;
+                    }
+                }
             }
-            // show total of image
-            if (vm.xmldata.surrogate) {
-                vm.total = vm.xmldata.surrogate.length;
-            } else if (vm.xmldata.image) {
-                vm.total = vm.xmldata.image.length;
-            } else if (vm.xmldata.length) {
-                vm.total = vm.xmldata.length;
-            }
+
             // display photo
             vm.displayPhoto();
         }, function (error) {
@@ -963,7 +1077,7 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         }
     };
 
-    vm.$onChanges = function () {
+    vm.$onInit = function () {
 
         // if the smaller screen size, make the flex size to 100.
         if ($mdMedia('sm')) {
@@ -989,11 +1103,11 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
                 divNode.appendChild(textNode);
                 topbar.insertBefore(divNode, topbar.children[2]);
                 // remove pin and bookmark
-                topbar.children[3].remove();
-                // remove user login message
-                topbar.children[3].remove();
+                if (topbar.children.length > 2) {
+                    topbar.children[1].remove();
+                }
             }
-        }, 300);
+        }, 1000);
     };
 
     // next photo
@@ -2331,245 +2445,30 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         var listArray = [];
         if (str) {
             xmldata = serviceObj.parseXml(str);
+
+            console.log('*** xmldata ****');
+            console.log(xmldata);
             if (xmldata.work) {
-                listArray = [];
-                var work = xmldata.work[0];
-                if (!work.surrogate && work.image) {
-                    var data = work;
-                    if (work.image.length === 1) {
-                        listArray = data;
-                    } else {
-                        listArray = [];
-                        var images = angular.copy(work.image);
-                        delete work.image;
-                        for (var i = 0; i < images.length; i++) {
-                            data = angular.copy(work);
-                            data.image = [];
-                            data.image[0] = images[i];
-                            listArray.push(data);
-                        }
-                    }
-                } else if (work.surrogate && work.image) {
-                    var data = {};
-                    listArray = [];
-                    var images = angular.copy(work.image);
-                    var surrogate = angular.copy(work.surrogate);
-                    delete work.image;
-                    delete work.surrogate;
-                    for (var i = 0; i < images.length; i++) {
-                        data = angular.copy(work);
-                        data.image = [];
-                        data.image[0] = images[i];
-                        listArray.push(data);
-                    }
+                for (var k = 0; k < xmldata.work.length; k++) {
+                    var subLevel = xmldata.work[k];
+                    var keys = Object.keys(subLevel);
+                    console.log('*** keys ***');
+                    console.log(keys);
 
-                    data = {};
-                    for (var i = 0; i < surrogate.length; i++) {
-                        data = surrogate[i];
-                        if (surrogate[i].image) {
-                            for (var j = 0; j < surrogate[i].image.length; j++) {
-                                data = angular.copy(surrogate[i]);
-                                if (surrogate[i].image[j]) {
-                                    data.image = [];
-                                    data.image[0] = surrogate[i].image[j];
-                                    data.thumbnail = surrogate[i].image[j].thumbnail;
-                                    data._attr = surrogate[i].image[j]._attr;
-                                    data.caption = surrogate[i].image[j].caption;
-                                }
-                                listArray.push(data);
-                            }
-                        } else {
-                            listArray.push(data);
-                        }
+                    if (subLevel.component) {
+                        listArray = subLevel.component;
+                    } else if (subLevel.image) {
+                        listArray = subLevel;
                     }
                 }
-
-                if (work.subwork && !work.surrogate) {
-                    listArray = [];
-                    for (var i = 0; i < work.subwork.length; i++) {
-                        var aSubwork = work.subwork[i];
-                        if (aSubwork.surrogate) {
-                            for (var j = 0; j < aSubwork.surrogate.length; j++) {
-                                var data = aSubwork.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if (aSubwork.image) {
-                            for (var k = 0; k < aSubwork.image.length; k++) {
-                                var data = aSubwork;
-                                data.thumbnail = aSubwork.image[k].thumbnail;
-                                data._attr = aSubwork.image[k]._attr;
-                                data.caption = aSubwork.image[k].caption;
-                                listArray.push(data);
-                            }
-                        }
-                        if (!aSubwork.image && !aSubwork.surrogate) {
-                            listArray.push(aSubwork);
-                        }
-                    }
-                }
-                if (work.subwork && work.surrogate) {
-                    listArray = [];
-                    for (var i = 0; i < work.subwork.length; i++) {
-                        var aSubwork = work.subwork[i];
-                        if (aSubwork.surrogate) {
-                            for (var j = 0; j < aSubwork.surrogate.length; j++) {
-                                var data = aSubwork.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if (aSubwork.image) {
-                            for (var k = 0; k < aSubwork.image.length; k++) {
-                                var data = aSubwork;
-                                data.thumbnail = aSubwork.image[k].thumbnail;
-                                data._attr = aSubwork.image[k]._attr;
-                                data.caption = aSubwork.image[k].caption;
-                                listArray.push(data);
-                            }
-                        }
-                    }
-                    for (var w = 0; w < work.surrogate.length; w++) {
-                        var aSurrogate = work.surrogate[w];
-                        if (aSurrogate.surrogate) {
-                            for (var j = 0; j < aSurrogate.surrogate.length; j++) {
-                                var data = aSurrogate.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if (aSurrogate.image) {
-                            for (var k = 0; k < aSurrogate.image.length; k++) {
-                                var data = aSurrogate;
-                                data.thumbnail = aSurrogate.image[k].thumbnail;
-                                data._attr = aSurrogate.image[k]._attr;
-                                data.caption = aSurrogate.image[k].caption;
-                                listArray.push(data);
-                            }
-                        }
-                    }
-                }
-                if (work.surrogate && !work.subwork) {
-                    listArray = [];
-                    for (var w = 0; w < work.surrogate.length; w++) {
-                        var aSurrogate = work.surrogate[w];
-                        if (aSurrogate.surrogate) {
-                            for (var j = 0; j < aSurrogate.surrogate.length; j++) {
-                                var data = aSurrogate.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if (aSurrogate.image) {
-                            for (var k = 0; k < aSurrogate.image.length; k++) {
-                                var data = angular.copy(aSurrogate);
-                                data.image[0] = aSurrogate.image[k];
-                                listArray.push(data);
-                            }
-                        }
-                        if (!aSurrogate.image && !aSurrogate.surrogate) {
-                            listArray.push(aSurrogate);
-                        }
-                    }
-                }
-
-                xmldata = work;
-                if (listArray.length > 0) {
-                    xmldata.surrogate = listArray;
-                }
-
-                /* end work section ***/
-            } else if (xmldata.group) {
-                listArray = [];
-                xmldata = xmldata.group[0];
-                if (xmldata.subwork && xmldata.surrogate) {
-                    var listArray = [];
-                    var subwork = xmldata.subwork;
-                    var surrogate = xmldata.surrogate;
-                    // get all the surrogate under subwork
-                    for (var i = 0; i < subwork.length; i++) {
-                        var aSubwork = subwork[i];
-                        if (aSubwork.surrogate) {
-                            for (var k = 0; k < aSubwork.surrogate.length; k++) {
-                                var data = aSubwork.surrogate[k];
-                                listArray.push(data);
-                            }
-                        }
-                        if (aSubwork.image) {
-                            for (var j = 0; j < aSubwork.image.length; j++) {
-                                var data = aSubwork;
-                                data.thumbnail = aSubwork.image[j].thumbnail;
-                                data._attr = aSubwork.image[j]._attr;
-                                data.caption = aSubwork.image[j].caption;
-                                listArray.push(data);
-                            }
-                        }
-                        if (!aSubwork.surrogate && !aSubwork.image) {
-                            listArray.push(aSubwork);
-                        }
-                    }
-                    // get all surrogate
-                    for (var i = 0; i < surrogate.length; i++) {
-                        var aSurrogate = surrogate[i];
-                        if (aSurrogate.surrogate) {
-                            for (var j = 0; j < aSurrogate.surrogate.length; j++) {
-                                var data = aSurrogate.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if (aSurrogate.image) {
-                            for (var j = 0; j < aSurrogate.image.length; j++) {
-                                var data = aSurrogate;
-                                data.thumbnail = aSurrogate.image[j].thumbnail;
-                                data._attr = aSurrogate.image[j]._attr;
-                                data.caption = aSurrogate.image[j].caption;
-                                listArray.push(data);
-                            }
-                        }
-                        if (!aSurrogate.surrogate && !aSurrogate.image) {
-                            listArray.push(aSurrogate);
-                        }
-                    }
-                    xmldata.surrogate = listArray;
-                } else if (xmldata.subwork && !xmldata.surrogate) {
-                    // transfer subwork to surrogate
-                    var surrogate = [];
-                    listArray = [];
-                    var subwork = angular.copy(xmldata.subwork);
-                    delete xmldata.subwork;
-                    for (var i = 0; i < subwork.length; i++) {
-                        if (subwork[i].surrogate) {
-                            surrogate = angular.copy(subwork[i].surrogate);
-                            delete subwork[i].surrogate;
-                            for (var k = 0; k < surrogate.length; k++) {
-                                if (surrogate[k].image) {
-                                    var images = angular.copy(surrogate[k].image);
-                                    delete surrogate[k].image;
-                                    for (var c = 0; c < images.length; c++) {
-                                        var data = surrogate[k];
-                                        data.image = [];
-                                        data.image[0] = images[c];
-                                        listArray.push(data);
-                                    }
-                                } else {
-                                    listArray.push(surrogate[k]);
-                                }
-                            }
-                        }
-                        if (subwork[i].image) {
-                            var images = angular.copy(subwork[i].image);
-                            delete subwork[i].image;
-                            for (var j = 0; j < images.length; j++) {
-                                var data = subwork[i];
-                                data.image = [];
-                                data.image[0] = images[j];
-                                listArray.push(data);
-                            }
-                        }
-                    }
-
-                    xmldata.surrogate = listArray;
-                }
+            } else {
+                listArray = xmldata;
             }
         }
-        return xmldata;
+
+        console.log('**** listArray ***');
+        console.log(listArray);
+        return listArray;
     };
 
     return serviceObj;
@@ -2613,7 +2512,7 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     vm.item = itemData.item;
     vm.searchData = itemData.searchData;
     vm.params = $location.search();
-    vm.zoomButtonFlag = true;
+    vm.zoomButtonFlag = false;
     vm.viewAllComponetMetadataFlag = false;
     vm.singleImageFlag = false;
 
@@ -2623,50 +2522,25 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
         itemData = sv.getItem();
         vm.item = itemData.item;
         if (vm.item.pnx.addata) {
-            var data = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
-            if (data.surrogate) {
-                vm.item.mis1Data = data.surrogate;
-            } else if (data.image) {
-                if (data.image.length === 1) {
-                    vm.item.mis1Data = [];
-                    vm.item.mis1Data.push(data);
-                } else {
-                    vm.item.mis1Data = data.image;
-                }
-            } else {
-                vm.item.mis1Data = [];
-                vm.item.mis1Data.push(data);
-            }
+            vm.item.mis1Data = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
         }
         vm.searchData = itemData.searchData;
         vm.searchData.sortby = vm.params.sortby;
         vm.pageInfo = sv.getPage();
 
-        if (vm.isLoggedIn === false && vm.item.mis1Data) {
-            if (vm.item.mis1Data.length === 1) {
-                if (vm.item.mis1Data[0].image) {
-                    if (vm.item.mis1Data[0].image[0]._attr.restrictedImage) {
-                        if (vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
-                            vm.zoomButtonFlag = false;
-                        }
-                    }
-                } else if (vm.item.mis1Data[0]._attr) {
-                    if (vm.item.mis1Data[0]._attr.restrictedImage) {
-                        if (vm.item.mis1Data[0]._attr.restrictedImage._value) {
-                            vm.zoomButtonFlag = false;
-                        }
-                    }
-                }
-            }
-        }
+        console.log('**** mis1Data ****');
+        console.log(Array.isArray(vm.item.mis1Data));
+
         if (vm.item.mis1Data) {
-            if (vm.item.mis1Data.length == 1) {
-                vm.singleImageFlag = true;
+            if (Array.isArray(vm.item.mis1Data) === false) {
+                if (vm.item.mis1Data.image) {
+                    vm.singleImageFlag = true;
+                }
             } else {
                 vm.viewAllComponetMetadataFlag = true;
+                vm.singleImageFlag = false;
+                vm.zoomButtonFlag = true;
             }
-        } else {
-            vm.singleImageFlag = true;
         }
     };
 

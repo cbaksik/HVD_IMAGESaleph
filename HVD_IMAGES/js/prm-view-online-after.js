@@ -11,7 +11,7 @@ angular.module('viewCustom')
         vm.item=itemData.item;
         vm.searchData=itemData.searchData;
         vm.params=$location.search();
-        vm.zoomButtonFlag=true;
+        vm.zoomButtonFlag=false;
         vm.viewAllComponetMetadataFlag=false;
         vm.singleImageFlag=false;
 
@@ -21,52 +21,25 @@ angular.module('viewCustom')
            itemData=sv.getItem();
            vm.item=itemData.item;
            if(vm.item.pnx.addata) {
-               var data=sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
-               if(data.surrogate) {
-                   vm.item.mis1Data=data.surrogate;
-               } else if(data.image) {
-                   if(data.image.length===1) {
-                       vm.item.mis1Data=[];
-                       vm.item.mis1Data.push(data);
-                   } else {
-                       vm.item.mis1Data=data.image;
-                   }
-               } else {
-                   vm.item.mis1Data=[];
-                   vm.item.mis1Data.push(data);
-               }
-
-
+               vm.item.mis1Data=sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
            }
            vm.searchData=itemData.searchData;
            vm.searchData.sortby=vm.params.sortby;
            vm.pageInfo=sv.getPage();
 
-           if(vm.isLoggedIn===false && vm.item.mis1Data) {
-               if(vm.item.mis1Data.length===1) {
-                   if (vm.item.mis1Data[0].image) {
-                       if (vm.item.mis1Data[0].image[0]._attr.restrictedImage) {
-                           if (vm.item.mis1Data[0].image[0]._attr.restrictedImage._value) {
-                               vm.zoomButtonFlag = false;
-                           }
-                       }
-                   } else if (vm.item.mis1Data[0]._attr) {
-                       if(vm.item.mis1Data[0]._attr.restrictedImage) {
-                           if (vm.item.mis1Data[0]._attr.restrictedImage._value) {
-                               vm.zoomButtonFlag = false;
-                           }
-                       }
-                   }
-               }
-           }
+           console.log('**** mis1Data ****');
+           console.log(Array.isArray(vm.item.mis1Data));
+
            if(vm.item.mis1Data) {
-             if(vm.item.mis1Data.length==1) {
-                 vm.singleImageFlag=true;
-             } else {
-                 vm.viewAllComponetMetadataFlag=true;
-             }
-           } else {
-               vm.singleImageFlag=true;
+               if(Array.isArray(vm.item.mis1Data)===false) {
+                   if (vm.item.mis1Data.image) {
+                       vm.singleImageFlag=true;
+                   }
+               } else {
+                   vm.viewAllComponetMetadataFlag=true;
+                   vm.singleImageFlag=false;
+                   vm.zoomButtonFlag=true;
+               }
            }
 
         };

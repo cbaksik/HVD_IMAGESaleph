@@ -37,17 +37,16 @@ angular.module('viewCustom')
                     vm.item=result.data;
                     // convert xml to json
                     if(vm.item.pnx.addata) {
-                        vm.xmldata = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
+                        var result = sv.parseXml(vm.item.pnx.addata.mis1[0]);
+                        if(result.work) {
+                            vm.xmldata=result.work[0];
+                            if(vm.xmldata.component) {
+                                vm.total=vm.xmldata.component.length;
+                            }
+                        }
 
                     }
-                    // show total of image
-                    if(vm.xmldata.surrogate) {
-                        vm.total=vm.xmldata.surrogate.length;
-                    } else if(vm.xmldata.image) {
-                        vm.total=vm.xmldata.image.length;
-                    } else if(vm.xmldata.length) {
-                        vm.total=vm.xmldata.length;
-                    }
+
                     // display photo
                     vm.displayPhoto();
 
@@ -91,7 +90,7 @@ angular.module('viewCustom')
 
         };
 
-        vm.$onChanges=function() {
+        vm.$onInit=function() {
 
             // if the smaller screen size, make the flex size to 100.
             if($mdMedia('sm')) {
@@ -118,13 +117,14 @@ angular.module('viewCustom')
                     divNode.appendChild(textNode);
                     topbar.insertBefore(divNode,topbar.children[2]);
                     // remove pin and bookmark
-                    topbar.children[3].remove();
-                    // remove user login message
-                    topbar.children[3].remove();
+                    if(topbar.children.length > 2) {
+                        topbar.children[1].remove();
+                    }
+
                 }
 
 
-            },300);
+            },1000);
 
         };
 

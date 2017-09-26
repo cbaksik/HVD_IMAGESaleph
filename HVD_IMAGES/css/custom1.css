@@ -664,6 +664,15 @@ prm-search-result-list-after{
     font-weight: normal;
     text-transform: uppercase;
 }
+
+.hv-toggle {
+    text-align: right;
+}
+
+.hv-toggle > button {
+    margin-bottom:10px !important;
+    margin-top:0px !important;
+}
 prm-logo {
 	display: flex;
 	flex-direction: row;

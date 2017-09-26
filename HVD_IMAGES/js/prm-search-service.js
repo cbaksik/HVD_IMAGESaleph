@@ -244,253 +244,34 @@ angular.module('viewCustom')
         var listArray=[];
         if(str) {
             xmldata = serviceObj.parseXml(str);
+
+            console.log('*** xmldata ****');
+            console.log(xmldata);
             if(xmldata.work) {
-                listArray=[];
-                var work=xmldata.work[0];
-                if(!work.surrogate && work.image) {
-                    var data = work;
-                    if(work.image.length===1) {
-                        listArray = data;
-                    } else {
-                        listArray=[];
-                        var images=angular.copy(work.image);
-                        delete work.image;
-                        for(var i=0; i < images.length; i++){
-                            data=angular.copy(work);
-                            data.image=[];
-                            data.image[0]=images[i];
-                            listArray.push(data);
-                        }
-                    }
+                for(var k=0; k < xmldata.work.length; k++) {
+                   var subLevel=xmldata.work[k];
+                    var keys = Object.keys(subLevel);
+                    console.log('*** keys ***');
+                    console.log(keys);
 
-                } else if(work.surrogate && work.image) {
-                    var data = {};
-                    listArray=[];
-                    var images = angular.copy(work.image);
-                    var surrogate = angular.copy(work.surrogate);
-                    delete work.image;
-                    delete work.surrogate;
-                    for(var i=0; i < images.length; i++){
-                        data=angular.copy(work);
-                        data.image=[];
-                        data.image[0]=images[i];
-                        listArray.push(data);
-                    }
+                     if(subLevel.component) {
+                         listArray=subLevel.component;
+                     } else if(subLevel.image) {
+                         listArray=subLevel;
+                     }
 
-                    data={};
-                    for(var i=0; i < surrogate.length; i++){
-                        data=surrogate[i];
-                        if(surrogate[i].image) {
-                            for(var j=0; j < surrogate[i].image.length; j++) {
-                                data = angular.copy(surrogate[i]);
-                                if (surrogate[i].image[j]) {
-                                    data.image = [];
-                                    data.image[0] = surrogate[i].image[j];
-                                    data.thumbnail = surrogate[i].image[j].thumbnail;
-                                    data._attr = surrogate[i].image[j]._attr;
-                                    data.caption = surrogate[i].image[j].caption;
-                                }
-                                listArray.push(data);
-                            }
-                        } else {
-                            listArray.push(data);
-                        }
-
-
-                    }
 
                 }
 
-                if(work.subwork && !work.surrogate) {
-                    listArray=[];
-                    for(var i=0; i < work.subwork.length; i++) {
-                        var aSubwork=work.subwork[i];
-                        if(aSubwork.surrogate) {
-                            for(var j=0; j < aSubwork.surrogate.length; j++) {
-                                var data=aSubwork.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if(aSubwork.image) {
-                            for(var k=0; k < aSubwork.image.length; k++) {
-                                var data=aSubwork;
-                                data.thumbnail=aSubwork.image[k].thumbnail;
-                                data._attr=aSubwork.image[k]._attr;
-                                data.caption=aSubwork.image[k].caption;
-                                listArray.push(data);
-                            }
-                        }
-                        if(!aSubwork.image && !aSubwork.surrogate) {
-                            listArray.push(aSubwork);
-                        }
-                    }
-                }
-                if(work.subwork && work.surrogate) {
-                    listArray=[];
-                    for(var i=0; i < work.subwork.length; i++) {
-                        var aSubwork=work.subwork[i];
-                        if(aSubwork.surrogate) {
-                            for(var j=0; j < aSubwork.surrogate.length; j++) {
-                                var data=aSubwork.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if(aSubwork.image) {
-                            for(var k=0; k < aSubwork.image.length; k++) {
-                                var data=aSubwork;
-                                data.thumbnail=aSubwork.image[k].thumbnail;
-                                data._attr=aSubwork.image[k]._attr;
-                                data.caption=aSubwork.image[k].caption;
-                                listArray.push(data);
-                            }
-                        }
-                    }
-                    for(var w=0; w < work.surrogate.length; w++) {
-                        var aSurrogate=work.surrogate[w];
-                        if(aSurrogate.surrogate) {
-                            for(var j=0; j < aSurrogate.surrogate.length; j++) {
-                                var data=aSurrogate.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if(aSurrogate.image) {
-                            for(var k=0; k < aSurrogate.image.length; k++) {
-                                var data=aSurrogate;
-                                data.thumbnail=aSurrogate.image[k].thumbnail;
-                                data._attr=aSurrogate.image[k]._attr;
-                                data.caption=aSurrogate.image[k].caption;
-                                listArray.push(data);
-                            }
-                        }
-                    }
-                }
-                if(work.surrogate && !work.subwork) {
-                    listArray=[];
-                    for(var w=0; w < work.surrogate.length; w++) {
-                        var aSurrogate=work.surrogate[w];
-                        if(aSurrogate.surrogate) {
-                            for(var j=0; j < aSurrogate.surrogate.length; j++) {
-                                var data=aSurrogate.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if(aSurrogate.image) {
-                            for(var k=0; k < aSurrogate.image.length; k++) {
-                                var data=angular.copy(aSurrogate);
-                                data.image[0]=aSurrogate.image[k];
-                                listArray.push(data);
-                            }
-                        }
-                        if(!aSurrogate.image && !aSurrogate.surrogate) {
-                            listArray.push(aSurrogate);
-                        }
-                    }
-
-                }
-
-                xmldata=work;
-                if(listArray.length > 0) {
-                    xmldata.surrogate = listArray;
-                }
-
-                /* end work section ***/
-            } else if(xmldata.group) {
-                listArray=[];
-                xmldata=xmldata.group[0];
-                if(xmldata.subwork && xmldata.surrogate){
-                    var listArray=[];
-                    var subwork=xmldata.subwork;
-                    var surrogate=xmldata.surrogate;
-                    // get all the surrogate under subwork
-                    for(var i=0; i < subwork.length; i++) {
-                        var aSubwork = subwork[i];
-                        if(aSubwork.surrogate) {
-                            for(var k=0; k < aSubwork.surrogate.length; k++) {
-                                var data=aSubwork.surrogate[k];
-                               listArray.push(data);
-                            }
-                        }
-                        if(aSubwork.image) {
-                            for(var j=0; j < aSubwork.image.length; j++){
-                                var data=aSubwork;
-                                data.thumbnail=aSubwork.image[j].thumbnail;
-                                data._attr=aSubwork.image[j]._attr;
-                                data.caption=aSubwork.image[j].caption;
-                                listArray.push(data);
-                            }
-                        }
-                        if(!aSubwork.surrogate && !aSubwork.image) {
-                            listArray.push(aSubwork);
-                        }
-
-                    }
-                    // get all surrogate
-                    for(var i=0; i < surrogate.length; i++) {
-                        var aSurrogate=surrogate[i];
-                        if(aSurrogate.surrogate) {
-                            for(var j=0; j < aSurrogate.surrogate.length; j++) {
-                                var data=aSurrogate.surrogate[j];
-                                listArray.push(data);
-                            }
-                        }
-                        if(aSurrogate.image) {
-                            for(var j=0; j < aSurrogate.image.length; j++) {
-                                var data=aSurrogate;
-                                data.thumbnail=aSurrogate.image[j].thumbnail;
-                                data._attr=aSurrogate.image[j]._attr;
-                                data.caption=aSurrogate.image[j].caption;
-                                listArray.push(data);
-                            }
-                        }
-                        if(!aSurrogate.surrogate && !aSurrogate.image) {
-                            listArray.push(aSurrogate);
-                        }
-                    }
-                    xmldata.surrogate=listArray;
-
-                } else if(xmldata.subwork && !xmldata.surrogate) {
-                    // transfer subwork to surrogate
-                    var surrogate=[];
-                    listArray=[];
-                    var subwork=angular.copy(xmldata.subwork);
-                    delete xmldata.subwork;
-                    for(var i=0; i < subwork.length; i++) {
-                        if(subwork[i].surrogate) {
-                            surrogate=angular.copy(subwork[i].surrogate);
-                            delete subwork[i].surrogate;
-                            for(var k=0; k < surrogate.length; k++) {
-                                if(surrogate[k].image) {
-                                    var images = angular.copy(surrogate[k].image);
-                                    delete surrogate[k].image;
-                                    for (var c = 0; c < images.length; c++) {
-                                        var data = surrogate[k];
-                                        data.image = [];
-                                        data.image[0] = images[c];
-                                        listArray.push(data);
-                                    }
-                                } else {
-                                    listArray.push(surrogate[k]);
-                                }
-                            }
-                        }
-                        if(subwork[i].image) {
-                            var images = angular.copy(subwork[i].image);
-                            delete subwork[i].image;
-                            for(var j=0; j < images.length; j++) {
-                                var data=subwork[i];
-                                data.image=[];
-                                data.image[0]=images[j];
-                                listArray.push(data);
-                            }
-                        }
-                    }
-
-                    xmldata.surrogate=listArray
-                }
+            } else {
+                listArray=xmldata;
             }
 
         }
-        return xmldata;
+
+        console.log('**** listArray ***');
+        console.log(listArray);
+        return listArray;
     };
 
     return serviceObj;
