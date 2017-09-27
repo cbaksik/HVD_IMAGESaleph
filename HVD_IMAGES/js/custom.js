@@ -2,6 +2,8 @@
 "use strict";
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 angular.module('viewCustom', ['angularLoad', 'cl.paging']);
 
 /**
@@ -856,9 +858,6 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
                         keys.splice(index, 1);
                     }
                     vm.keys = keys;
-
-                    console.log('** component **');
-                    console.log(vm.xmldata.component);
                 }
             }
         }, function (err) {
@@ -878,84 +877,14 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
     };
 
     // get json value base on dynamic key
-    vm.getValue = function (obj, keyType) {
-        var text = '';
-        var keys = Object.keys(obj);
-        for (var k = 0; k < keys.length; k++) {
-            var key = keys[k];
-            var data = obj[key];
-            if (Array.isArray(key)) {
-                for (var i = 0; i < key.length; i++) {
-                    var subkey = key[i];
-                    var subdata = data[subkey];
-                    console.log('**** subdata ***');
-                    console.log(subdata);
-                    console.log(subkey);
-
-                    if (Array.isArray(subkey)) {
-                        for (var j = 0; j < subkey.length; j++) {
-                            var subkey2 = subkey[j];
-                            var subdata2 = subdata[subkey2];
-                            if (Array.isArray(subdata2)) {
-                                for (var d = 0; d < subdata2.length; d++) {
-                                    text += subdata2[d] + '&nbsp;';
-                                }
-                            } else {
-                                text += subdata2;
-                            }
-                        }
-                    } else {
-                        text += subdata;
-                    }
-                }
-            } else if (Array.isArray(data)) {
-                for (var i = 0; i < data.length; i++) {
-                    var objdata = data[i];
-                    var subkeys = Object.keys(objdata);
-                    if (Array.isArray(subkeys)) {
-                        for (var w = 0; w < subkeys.length; w++) {
-                            var subkey2 = subkeys[w];
-                            var subdatas = objdata[subkey2];
-                            if (Array.isArray(subdatas)) {
-                                for (var c = 0; c < subdatas.length; c++) {
-                                    var subdata3 = subdatas[c];
-                                    var subkey3 = Object.keys(subdata3);
-                                    if (Array.isArray(subkey3)) {
-                                        for (var h = 0; h < subkey3.length; h++) {
-                                            var subkey4 = subkey3[h];
-                                            var subdata4 = subdata3[subkey4];
-                                            if (Array.isArray(subdata4)) {
-                                                for (var b = 0; b < subdata4.length; b++) {
-                                                    text += subdata4[b] + '&nbsp;';
-                                                }
-                                            } else {
-                                                text += subdata4 + '&nbsp;';
-                                            }
-                                        }
-                                    } else {
-                                        text += subdata3 + '&nbsp;';
-                                    }
-                                }
-                            } else {
-                                text += subdatas + '&nbsp;';
-                            }
-                        }
-                    } else {
-                        text += objdata + '&nbsp;';
-                    }
-                }
-            } else {
-                text += data + '&nbsp;';
-            }
-        }
-
-        return $sce.trustAsHtml(text);
+    vm.getValue = function (obj) {
+        return sv.getValue(obj);
     };
 
     // show the pop up image
     vm.gotoFullPhoto = function (index) {
         // go to full display page
-        var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '/' + index + '?vid=' + vm.params.vid + '&lang=' + vm.params.lang;
+        var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '/' + index + '?vid=' + vm.params.vid;
         if (vm.params.adaptor) {
             url += '&adaptor=' + vm.params.adaptor;
         }
@@ -981,6 +910,7 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
                 // remove pin and bookmark
                 if (topbar.children.length > 2) {
                     topbar.children[1].remove();
+                    topbar.children[2].remove();
                 }
             }
         }, 1000);
@@ -1018,8 +948,11 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     vm.itemData = {};
     vm.imageNav = true;
     vm.xmldata = {};
+    vm.keys = [];
     vm.imageTitle = '';
     vm.jp2 = false;
+    vm.componentData = {}; // single component data
+    vm.componentKey = [];
 
     // ajax call to get data
     vm.getData = function () {
@@ -1039,6 +972,16 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
                     if (vm.xmldata.component) {
                         vm.total = vm.xmldata.component.length;
                     }
+                    var keys = Object.keys(vm.xmldata);
+                    var index = keys.indexOf('component');
+                    if (index !== -1) {
+                        keys.splice(index, 1);
+                    }
+                    index = keys.indexOf('image');
+                    if (index !== -1) {
+                        keys.splice(index, 1);
+                    }
+                    vm.keys = keys;
                 }
             }
 
@@ -1049,30 +992,70 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         });
     };
 
+    // get json key
+    vm.getKeys = function (obj) {
+        var keys = Object.keys(obj);
+        var index = keys.indexOf('image');
+        if (index !== -1) {
+            // remove image from the list
+            keys.splice(index, 1);
+        }
+        return keys;
+    };
+
+    vm.getValue = function (val) {
+        return sv.getValue(val);
+    };
+
+    vm.getComponentValue = function (key) {
+        if (vm.componentData && key) {
+            var data = vm.componentData[key];
+            if (Array.isArray(data)) {
+                data = data[0];
+            }
+            return sv.getValue(data);
+        }
+    };
+
     vm.displayPhoto = function () {
         vm.isLoggedIn = sv.getLogInID();
-        if (vm.xmldata.surrogate && !vm.xmldata.image) {
-            if (vm.xmldata.surrogate[vm.index].image) {
-                vm.photo = vm.xmldata.surrogate[vm.index].image[0];
-                // find out if the image is jp2 or not
-                vm.jp2 = sv.findJP2(vm.photo);
-            } else {
-                vm.photo = vm.xmldata.surrogate[vm.index];
-                vm.jp2 = sv.findJP2(vm.photo);
-            }
-            if (vm.xmldata.surrogate[vm.index].title) {
-                vm.imageTitle = vm.xmldata.surrogate[vm.index].title[0].textElement[0]._text;
-            }
-        } else if (vm.xmldata.image) {
-            vm.photo = vm.xmldata.image[vm.index];
+        if (vm.xmldata.component && !vm.xmldata.image) {
+            vm.componentData = vm.xmldata.component[vm.index];
+            vm.photo = vm.componentData.image[0];
+            // find out if the image is jp2 or not
             vm.jp2 = sv.findJP2(vm.photo);
-        } else {
-            vm.photo = vm.xmldata[vm.index];
+        } else if (vm.xmldata.image) {
+            vm.photo = vm.xmldata.image[0];
+            vm.jp2 = sv.findJP2(vm.photo);
+            vm.componentData = vm.xmldata.image[0];
         }
 
         if (vm.photo._attr && vm.photo._attr.restrictedImage) {
             if (vm.photo._attr.restrictedImage._value && vm.isLoggedIn === false) {
                 vm.imageNav = false;
+            }
+        }
+
+        if (vm.componentData) {
+            // remove image from key list
+            vm.componentKey = Object.keys(vm.componentData);
+            var index = vm.componentKey.indexOf('image');
+            if (index !== -1) {
+                // remove image from the list
+                vm.componentKey.splice(index, 1);
+            }
+
+            // remove key that does not have value
+            for (var i = 0; i < vm.componentKey.length; i++) {
+                var key = vm.componentKey[i];
+                var data = vm.componentData[key];
+                if (Array.isArray(data)) {
+                    data = data[0];
+                }
+                var value = sv.getValue(data);
+                if (!value) {
+                    vm.componentKey.splice(i, 1);
+                }
             }
         }
     };
@@ -1105,6 +1088,7 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
                 // remove pin and bookmark
                 if (topbar.children.length > 2) {
                     topbar.children[1].remove();
+                    topbar.children[2].remove();
                 }
             }
         }, 1000);
@@ -1128,15 +1112,6 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         } else {
             vm.index = vm.total - 1;
             vm.displayPhoto();
-        }
-    };
-
-    // check if the item is array or not
-    vm.isArray = function (obj) {
-        if (Array.isArray(obj)) {
-            return true;
-        } else {
-            return false;
         }
     };
 }]);
@@ -2206,7 +2181,7 @@ angular.module('viewCustom').component('prmSearchResultListAfter', {
  * This custom service use to inject to the controller.
  */
 
-angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$filter', function ($http, $window, $filter) {
+angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$filter', '$sce', function ($http, $window, $filter, $sce) {
     var serviceObj = {};
 
     serviceObj.getBrowserType = function () {
@@ -2445,16 +2420,9 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         var listArray = [];
         if (str) {
             xmldata = serviceObj.parseXml(str);
-
-            console.log('*** xmldata ****');
-            console.log(xmldata);
             if (xmldata.work) {
                 for (var k = 0; k < xmldata.work.length; k++) {
                     var subLevel = xmldata.work[k];
-                    var keys = Object.keys(subLevel);
-                    console.log('*** keys ***');
-                    console.log(keys);
-
                     if (subLevel.component) {
                         listArray = subLevel.component;
                     } else if (subLevel.image) {
@@ -2466,9 +2434,112 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
             }
         }
 
-        console.log('**** listArray ***');
-        console.log(listArray);
         return listArray;
+    };
+
+    // get json value base on dynamic key
+    serviceObj.getValue = function (obj) {
+        var text = '';
+        if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object') {
+            var keys = Object.keys(obj);
+            for (var k = 0; k < keys.length; k++) {
+                var nodeKey = keys[k];
+                if (nodeKey) {
+                    var nodeValue = obj[nodeKey];
+                    if ((typeof nodeValue === 'undefined' ? 'undefined' : _typeof(nodeValue)) === 'object') {
+                        if (Array.isArray(nodeValue)) {
+                            for (var i = 0; i < nodeValue.length; i++) {
+                                var data = nodeValue[i];
+                                if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) === 'object') {
+                                    if (Array.isArray(data)) {
+                                        for (var j = 0; j < data.length; j++) {
+                                            var data2 = data[j];
+                                            if ((typeof data2 === 'undefined' ? 'undefined' : _typeof(data2)) === 'object') {
+                                                if (Array.isArray(data2)) {
+                                                    for (var c = 0; c < data2.length; c++) {
+                                                        var data3 = data2[c];
+                                                        if ((typeof data3 === 'undefined' ? 'undefined' : _typeof(data3)) === 'object') {
+                                                            if (Array.isArray(data3)) {
+                                                                for (var w = 0; w < data3.length; w++) {
+                                                                    var data4 = data3[w];
+                                                                    if ((typeof data4 === 'undefined' ? 'undefined' : _typeof(data4)) === 'object') {
+                                                                        text += data4[0] + '&nbsp;';
+                                                                    } else {
+                                                                        text += data4 + '&nbsp;';
+                                                                    }
+                                                                }
+                                                            }
+                                                        } else {
+                                                            text += data3 + '&nbsp;';
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                text += data2 + '&nbsp;';
+                                            }
+                                        }
+                                    } else {
+                                        var subNodeKeys = Object.keys(data);
+                                        if (Array.isArray(subNodeKeys)) {
+                                            for (var b = 0; b < subNodeKeys.length; b++) {
+                                                var key2 = subNodeKeys[b];
+                                                if ((typeof key2 === 'undefined' ? 'undefined' : _typeof(key2)) === 'object') {
+                                                    if (Array.isArray(key2)) {
+                                                        for (var c = 0; c < key2.length; c++) {
+                                                            var key3 = key2[c];
+                                                            if ((typeof key3 === 'undefined' ? 'undefined' : _typeof(key3)) === 'object') {
+                                                                if (Array.isArray(key3)) {
+                                                                    for (var x = 0; x < key3.length; x++) {
+                                                                        var key4 = key3[x];
+                                                                        if ((typeof key4 === 'undefined' ? 'undefined' : _typeof(key4)) === 'object') {
+                                                                            text += data[key4][0] + '&nbsp;';
+                                                                        } else {
+                                                                            text += data[key4] + '&nbsp;';
+                                                                        }
+                                                                    }
+                                                                }
+                                                            } else {
+                                                                text += data[key3];
+                                                            }
+                                                        }
+                                                    }
+                                                } else if (key2) {
+                                                    text += data[key2] + '&nbsp;';
+                                                }
+                                            }
+                                        } else {
+                                            text += data[subNodeKeys] + '&nbsp;';
+                                        }
+                                    }
+                                } else {
+                                    text += data;
+                                }
+                            }
+                        } else if (nodeKey) {
+                            var nodeKey2 = Object.keys(nodeValue);
+                            if ((typeof nodeKey2 === 'undefined' ? 'undefined' : _typeof(nodeKey2)) === 'object') {
+                                if (Array.isArray(nodeKey2)) {
+                                    for (var c = 0; c < nodeKey2.length; c++) {
+                                        var nodeKey3 = nodeKey2[c];
+                                        if (nodeKey3) {
+                                            text += nodeValue[nodeKey3] + '&nbsp;';
+                                        }
+                                    }
+                                }
+                            } else if (nodeKey2) {
+                                text += nodeValue[nodeKey2] + '&nbsp;';
+                            }
+                        }
+                    } else {
+                        text += nodeValue + '&nbsp;';
+                    }
+                }
+            }
+        } else {
+            text = obj;
+        }
+
+        return text;
     };
 
     return serviceObj;
@@ -2528,9 +2599,6 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
         vm.searchData.sortby = vm.params.sortby;
         vm.pageInfo = sv.getPage();
 
-        console.log('**** mis1Data ****');
-        console.log(Array.isArray(vm.item.mis1Data));
-
         if (vm.item.mis1Data) {
             if (Array.isArray(vm.item.mis1Data) === false) {
                 if (vm.item.mis1Data.image) {
@@ -2548,7 +2616,6 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     vm.viewAllComponentMetaData = function () {
         var url = '/primo-explore/viewallcomponentmetadata/' + vm.item.context + '/' + vm.item.pnx.control.recordid[0] + '?vid=' + vm.params.vid;
         url += '&tab=' + vm.params.tab + '&search_scope=' + vm.params.search_scope;
-        url += '&lang=' + vm.params.lang;
         url += '&adaptor=' + vm.item.adaptor;
         $window.open(url, '_blank');
     };

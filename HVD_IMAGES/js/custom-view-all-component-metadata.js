@@ -52,9 +52,6 @@ angular.module('viewCustom')
                               keys.splice(index,1);
                           }
                           vm.keys=keys;
-
-                          console.log('** component **');
-                          console.log(vm.xmldata.component)
                       }
 
                   }
@@ -77,89 +74,14 @@ angular.module('viewCustom')
         };
 
         // get json value base on dynamic key
-        vm.getValue=function (obj,keyType) {
-            var text='';
-            var keys=Object.keys(obj);
-            for(var k=0; k < keys.length; k++) {
-                var key=keys[k];
-                var data=obj[key];
-                if(Array.isArray(key)) {
-                    for(var i=0; i <key.length; i++ ) {
-                        var subkey=key[i];
-                        var subdata=data[subkey];
-                        console.log('**** subdata ***');
-                        console.log(subdata);
-                        console.log(subkey);
-
-                        if(Array.isArray(subkey)) {
-                            for(var j=0; j < subkey.length; j++) {
-                                var subkey2=subkey[j];
-                                var subdata2=subdata[subkey2];
-                                if(Array.isArray(subdata2)) {
-                                    for(var d=0; d<subdata2.length; d++) {
-                                        text+=subdata2[d]+'&nbsp;';
-                                    }
-
-                                } else {
-                                    text+=subdata2;
-                                }
-                            }
-                        } else {
-                            text += subdata;
-                        }
-                    }
-                } else if(Array.isArray(data)) {
-                    for(var i=0; i < data.length; i++) {
-                         var objdata=data[i];
-                         var subkeys=Object.keys(objdata);
-                         if(Array.isArray(subkeys)) {
-                             for(var w=0; w < subkeys.length; w++) {
-                                 var subkey2=subkeys[w];
-                                 var subdatas=objdata[subkey2];
-                                 if(Array.isArray(subdatas)) {
-                                     for(var c=0; c < subdatas.length; c++) {
-                                         var subdata3=subdatas[c];
-                                         var subkey3=Object.keys(subdata3);
-                                         if(Array.isArray(subkey3)) {
-                                             for(var h=0;  h < subkey3.length; h++) {
-                                                 var subkey4=subkey3[h];
-                                                 var subdata4=subdata3[subkey4];
-                                                 if(Array.isArray(subdata4)) {
-                                                     for(var b=0; b < subdata4.length; b++) {
-                                                         text+=subdata4[b]+'&nbsp;';
-                                                     }
-                                                 } else {
-                                                     text+=subdata4+'&nbsp;'
-                                                 }
-                                             }
-
-                                         } else {
-                                             text+=subdata3 + '&nbsp;';
-                                         }
-                                     }
-                                 } else {
-                                     text+=subdatas + '&nbsp;';
-                                 }
-                             }
-                         } else {
-                             text+=objdata + '&nbsp;';
-                         }
-                    }
-
-                } else {
-                    text+=data + '&nbsp;';
-                }
-
-            }
-
-
-            return $sce.trustAsHtml(text);
+        vm.getValue=function (obj) {
+            return sv.getValue(obj);
         };
 
         // show the pop up image
         vm.gotoFullPhoto=function (index) {
             // go to full display page
-            var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid+'/'+index+'?vid='+vm.params.vid+'&lang='+vm.params.lang;
+            var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid+'/'+index+'?vid='+vm.params.vid;
             if(vm.params.adaptor) {
                 url+='&adaptor='+vm.params.adaptor;
             }
@@ -185,6 +107,7 @@ angular.module('viewCustom')
                     // remove pin and bookmark
                     if(topbar.children.length > 2) {
                         topbar.children[1].remove();
+                        topbar.children[2].remove();
                     }
 
                 }

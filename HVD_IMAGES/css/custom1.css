@@ -673,6 +673,10 @@ prm-search-result-list-after{
     margin-bottom:10px !important;
     margin-top:0px !important;
 }
+
+.whiteBg {
+    background:#ffffff;
+}
 prm-logo {
 	display: flex;
 	flex-direction: row;

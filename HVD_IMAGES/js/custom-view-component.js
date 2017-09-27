@@ -21,8 +21,11 @@ angular.module('viewCustom')
         vm.itemData={};
         vm.imageNav=true;
         vm.xmldata={};
+        vm.keys=[];
         vm.imageTitle='';
         vm.jp2=false;
+        vm.componentData={}; // single component data
+        vm.componentKey=[];
 
         // ajax call to get data
         vm.getData=function () {
@@ -43,6 +46,16 @@ angular.module('viewCustom')
                             if(vm.xmldata.component) {
                                 vm.total=vm.xmldata.component.length;
                             }
+                            var keys=Object.keys(vm.xmldata);
+                            var index=keys.indexOf('component');
+                            if(index !== - 1) {
+                                keys.splice(index,1);
+                            }
+                            index=keys.indexOf('image');
+                            if(index !== -1) {
+                                keys.splice(index,1);
+                            }
+                            vm.keys=keys;
                         }
 
                     }
@@ -58,32 +71,72 @@ angular.module('viewCustom')
 
         };
 
+        // get json key
+        vm.getKeys=function (obj) {
+            var keys=Object.keys(obj);
+            var index=keys.indexOf('image');
+            if(index !== -1) {
+                // remove image from the list
+                keys.splice(index,1);
+            }
+            return keys;
+        };
+
+        vm.getValue=function(val){
+            return sv.getValue(val);
+        };
+
+        vm.getComponentValue=function(key){
+           if(vm.componentData && key) {
+               var data=vm.componentData[key];
+               if(Array.isArray(data)) {
+                   data=data[0];
+               }
+               return sv.getValue(data);
+           }
+        };
+
 
         vm.displayPhoto=function () {
             vm.isLoggedIn=sv.getLogInID();
-            if (vm.xmldata.surrogate && !vm.xmldata.image) {
-                if(vm.xmldata.surrogate[vm.index].image) {
-                    vm.photo = vm.xmldata.surrogate[vm.index].image[0];
-                    // find out if the image is jp2 or not
-                    vm.jp2=sv.findJP2(vm.photo);
-
-                } else {
-                    vm.photo = vm.xmldata.surrogate[vm.index];
-                    vm.jp2=sv.findJP2(vm.photo);
-                }
-                if(vm.xmldata.surrogate[vm.index].title) {
-                    vm.imageTitle = vm.xmldata.surrogate[vm.index].title[0].textElement[0]._text;
-                }
-            } else if(vm.xmldata.image) {
-                vm.photo=vm.xmldata.image[vm.index];
+            if (vm.xmldata.component && !vm.xmldata.image) {
+                vm.componentData = vm.xmldata.component[vm.index];
+                vm.photo = vm.componentData.image[0];
+                // find out if the image is jp2 or not
                 vm.jp2=sv.findJP2(vm.photo);
-            } else {
-                vm.photo=vm.xmldata[vm.index];
+            } else if(vm.xmldata.image) {
+                vm.photo=vm.xmldata.image[0];
+                vm.jp2=sv.findJP2(vm.photo);
+                vm.componentData=vm.xmldata.image[0];
             }
 
             if(vm.photo._attr && vm.photo._attr.restrictedImage) {
                 if(vm.photo._attr.restrictedImage._value && vm.isLoggedIn===false) {
                     vm.imageNav=false;
+                }
+            }
+
+            if(vm.componentData) {
+                // remove image from key list
+                vm.componentKey=Object.keys(vm.componentData);
+                var index=vm.componentKey.indexOf('image');
+                if(index !== -1) {
+                    // remove image from the list
+                    vm.componentKey.splice(index,1);
+                }
+
+                // remove key that does not have value
+                for(var i=0; i < vm.componentKey.length; i++) {
+                    var key=vm.componentKey[i];
+                    var data=vm.componentData[key];
+                    if(Array.isArray(data)) {
+                        data=data[0];
+                    }
+                    var value=sv.getValue(data);
+                    if(!value) {
+                        vm.componentKey.splice(i,1);
+                    }
+
                 }
             }
 
@@ -119,6 +172,7 @@ angular.module('viewCustom')
                     // remove pin and bookmark
                     if(topbar.children.length > 2) {
                         topbar.children[1].remove();
+                        topbar.children[2].remove();
                     }
 
                 }
@@ -150,14 +204,6 @@ angular.module('viewCustom')
             }
         };
 
-        // check if the item is array or not
-        vm.isArray=function (obj) {
-            if(Array.isArray(obj)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
 
     }]);
 

@@ -27,9 +27,6 @@ angular.module('viewCustom')
            vm.searchData.sortby=vm.params.sortby;
            vm.pageInfo=sv.getPage();
 
-           console.log('**** mis1Data ****');
-           console.log(Array.isArray(vm.item.mis1Data));
-
            if(vm.item.mis1Data) {
                if(Array.isArray(vm.item.mis1Data)===false) {
                    if (vm.item.mis1Data.image) {
@@ -48,7 +45,6 @@ angular.module('viewCustom')
         vm.viewAllComponentMetaData=function () {
             var url='/primo-explore/viewallcomponentmetadata/'+vm.item.context+'/'+vm.item.pnx.control.recordid[0]+'?vid='+vm.params.vid;
             url+='&tab='+vm.params.tab+'&search_scope='+vm.params.search_scope;
-            url+='&lang='+vm.params.lang;
             url+='&adaptor='+vm.item.adaptor;
             $window.open(url,'_blank');
 

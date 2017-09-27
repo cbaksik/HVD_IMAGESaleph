@@ -4,7 +4,7 @@
  */
 
 angular.module('viewCustom')
-    .service('prmSearchService',['$http','$window','$filter',function ($http, $window, $filter) {
+    .service('prmSearchService',['$http','$window','$filter','$sce',function ($http, $window, $filter,$sce) {
     let serviceObj={};
 
     serviceObj.getBrowserType=function () {
@@ -244,23 +244,14 @@ angular.module('viewCustom')
         var listArray=[];
         if(str) {
             xmldata = serviceObj.parseXml(str);
-
-            console.log('*** xmldata ****');
-            console.log(xmldata);
             if(xmldata.work) {
                 for(var k=0; k < xmldata.work.length; k++) {
                    var subLevel=xmldata.work[k];
-                    var keys = Object.keys(subLevel);
-                    console.log('*** keys ***');
-                    console.log(keys);
-
                      if(subLevel.component) {
                          listArray=subLevel.component;
                      } else if(subLevel.image) {
                          listArray=subLevel;
                      }
-
-
                 }
 
             } else {
@@ -269,10 +260,113 @@ angular.module('viewCustom')
 
         }
 
-        console.log('**** listArray ***');
-        console.log(listArray);
         return listArray;
     };
+
+    // get json value base on dynamic key
+     serviceObj.getValue=function (obj) {
+         var text='';
+         if(typeof(obj)==='object') {
+             var keys = Object.keys(obj);
+             for(var k=0; k < keys.length; k++) {
+                 var nodeKey=keys[k];
+                 if(nodeKey) {
+                     var nodeValue=obj[nodeKey];
+                     if(typeof(nodeValue)==='object') {
+                         if(Array.isArray(nodeValue)) {
+                             for(var i=0; i < nodeValue.length; i++) {
+                                 var data=nodeValue[i];
+                                 if(typeof(data)==='object') {
+                                     if(Array.isArray(data)) {
+                                         for(var j=0; j < data.length; j++) {
+                                             var data2=data[j];
+                                             if(typeof(data2)==='object'){
+                                                 if(Array.isArray(data2)) {
+                                                     for(var c=0; c < data2.length; c++) {
+                                                         var data3=data2[c];
+                                                         if(typeof(data3)==='object') {
+                                                             if(Array.isArray(data3)) {
+                                                                 for(var w=0; w < data3.length; w++) {
+                                                                     var data4=data3[w];
+                                                                     if(typeof(data4)==='object') {
+                                                                         text+=data4[0] + '&nbsp;';
+                                                                     } else {
+                                                                         text+=data4 + '&nbsp;';
+                                                                     }
+                                                                 }
+                                                             }
+                                                         } else {
+                                                             text+=data3+'&nbsp;';
+                                                         }
+                                                     }
+                                                 }
+                                             } else {
+                                                 text+=data2 + '&nbsp;';
+                                             }
+                                         }
+                                     } else  {
+                                         var subNodeKeys=Object.keys(data);
+                                         if(Array.isArray(subNodeKeys)) {
+                                             for(var b=0; b < subNodeKeys.length; b++) {
+                                                 var key2=subNodeKeys[b];
+                                                 if(typeof(key2)==='object') {
+                                                     if(Array.isArray(key2)) {
+                                                         for(var c=0; c < key2.length; c++){
+                                                             var key3=key2[c];
+                                                             if(typeof(key3)==='object') {
+                                                                 if(Array.isArray(key3)) {
+                                                                     for(var x=0; x < key3.length; x++) {
+                                                                         var key4=key3[x];
+                                                                         if(typeof(key4)==='object') {
+                                                                             text+=data[key4][0] + '&nbsp;';
+                                                                         } else {
+                                                                             text+=data[key4] + '&nbsp;';
+                                                                         }
+                                                                     }
+                                                                 }
+                                                             } else {
+                                                                 text+=data[key3];
+                                                             }
+                                                         }
+                                                     }
+                                                 } else if(key2) {
+                                                     text+=data[key2] + '&nbsp;';
+                                                 }
+                                             }
+                                         } else {
+                                             text+=data[subNodeKeys] + '&nbsp;';
+                                         }
+                                     }
+                                 } else {
+                                     text+=data;
+                                 }
+                             }
+                         } else if(nodeKey) {
+                             var nodeKey2=Object.keys(nodeValue);
+                             if(typeof(nodeKey2)==='object') {
+                                 if(Array.isArray(nodeKey2)) {
+                                     for(var c=0; c < nodeKey2.length; c++) {
+                                         var nodeKey3=nodeKey2[c];
+                                         if(nodeKey3) {
+                                             text+=nodeValue[nodeKey3] + '&nbsp;';
+                                         }
+                                     }
+                                 }
+                             } else if(nodeKey2) {
+                                 text+=nodeValue[nodeKey2] + '&nbsp;';
+                             }
+                         }
+                     } else {
+                         text+=nodeValue + '&nbsp;';
+                     }
+                 }
+             }
+         } else {
+             text=obj;
+         }
+
+         return text;
+     };
 
     return serviceObj;
 
