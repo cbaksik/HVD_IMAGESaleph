@@ -42,19 +42,13 @@ angular.module('viewCustom')
                       var result = sv.parseXml(vm.items.pnx.addata.mis1[0]);
                       if(result.work) {
                           vm.xmldata = result.work[0];
-                          var keys=Object.keys(vm.xmldata);
-                          var index=keys.indexOf('component');
-                          if(index !== - 1) {
-                              keys.splice(index,1);
-                          }
-                          index=keys.indexOf('image');
-                          if(index !== -1) {
-                              keys.splice(index,1);
-                          }
-                          vm.keys=keys;
+                          vm.keys=Object.keys(vm.items.pnx.display);
                       }
 
                   }
+
+                  console.log('**** custom-view-all-component-metadata ***');
+                  console.log(vm.items.pnx.display);
 
               },function (err) {
                   console.log(err);
@@ -70,12 +64,21 @@ angular.module('viewCustom')
                 // remove image from the list
                 keys.splice(index,1);
             }
+
             return keys;
         };
 
         // get json value base on dynamic key
-        vm.getValue=function (obj) {
-            return sv.getValue(obj);
+        vm.getValue=function (obj,key) {
+            return sv.getValue(obj,key);
+        };
+
+        vm.isArray=function (obj) {
+          if(Array.isArray(obj)) {
+              return true;
+          } else {
+              return false;
+          }
         };
 
         // show the pop up image
@@ -117,8 +120,6 @@ angular.module('viewCustom')
             vm.getData();
 
         };
-
-
 
     }]);
 

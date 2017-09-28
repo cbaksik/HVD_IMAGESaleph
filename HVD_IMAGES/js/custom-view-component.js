@@ -46,19 +46,14 @@ angular.module('viewCustom')
                             if(vm.xmldata.component) {
                                 vm.total=vm.xmldata.component.length;
                             }
-                            var keys=Object.keys(vm.xmldata);
-                            var index=keys.indexOf('component');
-                            if(index !== - 1) {
-                                keys.splice(index,1);
-                            }
-                            index=keys.indexOf('image');
-                            if(index !== -1) {
-                                keys.splice(index,1);
-                            }
-                            vm.keys=keys;
+                            vm.keys=Object.keys(vm.item.pnx.display);
+
                         }
 
                     }
+
+                    console.log('*** custom-view-component ***');
+                    console.log(vm);
 
                     // display photo
                     vm.displayPhoto();
@@ -82,16 +77,13 @@ angular.module('viewCustom')
             return keys;
         };
 
-        vm.getValue=function(val){
-            return sv.getValue(val);
+        vm.getValue=function(val,key){
+            return sv.getValue(val,key);
         };
 
         vm.getComponentValue=function(key){
            if(vm.componentData && key) {
                var data=vm.componentData[key];
-               if(Array.isArray(data)) {
-                   data=data[0];
-               }
                return sv.getValue(data);
            }
         };
@@ -139,8 +131,6 @@ angular.module('viewCustom')
 
                 }
             }
-
-
         };
 
         vm.$onInit=function() {
@@ -215,3 +205,14 @@ angular.module('viewCustom')
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/custom-view-component.html'
     });
 
+
+
+// truncate word to limit 60 characters
+angular.module('viewCustom').filter('mapXmlFilter',['customMapXmlKeys',function (customMapXmlKeys) {
+    var cMap=customMapXmlKeys;
+    return function (key) {
+
+        return cMap.mapKey(key);
+    }
+
+}]);

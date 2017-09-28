@@ -9,12 +9,13 @@ angular.module('viewCustom')
             parentCtrl:'<',
         },
         controllerAs:'vm',
-        controller:['$sce',function($sce) {
+        controller:[function() {
             var vm=this;
 
             vm.topRightMenus=[{'title':'HOLLIS +','url':'http://nrs.harvard.edu/urn-3:hul.ois:bannerhollis+','label':'Go to Hollis plus'},
                 {'title':'Libraries / Hours','url':'http://nrs.harvard.edu/urn-3:hul.ois:bannerfindlib','label':'Go to Library hours'},
-                {'title':'All My Accounts','url':'http://nrs.harvard.edu/urn-3:hul.ois:banneraccounts','label':'Go to all my accounts'}
+                {'title':'All My Accounts','url':'http://nrs.harvard.edu/urn-3:hul.ois:banneraccounts','label':'Go to all my accounts'},
+                {'title':'Feedback','url':'http://nrs.harvard.edu/urn-3:HUL.ois:hollisImages','label':'Go to Feedback'}
             ];
 
         }]

@@ -26,29 +26,16 @@
        <br/>
 
 
-       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="key in vm.keys track by $index" ng-if="vm.xmldata[key]">
+       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="key in vm.keys track by $index" ng-if="vm.item.pnx.display[key]">
            <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
-               <label class="bold-text">{{key|uppercase}}</label>
+               <label class="bold-text">{{key|mapXmlFilter}}</label>
            </div>
            <div flex class="flex">
-               <span ng-repeat="val in vm.xmldata[key] track by $index">
-                  <span ng-bind-html="vm.getValue(val)"></span>
+               <span ng-repeat="val in vm.item.pnx.display[key] track by $index">
+                  <span ng-bind-html="vm.getValue(val,key)"></span>
                </span>
            </div>
        </div>
-
-
-       <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-if="vm.item.pnx.control.sourcerecordid">
-           <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
-               <label class="bold-text">HOLLIS Number</label>
-           </div>
-           <div flex class="flex">
-               <span ng-repeat="sourcerecordid in vm.item.pnx.control.sourcerecordid track by $index">
-                   {{sourcerecordid}}&nbsp;
-               </span>
-           </div>
-       </div>
-
 
        <!--- end display title and info from xml format -->
         <hr/>
@@ -58,7 +45,7 @@
        <div  ng-if="vm.componentData">
            <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="key in vm.componentKey track by $index">
                <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex">
-                   <label class="bold-text">{{key|uppercase}}</label>&nbsp;
+                   <label class="bold-text">{{key|mapXmlFilter}}</label>&nbsp;
                </div>
                <div flex flex-gt-sm="80" flex-gt-xs="75" class=" flex-gt-xs-75 flex-gt-sm-80 flex">
                    <span ng-bind-html="vm.getComponentValue(key)"></span>

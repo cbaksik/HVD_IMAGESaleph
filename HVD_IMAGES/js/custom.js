@@ -396,6 +396,38 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['item
 }]);
 
 /**
+ * Created by samsan on 9/28/17.
+ */
+
+angular.module('viewCustom').service('customMapXmlKeys', [function () {
+    var serviceObj = {};
+
+    serviceObj.keys = [{ '_attr': 'Component ID' }, { '_text': 'TEXT' }, { 'associatedName': 'Associated name' }, { 'freeDate': 'Free date' }, { 'lds01': 'HOLLIS Number' }, { 'lds04': 'Variant title' }, { 'lds07': 'Publication info' }, { 'lds08': 'Permalink' }, { 'lds13': 'Notes' }, { 'lds22': 'Style / Period' }, { 'lds23': 'Culture' }, { 'lds24': 'Related Work' }, { 'lds25': 'Related Information' }, { 'lds26': 'Repository' }, { 'lds27': 'Use Restrictions' }, { 'lds30': 'Form / Genre' }, { 'lds31': 'Place' }, { 'lds44': 'Associated Name' }, { 'creationdate': 'Creation Date' }, { 'creator': 'Author / Creator' }, { 'format': 'Description' }, { 'rights': 'Copyright' }];
+
+    serviceObj.mapKey = function (key) {
+        var myKey = key;
+        var pattern = /^(HVD_)/i;
+        if (pattern.test(key)) {
+            var listKey = key.split('_');
+            if (listKey.length > 0) {
+                myKey = listKey[1];
+            }
+        } else {
+            for (var i = 0; i < serviceObj.keys.length; i++) {
+                var obj = serviceObj.keys[i];
+                if (Object.keys(obj)[0] === key) {
+                    myKey = serviceObj.keys[i][key];
+                }
+            }
+        }
+
+        return myKey.charAt(0).toUpperCase() + myKey.slice(1);;
+    };
+
+    return serviceObj;
+}]);
+
+/**
  * Created by samsan on 9/5/17.
  */
 
@@ -799,10 +831,10 @@ angular.module('viewCustom').component('customTopMenu', {
         parentCtrl: '<'
     },
     controllerAs: 'vm',
-    controller: ['$sce', function ($sce) {
+    controller: [function () {
         var vm = this;
 
-        vm.topRightMenus = [{ 'title': 'HOLLIS +', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:bannerhollis+', 'label': 'Go to Hollis plus' }, { 'title': 'Libraries / Hours', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:bannerfindlib', 'label': 'Go to Library hours' }, { 'title': 'All My Accounts', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:banneraccounts', 'label': 'Go to all my accounts' }];
+        vm.topRightMenus = [{ 'title': 'HOLLIS +', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:bannerhollis+', 'label': 'Go to Hollis plus' }, { 'title': 'Libraries / Hours', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:bannerfindlib', 'label': 'Go to Library hours' }, { 'title': 'All My Accounts', 'url': 'http://nrs.harvard.edu/urn-3:hul.ois:banneraccounts', 'label': 'Go to all my accounts' }, { 'title': 'Feedback', 'url': 'http://nrs.harvard.edu/urn-3:HUL.ois:hollisImages', 'label': 'Go to Feedback' }];
     }]
 });
 
@@ -848,18 +880,12 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
                 var result = sv.parseXml(vm.items.pnx.addata.mis1[0]);
                 if (result.work) {
                     vm.xmldata = result.work[0];
-                    var keys = Object.keys(vm.xmldata);
-                    var index = keys.indexOf('component');
-                    if (index !== -1) {
-                        keys.splice(index, 1);
-                    }
-                    index = keys.indexOf('image');
-                    if (index !== -1) {
-                        keys.splice(index, 1);
-                    }
-                    vm.keys = keys;
+                    vm.keys = Object.keys(vm.items.pnx.display);
                 }
             }
+
+            console.log('**** custom-view-all-component-metadata ***');
+            console.log(vm.items.pnx.display);
         }, function (err) {
             console.log(err);
         });
@@ -873,12 +899,21 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
             // remove image from the list
             keys.splice(index, 1);
         }
+
         return keys;
     };
 
     // get json value base on dynamic key
-    vm.getValue = function (obj) {
-        return sv.getValue(obj);
+    vm.getValue = function (obj, key) {
+        return sv.getValue(obj, key);
+    };
+
+    vm.isArray = function (obj) {
+        if (Array.isArray(obj)) {
+            return true;
+        } else {
+            return false;
+        }
     };
 
     // show the pop up image
@@ -972,18 +1007,12 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
                     if (vm.xmldata.component) {
                         vm.total = vm.xmldata.component.length;
                     }
-                    var keys = Object.keys(vm.xmldata);
-                    var index = keys.indexOf('component');
-                    if (index !== -1) {
-                        keys.splice(index, 1);
-                    }
-                    index = keys.indexOf('image');
-                    if (index !== -1) {
-                        keys.splice(index, 1);
-                    }
-                    vm.keys = keys;
+                    vm.keys = Object.keys(vm.item.pnx.display);
                 }
             }
+
+            console.log('*** custom-view-component ***');
+            console.log(vm);
 
             // display photo
             vm.displayPhoto();
@@ -1003,16 +1032,13 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         return keys;
     };
 
-    vm.getValue = function (val) {
-        return sv.getValue(val);
+    vm.getValue = function (val, key) {
+        return sv.getValue(val, key);
     };
 
     vm.getComponentValue = function (key) {
         if (vm.componentData && key) {
             var data = vm.componentData[key];
-            if (Array.isArray(data)) {
-                data = data[0];
-            }
             return sv.getValue(data);
         }
     };
@@ -1123,6 +1149,14 @@ angular.module('viewCustom').component('customViewComponent', {
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/custom-view-component.html'
 });
 
+// truncate word to limit 60 characters
+angular.module('viewCustom').filter('mapXmlFilter', ['customMapXmlKeys', function (customMapXmlKeys) {
+    var cMap = customMapXmlKeys;
+    return function (key) {
+
+        return cMap.mapKey(key);
+    };
+}]);
 /**
  * Created by samsan on 6/5/17.
  * A modal dialog pop up the image when a user click on thumbnail image in view full detail page
@@ -2438,10 +2472,21 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
     };
 
     // get json value base on dynamic key
-    serviceObj.getValue = function (obj) {
+    serviceObj.getValue = function (obj, key) {
         var text = '';
         if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object') {
+            if (Array.isArray(obj)) {
+                obj = obj[0];
+            }
             var keys = Object.keys(obj);
+            // remove altComponentID
+            if (key === '_attr') {
+                var index = keys.indexOf('altComponentID');
+                if (index !== -1) {
+                    keys.splice(index, 1);
+                }
+            }
+
             for (var k = 0; k < keys.length; k++) {
                 var nodeKey = keys[k];
                 if (nodeKey) {
@@ -2956,7 +3001,6 @@ angular.module('viewCustom').component('thumbnail', {
             itemData.item = vm.dataitem;
             itemData.searchData = vm.searchdata;
             sv.setItem(itemData);
-
             // modal dialog pop up here
             $mdDialog.show({
                 title: 'Full View Details',
@@ -2981,6 +3025,7 @@ angular.module('viewCustom').component('thumbnail', {
                     sv.setDialogFlag(false);
                 }
             });
+
             return false;
         };
 

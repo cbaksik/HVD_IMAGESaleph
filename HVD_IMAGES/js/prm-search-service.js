@@ -264,10 +264,21 @@ angular.module('viewCustom')
     };
 
     // get json value base on dynamic key
-     serviceObj.getValue=function (obj) {
+     serviceObj.getValue=function (obj,key) {
          var text='';
          if(typeof(obj)==='object') {
+             if(Array.isArray(obj)) {
+                 obj=obj[0];
+             }
              var keys = Object.keys(obj);
+             // remove altComponentID
+             if(key==='_attr') {
+                 var index=keys.indexOf('altComponentID');
+                 if(index !== -1) {
+                     keys.splice(index,1);
+                 }
+             }
+
              for(var k=0; k < keys.length; k++) {
                  var nodeKey=keys[k];
                  if(nodeKey) {

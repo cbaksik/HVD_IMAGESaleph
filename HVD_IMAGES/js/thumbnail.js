@@ -61,8 +61,7 @@ angular.module('viewCustom')
                 } else if(vm.params) {
                     vid=vm.params.vid;
                 }
-
-
+                
                 vm.linkUrl='/primo-explore/fulldisplay?vid='+vid+'&docid='+vm.dataitem.pnx.control.recordid[0]+'&sortby='+sort;
                 vm.linkUrl+='&q='+q+'&searchString='+searchString+'&offset='+offset;
                 vm.linkUrl+='&tab='+tab+'&search_scope='+scope;
@@ -127,7 +126,6 @@ angular.module('viewCustom')
             };
             
 
-
             vm.openWindow=function () {
                 var url='/primo-explore/fulldisplay?vid=HVD_IMAGES&docid='+vm.dataitem.pnx.control.recordid[0];
                 $window.open(url,'_blank');
@@ -140,7 +138,6 @@ angular.module('viewCustom')
                 itemData.item=vm.dataitem;
                 itemData.searchData=vm.searchdata;
                 sv.setItem(itemData);
-
                 // modal dialog pop up here
                 $mdDialog.show({
                     title:'Full View Details',
@@ -165,6 +162,7 @@ angular.module('viewCustom')
                         sv.setDialogFlag(false);
                     }
                 });
+
                 return false;
             };
 
