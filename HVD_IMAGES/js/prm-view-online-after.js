@@ -38,7 +38,7 @@ angular.module('viewCustom')
                    vm.zoomButtonFlag=true;
                }
            }
-            
+
         };
 
         // view all component metadata

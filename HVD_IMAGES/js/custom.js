@@ -403,23 +403,16 @@ angular.module('viewCustom').service('customMapXmlKeys', [function () {
     var serviceObj = {};
 
     // filter the xml key node
-    serviceObj.keys = [{ '_attr': 'Component ID' }, { '_text': 'TEXT' }, { 'associatedName': 'Associated Name' }, { 'freeDate': 'Free Date' }, { 'lds01': 'HOLLIS Number' }, { 'lds04': 'Variant Title' }, { 'lds07': 'Publication Info' }, { 'lds08': 'Permalink' }, { 'lds13': 'Notes' }, { 'lds22': 'Style / Period' }, { 'lds23': 'Culture' }, { 'lds24': 'Related Work' }, { 'lds25': 'Related Information' }, { 'lds26': 'Repository' }, { 'lds27': 'Use Restrictions' }, { 'lds30': 'Form / Genre' }, { 'lds31': 'Place' }, { 'lds44': 'Associated Name' }, { 'creationdate': 'Creation Date' }, { 'creator': 'Author / Creator' }, { 'format': 'Description' }, { 'rights': 'Copyright' }, { 'relatedWork': 'Related Work' }, { 'structuredDate': 'Structured Date' }, { 'workType': 'Work Type' }, { 'useRestrictions': 'Use Restrictions' }];
+    serviceObj.keys = [{ '_attr': 'Component ID' }, { '_text': 'TEXT' }, { 'associatedName': 'Associated Name' }, { 'freeDate': 'Date' }, { 'lds01': 'HOLLIS Number' }, { 'lds04': 'Variant Title' }, { 'lds07': 'Publication Info' }, { 'lds08': 'Permalink' }, { 'lds13': 'Notes' }, { 'lds22': 'Style / Period' }, { 'lds23': 'Culture' }, { 'lds24': 'Related Work' }, { 'lds25': 'Related Information' }, { 'lds26': 'Repository' }, { 'lds27': 'Use Restrictions' }, { 'lds30': 'Form / Genre' }, { 'lds31': 'Place' }, { 'lds44': 'Associated Name' }, { 'creationdate': 'Creation Date' }, { 'creator': 'Author / Creator' }, { 'format': 'Description' }, { 'rights': 'Copyright' }, { 'relatedWork': 'Related Work' }, { 'workType': 'Work Type' }, { 'useRestrictions': 'Use Restrictions' }, { 'hvd_title': 'Component Title' }, { 'hvd_itemIdentifier': 'Harvard Identifier' }, { 'hvd_classification': 'Havard Classification' }, { 'hvd_workType': 'Component Form' }, { 'hvd_creator': 'Component Creator' }, { 'hvd_production': 'Component Pub Info' }, { 'hvd_freeDate': 'Component Date' }, { 'hvd_copyright': 'Harvard Copyright' }, { 'hvd_useRestrictions': 'Harvard Use Restrictions' }, { 'hvd_repository': 'Harvard Repository' }, { 'hvd_dimensions': 'Component Dimensions' }, { 'hvd_topic': 'Harvard Topic' }, { 'hvd_notes': 'Harvard Notes' }, { 'hvd_materials': 'Component Materials' }, { 'hvd_associatedName': 'Harvard Associated Name' }];
 
     // remove hvd_ from the key
     serviceObj.mapKey = function (key) {
         var myKey = key;
-        var pattern = /^(HVD_)/i;
-        if (pattern.test(key)) {
-            var listKey = key.split('_');
-            if (listKey.length > 0) {
-                myKey = listKey[1];
-            }
-        } else {
-            for (var i = 0; i < serviceObj.keys.length; i++) {
-                var obj = serviceObj.keys[i];
-                if (Object.keys(obj)[0] === key) {
-                    myKey = serviceObj.keys[i][key];
-                }
+
+        for (var i = 0; i < serviceObj.keys.length; i++) {
+            var obj = serviceObj.keys[i];
+            if (Object.keys(obj)[0] === key) {
+                myKey = serviceObj.keys[i][key];
             }
         }
 
@@ -427,7 +420,7 @@ angular.module('viewCustom').service('customMapXmlKeys', [function () {
     };
 
     // do not show these items
-    serviceObj.removeList = ['lds03', 'lds20', 'lds37'];
+    serviceObj.removeList = ['lds03', 'lds20', 'lds37', 'structuredDate', 'image'];
     serviceObj.getRemoveList = function () {
         return serviceObj.removeList;
     };
@@ -910,10 +903,14 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
     // get json key
     vm.getKeys = function (obj) {
         var keys = Object.keys(obj);
-        var index = keys.indexOf('image');
-        if (index !== -1) {
-            // remove image from the list
-            keys.splice(index, 1);
+        var removeList = cMap.getRemoveList();
+        for (var i = 0; i < removeList.length; i++) {
+            var key = removeList[i];
+            var index = keys.indexOf(key);
+            if (index !== -1) {
+                // remove image from the list
+                keys.splice(index, 1);
+            }
         }
 
         return keys;
@@ -1093,10 +1090,14 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         if (vm.componentData) {
             // remove image from key list
             vm.componentKey = Object.keys(vm.componentData);
-            var index = vm.componentKey.indexOf('image');
-            if (index !== -1) {
-                // remove image from the list
-                vm.componentKey.splice(index, 1);
+            // remove unwanted key
+            var removeList = cMap.getRemoveList();
+            for (var k = 0; k < removeList.length; k++) {
+                var key = removeList[k];
+                var index = vm.componentKey.indexOf(key);
+                if (index !== -1) {
+                    vm.componentKey.splice(index, 1);
+                }
             }
 
             // remove key that does not have value

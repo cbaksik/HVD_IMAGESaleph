@@ -67,10 +67,14 @@ angular.module('viewCustom')
         // get json key
         vm.getKeys=function (obj) {
             var keys=Object.keys(obj);
-            var index=keys.indexOf('image');
-            if(index !== -1) {
-                // remove image from the list
-                keys.splice(index,1);
+            var removeList = cMap.getRemoveList();
+            for(var i=0; i < removeList.length; i++) {
+                var key=removeList[i];
+                var index = keys.indexOf(key);
+                if (index !== -1) {
+                    // remove image from the list
+                    keys.splice(index, 1);
+                }
             }
 
             return keys;
@@ -123,7 +127,6 @@ angular.module('viewCustom')
 
                 }
             },1000);
-
 
             vm.getData();
 

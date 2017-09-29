@@ -122,10 +122,14 @@ angular.module('viewCustom')
             if(vm.componentData) {
                 // remove image from key list
                 vm.componentKey=Object.keys(vm.componentData);
-                var index=vm.componentKey.indexOf('image');
-                if(index !== -1) {
-                    // remove image from the list
-                    vm.componentKey.splice(index,1);
+                // remove unwanted key
+                var removeList = cMap.getRemoveList();
+                for(var k=0; k < removeList.length; k++) {
+                    var key = removeList[k];
+                    var index = vm.componentKey.indexOf(key);
+                    if (index !== -1) {
+                        vm.componentKey.splice(index, 1);
+                    }
                 }
 
                 // remove key that does not have value
@@ -213,8 +217,6 @@ angular.module('viewCustom')
         controllerAs:'vm',
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/custom-view-component.html'
     });
-
-
 
 // truncate word to limit 60 characters
 angular.module('viewCustom').filter('mapXmlFilter',['customMapXmlKeys',function (customMapXmlKeys) {
