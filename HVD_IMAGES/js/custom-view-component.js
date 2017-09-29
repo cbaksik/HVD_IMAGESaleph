@@ -4,10 +4,11 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element','$timeout', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element, $timeout) {
+    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element','$timeout','customMapXmlKeys', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element, $timeout, customMapXmlKeys) {
 
         let vm = this;
         var sv=prmSearchService;
+        var cMap=customMapXmlKeys;
         // get location parameter
         vm.params=$location.search();
         // get parameter from angular ui-router
@@ -46,14 +47,22 @@ angular.module('viewCustom')
                             if(vm.xmldata.component) {
                                 vm.total=vm.xmldata.component.length;
                             }
-                            vm.keys=Object.keys(vm.item.pnx.display);
+                            if(vm.item.pnx.display) {
+                                vm.keys = Object.keys(vm.item.pnx.display);
+                                // remove unwanted key
+                                var removeList = cMap.getRemoveList();
+                                for (var i = 0; i < removeList.length; i++) {
+                                    var key = removeList[i];
+                                    var index = vm.keys.indexOf(key);
+                                    if (index !== -1) {
+                                        vm.keys.splice(index, 1);
+                                    }
+                                }
+                            }
 
                         }
 
                     }
-
-                    console.log('*** custom-view-component ***');
-                    console.log(vm);
 
                     // display photo
                     vm.displayPhoto();
@@ -66,7 +75,7 @@ angular.module('viewCustom')
 
         };
 
-        // get json key
+        // get json key and remove image from the key
         vm.getKeys=function (obj) {
             var keys=Object.keys(obj);
             var index=keys.indexOf('image');
@@ -77,18 +86,20 @@ angular.module('viewCustom')
             return keys;
         };
 
+        // get value base on json key
         vm.getValue=function(val,key){
             return sv.getValue(val,key);
         };
 
+        // display each component value key
         vm.getComponentValue=function(key){
            if(vm.componentData && key) {
                var data=vm.componentData[key];
-               return sv.getValue(data);
+               return sv.getValue(data,key);
            }
         };
 
-
+        // display each photo component
         vm.displayPhoto=function () {
             vm.isLoggedIn=sv.getLogInID();
             if (vm.xmldata.component && !vm.xmldata.image) {
@@ -134,7 +145,6 @@ angular.module('viewCustom')
         };
 
         vm.$onInit=function() {
-
             // if the smaller screen size, make the flex size to 100.
             if($mdMedia('sm')) {
                 vm.flexsize=100;
@@ -171,7 +181,6 @@ angular.module('viewCustom')
             },1000);
 
         };
-
 
         // next photo
         vm.nextPhoto=function () {
@@ -211,8 +220,8 @@ angular.module('viewCustom')
 angular.module('viewCustom').filter('mapXmlFilter',['customMapXmlKeys',function (customMapXmlKeys) {
     var cMap=customMapXmlKeys;
     return function (key) {
-
-        return cMap.mapKey(key);
+        var newKey=cMap.mapKey(key);
+        return newKey.charAt(0).toUpperCase() + newKey.slice(1);
     }
 
 }]);

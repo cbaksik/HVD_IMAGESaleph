@@ -402,8 +402,10 @@ angular.module('viewCustom').controller('customFullViewDialogController', ['item
 angular.module('viewCustom').service('customMapXmlKeys', [function () {
     var serviceObj = {};
 
-    serviceObj.keys = [{ '_attr': 'Component ID' }, { '_text': 'TEXT' }, { 'associatedName': 'Associated name' }, { 'freeDate': 'Free date' }, { 'lds01': 'HOLLIS Number' }, { 'lds04': 'Variant title' }, { 'lds07': 'Publication info' }, { 'lds08': 'Permalink' }, { 'lds13': 'Notes' }, { 'lds22': 'Style / Period' }, { 'lds23': 'Culture' }, { 'lds24': 'Related Work' }, { 'lds25': 'Related Information' }, { 'lds26': 'Repository' }, { 'lds27': 'Use Restrictions' }, { 'lds30': 'Form / Genre' }, { 'lds31': 'Place' }, { 'lds44': 'Associated Name' }, { 'creationdate': 'Creation Date' }, { 'creator': 'Author / Creator' }, { 'format': 'Description' }, { 'rights': 'Copyright' }];
+    // filter the xml key node
+    serviceObj.keys = [{ '_attr': 'Component ID' }, { '_text': 'TEXT' }, { 'associatedName': 'Associated Name' }, { 'freeDate': 'Free Date' }, { 'lds01': 'HOLLIS Number' }, { 'lds04': 'Variant Title' }, { 'lds07': 'Publication Info' }, { 'lds08': 'Permalink' }, { 'lds13': 'Notes' }, { 'lds22': 'Style / Period' }, { 'lds23': 'Culture' }, { 'lds24': 'Related Work' }, { 'lds25': 'Related Information' }, { 'lds26': 'Repository' }, { 'lds27': 'Use Restrictions' }, { 'lds30': 'Form / Genre' }, { 'lds31': 'Place' }, { 'lds44': 'Associated Name' }, { 'creationdate': 'Creation Date' }, { 'creator': 'Author / Creator' }, { 'format': 'Description' }, { 'rights': 'Copyright' }, { 'relatedWork': 'Related Work' }, { 'structuredDate': 'Structured Date' }, { 'workType': 'Work Type' }, { 'useRestrictions': 'Use Restrictions' }];
 
+    // remove hvd_ from the key
     serviceObj.mapKey = function (key) {
         var myKey = key;
         var pattern = /^(HVD_)/i;
@@ -421,7 +423,13 @@ angular.module('viewCustom').service('customMapXmlKeys', [function () {
             }
         }
 
-        return myKey.charAt(0).toUpperCase() + myKey.slice(1);;
+        return myKey;
+    };
+
+    // do not show these items
+    serviceObj.removeList = ['lds03', 'lds20', 'lds37'];
+    serviceObj.getRemoveList = function () {
+        return serviceObj.removeList;
     };
 
     return serviceObj;
@@ -842,10 +850,11 @@ angular.module('viewCustom').component('customTopMenu', {
  * Created by samsan on 7/17/17.
  */
 
-angular.module('viewCustom').controller('customViewAllComponentMetadataController', ['$sce', '$element', '$location', 'prmSearchService', '$window', '$stateParams', '$timeout', function ($sce, $element, $location, prmSearchService, $window, $stateParams, $timeout) {
+angular.module('viewCustom').controller('customViewAllComponentMetadataController', ['$sce', '$element', '$location', 'prmSearchService', '$window', '$stateParams', '$timeout', 'customMapXmlKeys', function ($sce, $element, $location, prmSearchService, $window, $stateParams, $timeout, customMapXmlKeys) {
 
     var vm = this;
     var sv = prmSearchService;
+    var cMap = customMapXmlKeys;
     vm.params = $location.search();
     // get ui-router parameters
     vm.context = $stateParams.context;
@@ -880,12 +889,19 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
                 var result = sv.parseXml(vm.items.pnx.addata.mis1[0]);
                 if (result.work) {
                     vm.xmldata = result.work[0];
-                    vm.keys = Object.keys(vm.items.pnx.display);
+                    if (vm.items.pnx.display) {
+                        vm.keys = Object.keys(vm.items.pnx.display);
+                        var removeKeys = cMap.getRemoveList();
+                        for (var i = 0; i < removeKeys.length; i++) {
+                            var key = removeKeys[i];
+                            var index = vm.keys.indexOf(key);
+                            if (index !== -1) {
+                                vm.keys.splice(index, 1);
+                            }
+                        }
+                    }
                 }
             }
-
-            console.log('**** custom-view-all-component-metadata ***');
-            console.log(vm.items.pnx.display);
         }, function (err) {
             console.log(err);
         });
@@ -966,10 +982,11 @@ angular.module('viewCustom').component('customViewAllComponentMetadata', {
  * This component is for a single image full display when a user click on thumbnail from a full display page
  */
 
-angular.module('viewCustom').controller('customViewComponentController', ['$sce', '$mdMedia', 'prmSearchService', '$location', '$stateParams', '$element', '$timeout', function ($sce, $mdMedia, prmSearchService, $location, $stateParams, $element, $timeout) {
+angular.module('viewCustom').controller('customViewComponentController', ['$sce', '$mdMedia', 'prmSearchService', '$location', '$stateParams', '$element', '$timeout', 'customMapXmlKeys', function ($sce, $mdMedia, prmSearchService, $location, $stateParams, $element, $timeout, customMapXmlKeys) {
 
     var vm = this;
     var sv = prmSearchService;
+    var cMap = customMapXmlKeys;
     // get location parameter
     vm.params = $location.search();
     // get parameter from angular ui-router
@@ -1007,12 +1024,20 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
                     if (vm.xmldata.component) {
                         vm.total = vm.xmldata.component.length;
                     }
-                    vm.keys = Object.keys(vm.item.pnx.display);
+                    if (vm.item.pnx.display) {
+                        vm.keys = Object.keys(vm.item.pnx.display);
+                        // remove unwanted key
+                        var removeList = cMap.getRemoveList();
+                        for (var i = 0; i < removeList.length; i++) {
+                            var key = removeList[i];
+                            var index = vm.keys.indexOf(key);
+                            if (index !== -1) {
+                                vm.keys.splice(index, 1);
+                            }
+                        }
+                    }
                 }
             }
-
-            console.log('*** custom-view-component ***');
-            console.log(vm);
 
             // display photo
             vm.displayPhoto();
@@ -1021,7 +1046,7 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         });
     };
 
-    // get json key
+    // get json key and remove image from the key
     vm.getKeys = function (obj) {
         var keys = Object.keys(obj);
         var index = keys.indexOf('image');
@@ -1032,17 +1057,20 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         return keys;
     };
 
+    // get value base on json key
     vm.getValue = function (val, key) {
         return sv.getValue(val, key);
     };
 
+    // display each component value key
     vm.getComponentValue = function (key) {
         if (vm.componentData && key) {
             var data = vm.componentData[key];
-            return sv.getValue(data);
+            return sv.getValue(data, key);
         }
     };
 
+    // display each photo component
     vm.displayPhoto = function () {
         vm.isLoggedIn = sv.getLogInID();
         if (vm.xmldata.component && !vm.xmldata.image) {
@@ -1087,7 +1115,6 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     };
 
     vm.$onInit = function () {
-
         // if the smaller screen size, make the flex size to 100.
         if ($mdMedia('sm')) {
             vm.flexsize = 100;
@@ -1153,8 +1180,8 @@ angular.module('viewCustom').component('customViewComponent', {
 angular.module('viewCustom').filter('mapXmlFilter', ['customMapXmlKeys', function (customMapXmlKeys) {
     var cMap = customMapXmlKeys;
     return function (key) {
-
-        return cMap.mapKey(key);
+        var newKey = cMap.mapKey(key);
+        return newKey.charAt(0).toUpperCase() + newKey.slice(1);
     };
 }]);
 /**
@@ -2632,7 +2659,7 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     vm.viewAllComponetMetadataFlag = false;
     vm.singleImageFlag = false;
 
-    vm.$onChanges = function () {
+    vm.$onInit = function () {
         vm.isLoggedIn = sv.getLogInID();
         // get item data from service
         itemData = sv.getItem();

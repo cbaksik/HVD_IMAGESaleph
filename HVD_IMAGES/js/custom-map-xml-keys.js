@@ -6,13 +6,14 @@ angular.module('viewCustom')
     .service('customMapXmlKeys',[function () {
         var serviceObj={};
 
+        // filter the xml key node
         serviceObj.keys=[{'_attr':'Component ID'},
             {'_text':'TEXT'},
-            {'associatedName':'Associated name'},
-            {'freeDate':'Free date'},
+            {'associatedName':'Associated Name'},
+            {'freeDate':'Free Date'},
             {'lds01':'HOLLIS Number'},
-            {'lds04':'Variant title'},
-            {'lds07':'Publication info'},
+            {'lds04':'Variant Title'},
+            {'lds07':'Publication Info'},
             {'lds08':'Permalink'},
             {'lds13':'Notes'},
             {'lds22':'Style / Period'},
@@ -27,10 +28,14 @@ angular.module('viewCustom')
             {'creationdate':'Creation Date'},
             {'creator':'Author / Creator'},
             {'format':'Description'},
-            {'rights':'Copyright'}
+            {'rights':'Copyright'},
+            {'relatedWork':'Related Work'},
+            {'structuredDate':'Structured Date'},
+            {'workType':'Work Type'},
+            {'useRestrictions':'Use Restrictions'}
         ];
 
-
+        // remove hvd_ from the key
         serviceObj.mapKey=function (key) {
             var myKey=key;
             var pattern = /^(HVD_)/i;
@@ -48,7 +53,13 @@ angular.module('viewCustom')
                 }
             }
 
-            return myKey.charAt(0).toUpperCase() + myKey.slice(1);;
+            return myKey;
+        };
+
+        // do not show these items
+        serviceObj.removeList=['lds03','lds20','lds37'];
+        serviceObj.getRemoveList=function () {
+            return serviceObj.removeList;
         };
 
 

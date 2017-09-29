@@ -3,10 +3,11 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService','$window','$stateParams','$timeout', function ($sce, $element,$location, prmSearchService, $window, $stateParams, $timeout) {
+    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService','$window','$stateParams','$timeout','customMapXmlKeys', function ($sce, $element,$location, prmSearchService, $window, $stateParams, $timeout, customMapXmlKeys) {
 
         var vm = this;
         var sv=prmSearchService;
+        var cMap=customMapXmlKeys;
         vm.params=$location.search();
         // get ui-router parameters
         vm.context=$stateParams.context;
@@ -42,13 +43,20 @@ angular.module('viewCustom')
                       var result = sv.parseXml(vm.items.pnx.addata.mis1[0]);
                       if(result.work) {
                           vm.xmldata = result.work[0];
-                          vm.keys=Object.keys(vm.items.pnx.display);
+                          if(vm.items.pnx.display) {
+                              vm.keys = Object.keys(vm.items.pnx.display);
+                              var removeKeys = cMap.getRemoveList();
+                              for (var i = 0; i < removeKeys.length; i++) {
+                                  var key = removeKeys[i];
+                                  var index = vm.keys.indexOf(key);
+                                  if (index !== -1) {
+                                      vm.keys.splice(index, 1);
+                                  }
+                              }
+                          }
                       }
 
                   }
-
-                  console.log('**** custom-view-all-component-metadata ***');
-                  console.log(vm.items.pnx.display);
 
               },function (err) {
                   console.log(err);

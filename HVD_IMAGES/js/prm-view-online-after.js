@@ -15,7 +15,7 @@ angular.module('viewCustom')
         vm.viewAllComponetMetadataFlag=false;
         vm.singleImageFlag=false;
 
-        vm.$onChanges=function() {
+        vm.$onInit=function() {
             vm.isLoggedIn=sv.getLogInID();
            // get item data from service
            itemData=sv.getItem();
@@ -38,7 +38,7 @@ angular.module('viewCustom')
                    vm.zoomButtonFlag=true;
                }
            }
-
+            
         };
 
         // view all component metadata
