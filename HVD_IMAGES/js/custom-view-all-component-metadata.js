@@ -53,6 +53,7 @@ angular.module('viewCustom')
                                       vm.keys.splice(index, 1);
                                   }
                               }
+                              vm.keys=cMap.sort(vm.keys);
                           }
                       }
 
