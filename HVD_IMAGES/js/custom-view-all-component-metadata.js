@@ -77,8 +77,7 @@ angular.module('viewCustom')
                     keys.splice(index, 1);
                 }
             }
-
-            return keys;
+            return cMap.getOrderList(keys);
         };
 
         // get json value base on dynamic key

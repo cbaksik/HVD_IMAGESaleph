@@ -420,7 +420,7 @@ angular.module('viewCustom').service('customMapXmlKeys', [function () {
     };
 
     // do not show these items
-    serviceObj.removeList = ['lds03', 'lds08', 'lds20', 'lds37', 'structuredDate', 'image', 'source'];
+    serviceObj.removeList = ['lds03', 'lds08', 'lds20', 'lds37', 'structuredDate', 'image', 'source', 'altComponentID'];
     serviceObj.getRemoveList = function () {
         return serviceObj.removeList;
     };
@@ -435,6 +435,43 @@ angular.module('viewCustom').service('customMapXmlKeys', [function () {
             var index = listKey.indexOf(key);
             if (index !== -1) {
                 keys.push(key);
+            }
+        }
+
+        return keys;
+    };
+
+    // re-arrange sorting component order
+    serviceObj.orderList = ['_attr', 'title', 'creator', 'state', 'production', 'description', 'physicalDescription', 'materials', 'dimensions', 'notes', 'note', 'topic', 'placeName', 'location', 'culture', 'style', 'workType', 'classification', 'itemIdentifier', 'associatedName', 'relatedWork', 'relatedInformation', 'useRestrictions', 'copyright', 'freeDate', 'repository'];
+    serviceObj.getOrderList = function (listKey) {
+        var keys = [];
+        var hvdKeys = [];
+        var key = '';
+        var pattern = /^(hvd_)/i;
+        // find hvd key
+        for (var j = 0; j < listKey.length; j++) {
+            key = listKey[j];
+            if (pattern.test(key)) {
+                hvdKeys.push(key);
+            }
+        }
+
+        for (var i = 0; i < serviceObj.orderList.length; i++) {
+            key = serviceObj.orderList[i];
+            var index = listKey.indexOf(key);
+            if (index !== -1) {
+                keys.push(key);
+            }
+        }
+
+        if (hvdKeys.length > 0) {
+            for (var i = 0; i < serviceObj.orderList.length; i++) {
+                var keyMap = serviceObj.orderList[i];
+                key = 'hvd_' + keyMap;
+                var index = hvdKeys.indexOf(key);
+                if (index !== -1) {
+                    keys.push(key);
+                }
             }
         }
 
@@ -929,8 +966,7 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
                 keys.splice(index, 1);
             }
         }
-
-        return keys;
+        return cMap.getOrderList(keys);
     };
 
     // get json value base on dynamic key
@@ -1062,15 +1098,27 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         });
     };
 
+    vm.isArray = function (obj) {
+        if (Array.isArray(obj)) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     // get json key and remove image from the key
     vm.getKeys = function (obj) {
         var keys = Object.keys(obj);
-        var index = keys.indexOf('image');
-        if (index !== -1) {
-            // remove image from the list
-            keys.splice(index, 1);
+        var removeList = cMap.getRemoveList();
+        for (var i = 0; i < removeList.length; i++) {
+            var key = removeList[i];
+            var index = keys.indexOf(key);
+            if (index !== -1) {
+                // remove image from the list
+                keys.splice(index, 1);
+            }
         }
-        return keys;
+        return cMap.getOrderList(keys);
     };
 
     // get value base on json key
@@ -1080,10 +1128,12 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
 
     // display each component value key
     vm.getComponentValue = function (key) {
+        var text = '';
         if (vm.componentData && key) {
             var data = vm.componentData[key];
-            return sv.getValue(data, key);
+            text = sv.getValue(data, key);
         }
+        return text;
     };
 
     // display each photo component
@@ -1103,33 +1153,6 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         if (vm.photo._attr && vm.photo._attr.restrictedImage) {
             if (vm.photo._attr.restrictedImage._value && vm.isLoggedIn === false) {
                 vm.imageNav = false;
-            }
-        }
-
-        if (vm.componentData) {
-            // remove image from key list
-            vm.componentKey = Object.keys(vm.componentData);
-            // remove unwanted key
-            var removeList = cMap.getRemoveList();
-            for (var k = 0; k < removeList.length; k++) {
-                var key = removeList[k];
-                var index = vm.componentKey.indexOf(key);
-                if (index !== -1) {
-                    vm.componentKey.splice(index, 1);
-                }
-            }
-
-            // remove key that does not have value
-            for (var i = 0; i < vm.componentKey.length; i++) {
-                var key = vm.componentKey[i];
-                var data = vm.componentData[key];
-                if (Array.isArray(data)) {
-                    data = data[0];
-                }
-                var value = sv.getValue(data);
-                if (!value) {
-                    vm.componentKey.splice(i, 1);
-                }
             }
         }
     };
@@ -2591,7 +2614,7 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                                                                     }
                                                                 }
                                                             } else {
-                                                                text += data[key3];
+                                                                text += data[key3] + '&nbsp;';
                                                             }
                                                         }
                                                     }

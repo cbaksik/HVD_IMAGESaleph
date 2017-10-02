@@ -78,15 +78,27 @@ angular.module('viewCustom')
 
         };
 
+        vm.isArray=function (obj) {
+            if(Array.isArray(obj)) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+
         // get json key and remove image from the key
         vm.getKeys=function (obj) {
             var keys=Object.keys(obj);
-            var index=keys.indexOf('image');
-            if(index !== -1) {
-                // remove image from the list
-                keys.splice(index,1);
+            var removeList = cMap.getRemoveList();
+            for(var i=0; i < removeList.length; i++) {
+                var key=removeList[i];
+                var index = keys.indexOf(key);
+                if (index !== -1) {
+                    // remove image from the list
+                    keys.splice(index, 1);
+                }
             }
-            return keys;
+            return cMap.getOrderList(keys);
         };
 
         // get value base on json key
@@ -96,11 +108,14 @@ angular.module('viewCustom')
 
         // display each component value key
         vm.getComponentValue=function(key){
+           var text='';
            if(vm.componentData && key) {
                var data=vm.componentData[key];
-               return sv.getValue(data,key);
+               text = sv.getValue(data,key);
            }
+           return text;
         };
+
 
         // display each photo component
         vm.displayPhoto=function () {
@@ -122,33 +137,6 @@ angular.module('viewCustom')
                 }
             }
 
-            if(vm.componentData) {
-                // remove image from key list
-                vm.componentKey=Object.keys(vm.componentData);
-                // remove unwanted key
-                var removeList = cMap.getRemoveList();
-                for(var k=0; k < removeList.length; k++) {
-                    var key = removeList[k];
-                    var index = vm.componentKey.indexOf(key);
-                    if (index !== -1) {
-                        vm.componentKey.splice(index, 1);
-                    }
-                }
-
-                // remove key that does not have value
-                for(var i=0; i < vm.componentKey.length; i++) {
-                    var key=vm.componentKey[i];
-                    var data=vm.componentData[key];
-                    if(Array.isArray(data)) {
-                        data=data[0];
-                    }
-                    var value=sv.getValue(data);
-                    if(!value) {
-                        vm.componentKey.splice(i,1);
-                    }
-
-                }
-            }
         };
 
         vm.$onInit=function() {
@@ -165,7 +153,6 @@ angular.module('viewCustom')
             if(el) {
                 el.style.display = 'none';
             }
-
 
             // insert a header into black topbar
             $timeout(function (e) {

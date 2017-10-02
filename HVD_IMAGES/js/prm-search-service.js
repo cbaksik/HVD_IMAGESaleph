@@ -307,7 +307,7 @@ angular.module('viewCustom')
                                                                  }
                                                              }
                                                          } else {
-                                                             text+=data3+'&nbsp;';
+                                                             text+=data3 + '&nbsp;';
                                                          }
                                                      }
                                                  }
@@ -336,7 +336,7 @@ angular.module('viewCustom')
                                                                      }
                                                                  }
                                                              } else {
-                                                                 text+=data[key3];
+                                                                 text+=data[key3] + '&nbsp;';
                                                              }
                                                          }
                                                      }

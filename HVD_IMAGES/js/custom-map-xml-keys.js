@@ -65,7 +65,7 @@ angular.module('viewCustom')
         };
 
         // do not show these items
-        serviceObj.removeList=['lds03','lds08','lds20','lds37','structuredDate','image','source'];
+        serviceObj.removeList=['lds03','lds08','lds20','lds37','structuredDate','image','source','altComponentID'];
         serviceObj.getRemoveList=function () {
             return serviceObj.removeList;
         };
@@ -85,6 +85,45 @@ angular.module('viewCustom')
            }
 
            return keys;
+        };
+
+        // re-arrange sorting component order
+        serviceObj.orderList=['_attr','title','creator','state','production','description','physicalDescription','materials','dimensions',
+        'notes','note','topic','placeName','location','culture','style','workType','classification','itemIdentifier',
+            'associatedName','relatedWork','relatedInformation','useRestrictions','copyright','freeDate','repository'];
+        serviceObj.getOrderList=function (listKey) {
+            var keys=[];
+            var hvdKeys=[];
+            var key='';
+            var pattern = /^(hvd_)/i;
+            // find hvd key
+            for(var j=0; j < listKey.length; j++) {
+               key=listKey[j];
+               if(pattern.test(key)) {
+                   hvdKeys.push(key);
+               }
+            }
+
+            for(var i=0; i < serviceObj.orderList.length; i++) {
+                key=serviceObj.orderList[i];
+                var index=listKey.indexOf(key);
+                if(index!== -1) {
+                    keys.push(key);
+                }
+            }
+
+            if(hvdKeys.length > 0) {
+                for(var i=0; i < serviceObj.orderList.length; i++) {
+                    var keyMap=serviceObj.orderList[i];
+                    key = 'hvd_'+keyMap;
+                    var index = hvdKeys.indexOf(key);
+                    if(index !== -1) {
+                        keys.push(key);
+                    }
+                }
+            }
+
+            return keys;
         };
 
         return serviceObj;

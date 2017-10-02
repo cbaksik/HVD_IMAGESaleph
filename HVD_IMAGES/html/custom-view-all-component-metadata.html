@@ -7,7 +7,7 @@
         </div>
         <div flex class="flex">
                <span ng-repeat="val in vm.items.pnx.display[key] track by $index">
-                  <span ng-bind-html="vm.getValue(val,key)"></span>
+                  <span ng-bind-html="vm.getValue(val,key)"></span><br/>
                </span>
         </div>
     </div>
@@ -38,6 +38,7 @@
                     </span>
                     <span ng-if="vm.isArray(data[key])" ng-repeat="val in data[key] track by $index">
                         <span ng-bind-html="vm.getValue(val,key)"></span>
+                        <span ng-if="key==='topic' && $index < data[key].length - 1">;</span>&nbsp;
                     </span>
                 </div>
                 </div>
