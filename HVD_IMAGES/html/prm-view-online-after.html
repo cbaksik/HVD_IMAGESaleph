@@ -6,11 +6,14 @@
     </div>
     <div layout="row">
         <div flex="grow">
-            <responsive-image ng-if="$ctrl.item.mis1Data.image" src="$ctrl.item.mis1Data.image[0]._attr.href._value"
-                              imgtitle="$ctrl.item.mis1Data.title[0].textElement[0]._text"
-                              restricted="$ctrl.item.mis1Data.image[0]._attr.restrictedImage._value">
-
-            </responsive-image>
+            <!-- single image -->
+            <single-image src="$ctrl.photo._attr.href._value" imgtitle="$ctrl.imageTitle"
+                          restricted="$ctrl.photo._attr.restrictedImage._value" jp2="$ctrl.jp2"></single-image>
+            <div layout="row" class="spaceTop" layout-sm="column" ng-if="$ctrl.photo.caption">
+                <div flex="20"></div>
+                <div flex="80"><span class="bold-text spaceRight">Caption:</span>  {{$ctrl.photo.caption[0]._text}}</div>
+            </div>
+            <!-- end single image -->
         </div>
     </div>
 </div>

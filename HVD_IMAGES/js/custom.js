@@ -2678,6 +2678,9 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     vm.zoomButtonFlag = false;
     vm.viewAllComponetMetadataFlag = false;
     vm.singleImageFlag = false;
+    vm.photo = {}; // single imae
+    vm.jp2 = false;
+    vm.imageTitle = '';
 
     vm.$onInit = function () {
         vm.isLoggedIn = sv.getLogInID();
@@ -2695,6 +2698,11 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
             if (Array.isArray(vm.item.mis1Data) === false) {
                 if (vm.item.mis1Data.image) {
                     vm.singleImageFlag = true;
+                    vm.photo = vm.item.mis1Data.image[0];
+                    vm.jp2 = sv.findJP2(vm.photo); // check to see if the image is jp2 or not
+                    if (vm.item.mis1Data.title) {
+                        vm.imageTitle = vm.item.mis1Data.title[0].textElement[0]._text;
+                    }
                 }
             } else {
                 vm.viewAllComponetMetadataFlag = true;
