@@ -278,6 +278,18 @@ angular.module('viewCustom')
                      keys.splice(index,1);
                  }
              }
+             // re-arrange keys relate to associatedName
+             if(key==='associatedName') {
+                 var tempKeys=[];
+                 var asskeys=['nameElement','dates','role'];
+                 for(var c=0; c < asskeys.length; c++) {
+                     var index=keys.indexOf(asskeys[c]);
+                     if(index !== -1) {
+                         tempKeys.push(asskeys[c]);
+                     }
+                 }
+                 keys=tempKeys;
+             }
 
              for(var k=0; k < keys.length; k++) {
                  var nodeKey=keys[k];
@@ -341,7 +353,13 @@ angular.module('viewCustom')
                                                          }
                                                      }
                                                  } else if(key2) {
-                                                     text+=data[key2] + '&nbsp;';
+                                                     if(key==='associatedName' && nodeKey==='nameElement') {
+                                                         text += data[key2] + ', ';
+                                                     } else if(key==='associatedName' && nodeKey==='role') {
+                                                         text += '[' + data[key2] + ']';
+                                                     } else {
+                                                         text += data[key2] + '&nbsp;';
+                                                     }
                                                  }
                                              }
                                          } else {
