@@ -4,7 +4,7 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element','$timeout','customMapXmlKeys', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element, $timeout, customMapXmlKeys) {
+    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element','$timeout','customMapXmlKeys','$window', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element, $timeout, customMapXmlKeys,$window) {
 
         let vm = this;
         var sv=prmSearchService;
@@ -14,7 +14,9 @@ angular.module('viewCustom')
         // get parameter from angular ui-router
         vm.context=$stateParams.context;
         vm.docid=$stateParams.docid;
+        vm.filename = $stateParams.filename;
         vm.index=parseInt($stateParams.index);
+        vm.clientIp=sv.getClientIp();
 
         vm.photo={};
         vm.flexsize=80;
@@ -46,6 +48,9 @@ angular.module('viewCustom')
                             vm.xmldata=result.work[0];
                             if(vm.xmldata.component) {
                                 vm.total=vm.xmldata.component.length;
+                                if(vm.index >= vm.total) {
+                                    $window.location.href='/primo-explore/fulldisplay?docid='+vm.docid+'&vid='+vm.params.vid;
+                                }
                             }
                             if(vm.item.pnx.display) {
                                 vm.keys = Object.keys(vm.item.pnx.display);
@@ -120,6 +125,7 @@ angular.module('viewCustom')
         // display each photo component
         vm.displayPhoto=function () {
             vm.isLoggedIn=sv.getLogInID();
+            vm.clientIp=sv.getClientIp();
             if (vm.xmldata.component && !vm.xmldata.image) {
                 vm.componentData = vm.xmldata.component[vm.index];
                 vm.photo = vm.componentData.image[0];
@@ -132,7 +138,7 @@ angular.module('viewCustom')
             }
 
             if(vm.photo._attr && vm.photo._attr.restrictedImage) {
-                if(vm.photo._attr.restrictedImage._value && vm.isLoggedIn===false) {
+                if(vm.photo._attr.restrictedImage._value && vm.isLoggedIn===false && !vm.clientIp.status) {
                     vm.imageNav=false;
                 }
             }
@@ -171,8 +177,10 @@ angular.module('viewCustom')
 
                 }
 
-
             },1000);
+
+            console.log('*** custom-view-component ***');
+            console.log(vm)
 
         };
 

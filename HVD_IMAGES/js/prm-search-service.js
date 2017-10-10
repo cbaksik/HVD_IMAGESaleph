@@ -397,6 +397,25 @@ angular.module('viewCustom')
          return text;
      };
 
+     // store api rest url from config.html
+     serviceObj.api={};
+     serviceObj.setApi=function (data) {
+         serviceObj.api=data;
+     };
+
+     serviceObj.getApi=function () {
+        return serviceObj.api;
+     };
+
+     // store validate client ip status
+     serviceObj.clientIp={};
+     serviceObj.setClientIp=function (data) {
+        serviceObj.clientIp = data;
+     };
+     serviceObj.getClientIp=function(){
+       return serviceObj.clientIp;
+     };
+
     return serviceObj;
 
 }]);

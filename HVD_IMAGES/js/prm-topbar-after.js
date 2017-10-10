@@ -3,9 +3,29 @@
  */
 
 angular.module('viewCustom')
-    .controller('prmTopbarAfterController', ['$element', function ($element) {
+    .controller('prmTopbarAfterController', ['$element','prmSearchService', function ($element,prmSearchService) {
 
         let vm = this;
+        let cs = prmSearchService;
+
+        // get rest endpoint Url
+        vm.getUrl=function () {
+            cs.getAjax('/primo-explore/custom/HVD_IMAGES/html/config.html','','get')
+                .then(function (res) {
+                        vm.api=res.data;
+                        cs.setApi(vm.api);
+                    },
+                    function (error) {
+                        console.log(error);
+                    }
+                )
+        };
+
+        vm.$onChanges=function() {
+            // get api url for cross site
+            vm.getUrl();
+        };
+
         vm.$onInit=function() {
             // hide primo tab menu
             vm.parentCtrl.showMainMenu=false;

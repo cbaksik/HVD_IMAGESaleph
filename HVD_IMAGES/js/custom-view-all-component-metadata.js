@@ -94,9 +94,18 @@ angular.module('viewCustom')
         };
 
         // show the pop up image
-        vm.gotoFullPhoto=function (index) {
+        vm.gotoFullPhoto=function (index,data) {
+            var filename='';
+            if(data.image){
+                var urlList = data.image[0]._attr.href._value;
+                urlList = urlList.split('/');
+                if(urlList.length >=3) {
+                    filename = urlList[3];
+                }
+            }
+
             // go to full display page
-            var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid+'/'+index+'?vid='+vm.params.vid;
+            var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid + '/' + filename + '/' + index + '?vid='+vm.params.vid;
             if(vm.params.adaptor) {
                 url+='&adaptor='+vm.params.adaptor;
             }

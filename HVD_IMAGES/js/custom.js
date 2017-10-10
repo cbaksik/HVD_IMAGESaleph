@@ -983,9 +983,18 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
     };
 
     // show the pop up image
-    vm.gotoFullPhoto = function (index) {
+    vm.gotoFullPhoto = function (index, data) {
+        var filename = '';
+        if (data.image) {
+            var urlList = data.image[0]._attr.href._value;
+            urlList = urlList.split('/');
+            if (urlList.length >= 3) {
+                filename = urlList[3];
+            }
+        }
+
         // go to full display page
-        var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '/' + index + '?vid=' + vm.params.vid;
+        var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '/' + filename + '/' + index + '?vid=' + vm.params.vid;
         if (vm.params.adaptor) {
             url += '&adaptor=' + vm.params.adaptor;
         }
@@ -1032,7 +1041,7 @@ angular.module('viewCustom').component('customViewAllComponentMetadata', {
  * This component is for a single image full display when a user click on thumbnail from a full display page
  */
 
-angular.module('viewCustom').controller('customViewComponentController', ['$sce', '$mdMedia', 'prmSearchService', '$location', '$stateParams', '$element', '$timeout', 'customMapXmlKeys', function ($sce, $mdMedia, prmSearchService, $location, $stateParams, $element, $timeout, customMapXmlKeys) {
+angular.module('viewCustom').controller('customViewComponentController', ['$sce', '$mdMedia', 'prmSearchService', '$location', '$stateParams', '$element', '$timeout', 'customMapXmlKeys', '$window', function ($sce, $mdMedia, prmSearchService, $location, $stateParams, $element, $timeout, customMapXmlKeys, $window) {
 
     var vm = this;
     var sv = prmSearchService;
@@ -1042,7 +1051,9 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     // get parameter from angular ui-router
     vm.context = $stateParams.context;
     vm.docid = $stateParams.docid;
+    vm.filename = $stateParams.filename;
     vm.index = parseInt($stateParams.index);
+    vm.clientIp = sv.getClientIp();
 
     vm.photo = {};
     vm.flexsize = 80;
@@ -1073,6 +1084,9 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
                     vm.xmldata = result.work[0];
                     if (vm.xmldata.component) {
                         vm.total = vm.xmldata.component.length;
+                        if (vm.index >= vm.total) {
+                            $window.location.href = '/primo-explore/fulldisplay?docid=' + vm.docid + '&vid=' + vm.params.vid;
+                        }
                     }
                     if (vm.item.pnx.display) {
                         vm.keys = Object.keys(vm.item.pnx.display);
@@ -1139,6 +1153,7 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     // display each photo component
     vm.displayPhoto = function () {
         vm.isLoggedIn = sv.getLogInID();
+        vm.clientIp = sv.getClientIp();
         if (vm.xmldata.component && !vm.xmldata.image) {
             vm.componentData = vm.xmldata.component[vm.index];
             vm.photo = vm.componentData.image[0];
@@ -1151,7 +1166,7 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         }
 
         if (vm.photo._attr && vm.photo._attr.restrictedImage) {
-            if (vm.photo._attr.restrictedImage._value && vm.isLoggedIn === false) {
+            if (vm.photo._attr.restrictedImage._value && vm.isLoggedIn === false && !vm.clientIp.status) {
                 vm.imageNav = false;
             }
         }
@@ -1188,6 +1203,9 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
                 }
             }
         }, 1000);
+
+        console.log('*** custom-view-component ***');
+        console.log(vm);
     };
 
     // next photo
@@ -1535,12 +1553,57 @@ angular.module('viewCustom').controller('prmAuthenticationAfterController', ['pr
     var vm = this;
     // initialize custom service search
     var sv = prmSearchService;
+    vm.api = sv.getApi();
+    vm.form = { 'ip': '', 'status': false, 'token': '', 'sessionToken': '', 'isLoggedIn': '' };
+
+    vm.validateIP = function () {
+        vm.api = sv.getApi();
+        if (vm.api.ipUrl) {
+            sv.postAjax(vm.api.ipUrl, vm.form).then(function (result) {
+                sv.setClientIp(result.data);
+            }, function (error) {
+                console.log(error);
+            });
+        }
+    };
+
+    vm.getClientIP = function () {
+        vm.auth = sv.getAuth();
+        if (vm.auth.primolyticsService.jwtUtilService) {
+            vm.form.token = vm.auth.primolyticsService.jwtUtilService.storageUtil.sessionStorage.primoExploreJwt;
+            vm.form.sessionToken = vm.auth.primolyticsService.jwtUtilService.storageUtil.localStorage.getJWTFromSessionStorage;
+            vm.form.isLoggedIn = vm.auth.isLoggedIn;
+            // decode JWT Token to see if it is a valid token
+            var obj = vm.auth.authenticationService.userSessionManagerService.jwtUtilService.jwtHelper.decodeToken(vm.form.token);
+            vm.form.ip = obj.ip;
+
+            vm.validateIP();
+        }
+    };
+
+    // get rest endpoint Url
+    vm.getUrl = function () {
+        sv.getAjax('/primo-explore/custom/HVD_IMAGES/html/config.html', '', 'get').then(function (res) {
+            vm.api = res.data;
+            sv.setApi(vm.api);
+            vm.getClientIP();
+        }, function (error) {
+            console.log(error);
+        });
+    };
     // check if a user login
     vm.$onChanges = function () {
         // This flag is return true or false
         var loginID = vm.parentCtrl.isLoggedIn;
         sv.setLogInID(loginID);
         sv.setAuth(vm.parentCtrl);
+        vm.api = sv.getApi();
+        if (!vm.api.ipUrl) {
+            vm.getUrl();
+        } else {
+            // get client ip address to see if a user is internal or external user
+            vm.getClientIP();
+        }
     };
 }]);
 
@@ -2675,6 +2738,25 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
         return text;
     };
 
+    // store api rest url from config.html
+    serviceObj.api = {};
+    serviceObj.setApi = function (data) {
+        serviceObj.api = data;
+    };
+
+    serviceObj.getApi = function () {
+        return serviceObj.api;
+    };
+
+    // store validate client ip status
+    serviceObj.clientIp = {};
+    serviceObj.setClientIp = function (data) {
+        serviceObj.clientIp = data;
+    };
+    serviceObj.getClientIp = function () {
+        return serviceObj.clientIp;
+    };
+
     return serviceObj;
 }]);
 
@@ -2682,9 +2764,26 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
  * Created by samsan on 6/29/17.
  */
 
-angular.module('viewCustom').controller('prmTopbarAfterController', ['$element', function ($element) {
+angular.module('viewCustom').controller('prmTopbarAfterController', ['$element', 'prmSearchService', function ($element, prmSearchService) {
 
     var vm = this;
+    var cs = prmSearchService;
+
+    // get rest endpoint Url
+    vm.getUrl = function () {
+        cs.getAjax('/primo-explore/custom/HVD_IMAGES/html/config.html', '', 'get').then(function (res) {
+            vm.api = res.data;
+            cs.setApi(vm.api);
+        }, function (error) {
+            console.log(error);
+        });
+    };
+
+    vm.$onChanges = function () {
+        // get api url for cross site
+        vm.getUrl();
+    };
+
     vm.$onInit = function () {
         // hide primo tab menu
         vm.parentCtrl.showMainMenu = false;
@@ -2722,8 +2821,10 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     vm.photo = {}; // single imae
     vm.jp2 = false;
     vm.imageTitle = '';
+    vm.auth = sv.getAuth();
 
     vm.$onInit = function () {
+
         vm.isLoggedIn = sv.getLogInID();
         // get item data from service
         itemData = sv.getItem();
@@ -2763,8 +2864,16 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
 
     // show the pop up image
     vm.gotoFullPhoto = function ($event, item, index) {
+        var filename = '';
+        if (item._attr.href._value) {
+            var urlList = item._attr.href._value;
+            urlList = urlList.split('/');
+            if (urlList.length >= 3) {
+                filename = urlList[3];
+            }
+        }
         // go to full display page
-        var url = '/primo-explore/viewcomponent/' + vm.item.context + '/' + vm.item.pnx.control.recordid[0] + '/' + index + '?vid=' + vm.searchData.vid + '&lang=' + vm.searchData.lang;
+        var url = '/primo-explore/viewcomponent/' + vm.item.context + '/' + vm.item.pnx.control.recordid[0] + '/' + filename + '/' + index + '?vid=' + vm.searchData.vid + '&lang=' + vm.searchData.lang;
         if (vm.item.adaptor) {
             url += '&adaptor=' + vm.item.adaptor;
         } else {
@@ -2783,7 +2892,7 @@ angular.module('viewCustom').config(function ($stateProvider) {
             }
         }
     }).state('exploreMain.viewcomponent', {
-        url: '/viewcomponent/:context/:docid/:index',
+        url: '/viewcomponent/:context/:docid/:filename/:index',
         views: {
             '': {
                 template: '<custom-view-component parent-ctrl="$ctrl" item="$ctrl.item" services="$ctrl.services" params="$ctrl.params"></custom-view-component>'
@@ -2898,12 +3007,14 @@ angular.module('viewCustom').component('singleImage', {
         vm.params = $location.search();
         vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };
         vm.isLoggedIn = sv.getLogInID();
+        vm.clientIp = sv.getClientIp();
 
         // check if image is not empty and it has width and height and greater than 150, then add css class
         vm.$onChanges = function () {
-
+            vm.clientIp = sv.getClientIp();
             vm.isLoggedIn = sv.getLogInID();
-            if (vm.restricted && !vm.isLoggedIn) {
+
+            if (vm.restricted && !vm.isLoggedIn && !vm.clientIp.status) {
                 vm.showImage = false;
             }
             vm.localScope = { 'imgClass': '', 'loading': true, 'hideLockIcon': false };

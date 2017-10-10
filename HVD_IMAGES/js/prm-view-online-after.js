@@ -17,8 +17,10 @@ angular.module('viewCustom')
         vm.photo = {}; // single imae
         vm.jp2 = false;
         vm.imageTitle = '';
+        vm.auth = sv.getAuth();
 
         vm.$onInit=function() {
+
             vm.isLoggedIn=sv.getLogInID();
            // get item data from service
            itemData=sv.getItem();
@@ -47,6 +49,7 @@ angular.module('viewCustom')
                }
            }
 
+
         };
 
         // view all component metadata
@@ -61,8 +64,16 @@ angular.module('viewCustom')
 
         // show the pop up image
         vm.gotoFullPhoto=function ($event, item, index) {
+            var filename='';
+            if(item._attr.href._value) {
+                var urlList=item._attr.href._value;
+                urlList = urlList.split('/');
+                if(urlList.length >=3) {
+                    filename=urlList[3];
+                }
+            }
             // go to full display page
-            var url='/primo-explore/viewcomponent/'+vm.item.context+'/'+vm.item.pnx.control.recordid[0]+'/'+index+'?vid='+vm.searchData.vid+'&lang='+vm.searchData.lang;
+            var url='/primo-explore/viewcomponent/'+vm.item.context+'/'+vm.item.pnx.control.recordid[0]+'/'+filename+'/'+index+'?vid='+vm.searchData.vid+'&lang='+vm.searchData.lang;
             if(vm.item.adaptor) {
                 url+='&adaptor='+vm.item.adaptor;
             } else {
@@ -88,7 +99,7 @@ angular.module('viewCustom')
 
             )
             .state('exploreMain.viewcomponent', {
-                    url:'/viewcomponent/:context/:docid/:index',
+                    url:'/viewcomponent/:context/:docid/:filename/:index',
                     views:{
                         '':{
                            template:`<custom-view-component parent-ctrl="$ctrl" item="$ctrl.item" services="$ctrl.services" params="$ctrl.params"></custom-view-component>`
