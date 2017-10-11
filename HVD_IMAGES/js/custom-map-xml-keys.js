@@ -8,7 +8,6 @@ angular.module('viewCustom')
 
         // filter the xml key node
         serviceObj.keys=[
-            {'freeDate':'Date'},
             {'lds01':'HOLLIS Number'},
             {'lds04':'Variant Title'},
             {'lds07':'Publication Info'},
@@ -23,30 +22,45 @@ angular.module('viewCustom')
             {'lds30':'Form / Genre'},
             {'lds31':'Place'},
             {'lds44':'Associated Name'},
+            {'associatedName':'Associated Name'},
             {'creationdate':'Creation Date'},
             {'creator':'Author / Creator'},
             {'format':'Description'},
-            {'rights':'Copyright'},
+            {'freeDate':'Date'},
+            {'itemIdentifier':'Identifier'},
+            {'placeName':'Place'},
+            {'production':'Publication info'},
             {'relatedWork':'Related Work'},
-            {'workType':'Work Type'},
+            {'relatedInformation':'Related Information'},
+            {'rights':'Copyright'},
+            {'state':'Edition'},
+            {'topic':'Subject'},
+            {'workType':'Form / Genre'},
             {'useRestrictions':'Use Restrictions'},
-            {'hvd_title':'Component Title'},
-            {'hvd_itemIdentifier':'Harvard Identifier'},
-            {'hvd_classification':'Havard Classification'},
-            {'hvd_workType':'Component Form'},
-            {'hvd_creator':'Component Creator'},
-            {'hvd_production':'Component Pub Info'},
-            {'hvd_freeDate':'Component Date'},
-            {'hvd_copyright':'Harvard Copyright'},
-            {'hvd_useRestrictions':'Harvard Use Restrictions'},
-            {'hvd_repository':'Harvard Repository'},
-            {'hvd_dimensions':'Component Dimensions'},
-            {'hvd_topic':'Harvard Topic'},
-            {'hvd_notes':'Harvard Notes'},
-            {'hvd_materials':'Component Materials'},
-            {'hvd_associatedName':'Harvard Associated Name'},
-            {'associatedName':'Associated Name'},
-            {'_attr':'Component ID'},
+            {'hvd_associatedName':'Image Associated Name'},
+            {'hvd_classification':'Image Classification'},
+            {'hvd_copyright':'Image Copyright'},
+            {'hvd_creator':'Image Creator'},
+            {'hvd_culture':'Image Culture'},
+            {'hvd_description':'Image Description'},
+            {'hvd_dimensions':'Image Dimensions'},
+            {'hvd_freeDate':'Image Date'},
+            {'hvd_itemIdentifier':'Image Identifier'},
+            {'hvd_materials':'Image Materials'},
+            {'hvd_notes':'Image Notes'},
+            {'hvd_note':'Image Notes'},
+            {'hvd_placeName':'Image Place'},
+            {'hvd_production':'Image Publication info'},
+            {'hvd_relatedInformation':'Image Related info'},
+            {'hvd_relatedWork':'Image Related Work'},
+            {'hvd_repository':'Image Repository'},
+            {'hvd_state':'Image Edition'},
+            {'hvd_style':'Image Style'},
+            {'hvd_title':'Image Title'},
+            {'hvd_topic':'Image Subject'},
+            {'hvd_useRestrictions':'Image Use Restrictions'},
+            {'hvd_workType':'Image Type'},
+            {'_attr':'Image ID'},
             {'_text':'TEXT'}
         ];
 
@@ -88,9 +102,9 @@ angular.module('viewCustom')
         };
 
         // re-arrange sorting component order
-        serviceObj.orderList=['_attr','title','creator','state','production','description','physicalDescription','materials','dimensions',
+        serviceObj.orderList=['title','creator','state','production','description','physicalDescription','materials','dimensions',
         'notes','note','topic','placeName','location','culture','style','workType','classification','itemIdentifier',
-            'associatedName','relatedWork','relatedInformation','useRestrictions','copyright','freeDate','repository'];
+            'associatedName','relatedWork','relatedInformation','useRestrictions','copyright','freeDate','_attr','repository'];
         serviceObj.getOrderList=function (listKey) {
             var keys=[];
             var hvdKeys=[];

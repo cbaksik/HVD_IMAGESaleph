@@ -403,7 +403,7 @@ angular.module('viewCustom').service('customMapXmlKeys', [function () {
     var serviceObj = {};
 
     // filter the xml key node
-    serviceObj.keys = [{ 'freeDate': 'Date' }, { 'lds01': 'HOLLIS Number' }, { 'lds04': 'Variant Title' }, { 'lds07': 'Publication Info' }, { 'lds08': 'Permalink' }, { 'lds13': 'Notes' }, { 'lds22': 'Style / Period' }, { 'lds23': 'Culture' }, { 'lds24': 'Related Work' }, { 'lds25': 'Related Information' }, { 'lds26': 'Repository' }, { 'lds27': 'Use Restrictions' }, { 'lds30': 'Form / Genre' }, { 'lds31': 'Place' }, { 'lds44': 'Associated Name' }, { 'creationdate': 'Creation Date' }, { 'creator': 'Author / Creator' }, { 'format': 'Description' }, { 'rights': 'Copyright' }, { 'relatedWork': 'Related Work' }, { 'workType': 'Work Type' }, { 'useRestrictions': 'Use Restrictions' }, { 'hvd_title': 'Component Title' }, { 'hvd_itemIdentifier': 'Harvard Identifier' }, { 'hvd_classification': 'Havard Classification' }, { 'hvd_workType': 'Component Form' }, { 'hvd_creator': 'Component Creator' }, { 'hvd_production': 'Component Pub Info' }, { 'hvd_freeDate': 'Component Date' }, { 'hvd_copyright': 'Harvard Copyright' }, { 'hvd_useRestrictions': 'Harvard Use Restrictions' }, { 'hvd_repository': 'Harvard Repository' }, { 'hvd_dimensions': 'Component Dimensions' }, { 'hvd_topic': 'Harvard Topic' }, { 'hvd_notes': 'Harvard Notes' }, { 'hvd_materials': 'Component Materials' }, { 'hvd_associatedName': 'Harvard Associated Name' }, { 'associatedName': 'Associated Name' }, { '_attr': 'Component ID' }, { '_text': 'TEXT' }];
+    serviceObj.keys = [{ 'lds01': 'HOLLIS Number' }, { 'lds04': 'Variant Title' }, { 'lds07': 'Publication Info' }, { 'lds08': 'Permalink' }, { 'lds13': 'Notes' }, { 'lds22': 'Style / Period' }, { 'lds23': 'Culture' }, { 'lds24': 'Related Work' }, { 'lds25': 'Related Information' }, { 'lds26': 'Repository' }, { 'lds27': 'Use Restrictions' }, { 'lds30': 'Form / Genre' }, { 'lds31': 'Place' }, { 'lds44': 'Associated Name' }, { 'associatedName': 'Associated Name' }, { 'creationdate': 'Creation Date' }, { 'creator': 'Author / Creator' }, { 'format': 'Description' }, { 'freeDate': 'Date' }, { 'itemIdentifier': 'Identifier' }, { 'placeName': 'Place' }, { 'production': 'Publication info' }, { 'relatedWork': 'Related Work' }, { 'relatedInformation': 'Related Information' }, { 'rights': 'Copyright' }, { 'state': 'Edition' }, { 'topic': 'Subject' }, { 'workType': 'Form / Genre' }, { 'useRestrictions': 'Use Restrictions' }, { 'hvd_associatedName': 'Image Associated Name' }, { 'hvd_classification': 'Image Classification' }, { 'hvd_copyright': 'Image Copyright' }, { 'hvd_creator': 'Image Creator' }, { 'hvd_culture': 'Image Culture' }, { 'hvd_description': 'Image Description' }, { 'hvd_dimensions': 'Image Dimensions' }, { 'hvd_freeDate': 'Image Date' }, { 'hvd_itemIdentifier': 'Image Identifier' }, { 'hvd_materials': 'Image Materials' }, { 'hvd_notes': 'Image Notes' }, { 'hvd_note': 'Image Notes' }, { 'hvd_placeName': 'Image Place' }, { 'hvd_production': 'Image Publication info' }, { 'hvd_relatedInformation': 'Image Related info' }, { 'hvd_relatedWork': 'Image Related Work' }, { 'hvd_repository': 'Image Repository' }, { 'hvd_state': 'Image Edition' }, { 'hvd_style': 'Image Style' }, { 'hvd_title': 'Image Title' }, { 'hvd_topic': 'Image Subject' }, { 'hvd_useRestrictions': 'Image Use Restrictions' }, { 'hvd_workType': 'Image Type' }, { '_attr': 'Image ID' }, { '_text': 'TEXT' }];
 
     // remove hvd_ from the key
     serviceObj.mapKey = function (key) {
@@ -442,7 +442,7 @@ angular.module('viewCustom').service('customMapXmlKeys', [function () {
     };
 
     // re-arrange sorting component order
-    serviceObj.orderList = ['_attr', 'title', 'creator', 'state', 'production', 'description', 'physicalDescription', 'materials', 'dimensions', 'notes', 'note', 'topic', 'placeName', 'location', 'culture', 'style', 'workType', 'classification', 'itemIdentifier', 'associatedName', 'relatedWork', 'relatedInformation', 'useRestrictions', 'copyright', 'freeDate', 'repository'];
+    serviceObj.orderList = ['title', 'creator', 'state', 'production', 'description', 'physicalDescription', 'materials', 'dimensions', 'notes', 'note', 'topic', 'placeName', 'location', 'culture', 'style', 'workType', 'classification', 'itemIdentifier', 'associatedName', 'relatedWork', 'relatedInformation', 'useRestrictions', 'copyright', 'freeDate', '_attr', 'repository'];
     serviceObj.getOrderList = function (listKey) {
         var keys = [];
         var hvdKeys = [];
@@ -1053,6 +1053,7 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     // get parameter from angular ui-router
     vm.context = $stateParams.context;
     vm.docid = $stateParams.docid;
+    vm.recordid = '';
     vm.filename = $stateParams.filename;
     vm.index = '';
     vm.clientIp = sv.getClientIp();
@@ -1069,6 +1070,18 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     vm.componentData = {}; // single component data
     vm.componentKey = [];
 
+    // remove HVD_VIA from record id of vm.docid
+    vm.removeHVD_VIA = function () {
+        var pattern = /^(HVD_VIA)/;
+        var docid = angular.copy(vm.docid);
+        if (pattern.test(docid)) {
+            vm.recordid = docid.substring(7, docid.length);
+        } else {
+            vm.recordid = docid;
+        }
+    };
+
+    // find index base on file name
     vm.findFilenameIndex = function (arrList, filename) {
         var k = -1;
         for (var i = 0; i < arrList.length; i++) {
@@ -1204,6 +1217,7 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     };
 
     vm.$onInit = function () {
+        vm.removeHVD_VIA();
         // if the smaller screen size, make the flex size to 100.
         if ($mdMedia('sm')) {
             vm.flexsize = 100;
@@ -2664,6 +2678,10 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                 var nodeKey = keys[k];
                 if (nodeKey) {
                     var nodeValue = obj[nodeKey];
+                    if (Array.isArray(nodeValue)) {
+                        nodeValue = nodeValue[0];
+                    }
+
                     if ((typeof nodeValue === 'undefined' ? 'undefined' : _typeof(nodeValue)) === 'object') {
                         if (Array.isArray(nodeValue)) {
                             for (var i = 0; i < nodeValue.length; i++) {
@@ -2741,12 +2759,36 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                             }
                         } else if (nodeKey) {
                             var nodeKey2 = Object.keys(nodeValue);
+
                             if ((typeof nodeKey2 === 'undefined' ? 'undefined' : _typeof(nodeKey2)) === 'object') {
                                 if (Array.isArray(nodeKey2)) {
                                     for (var c = 0; c < nodeKey2.length; c++) {
                                         var nodeKey3 = nodeKey2[c];
                                         if (nodeKey3) {
-                                            text += nodeValue[nodeKey3] + '&nbsp;';
+                                            var nodeValue3 = nodeValue[nodeKey3];
+                                            if (Array.isArray(nodeValue3)) {
+                                                nodeValue3 = nodeValue3[0];
+                                            }
+
+                                            if ((typeof nodeValue3 === 'undefined' ? 'undefined' : _typeof(nodeValue3)) === 'object') {
+                                                var nodeKey4 = Object.keys(nodeValue3);
+                                                if (Array.isArray(nodeKey4)) {
+                                                    for (var b = 0; b < nodeKey4.length; b++) {
+                                                        var nodeKey5 = nodeKey4[b];
+                                                        if (nodeKey5) {
+                                                            text += nodeValue3[nodeKey5] + '&nbsp;';
+                                                        }
+                                                    }
+                                                } else {
+                                                    text += nodeValue3[nodeKey4] + '&nbsp;';
+                                                }
+                                            } else {
+                                                if (key === 'hvd_relatedWork' || key === 'relatedWork') {
+                                                    text += nodeValue3 + '<br/>';
+                                                } else {
+                                                    text += nodeValue3 + '&nbsp;';
+                                                }
+                                            }
                                         }
                                     }
                                 }

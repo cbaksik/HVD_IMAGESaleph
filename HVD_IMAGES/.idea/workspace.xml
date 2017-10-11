@@ -59,8 +59,6 @@
         <option value="$PROJECT_DIR$/js/thumbnail.js" />
         <option value="$PROJECT_DIR$/js/custom-thumbnail.js" />
         <option value="$PROJECT_DIR$/js/responsiveImage.js" />
-        <option value="$PROJECT_DIR$/js/custom-map-xml-keys.js" />
-        <option value="$PROJECT_DIR$/js/prm-search-service.js" />
         <option value="$PROJECT_DIR$/js/prm-topbar-after.js" />
         <option value="$PROJECT_DIR$/html/config.html" />
         <option value="$PROJECT_DIR$/js/singleImage.js" />
@@ -70,6 +68,8 @@
         <option value="$PROJECT_DIR$/js/prm-view-online-after.js" />
         <option value="$PROJECT_DIR$/js/custom-view-all-component-metadata.js" />
         <option value="$PROJECT_DIR$/css/custom-view-all-component-metadata.css" />
+        <option value="$PROJECT_DIR$/js/prm-search-service.js" />
+        <option value="$PROJECT_DIR$/js/custom-map-xml-keys.js" />
         <option value="$PROJECT_DIR$/html/custom-view-component.html" />
         <option value="$PROJECT_DIR$/js/custom-view-component.js" />
       </list>
@@ -118,6 +118,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="HVD_IMAGES" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="HVD_IMAGES" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="HVD_IMAGES" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="html" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -256,12 +270,12 @@
       <workItem from="1507123534024" duration="775000" />
       <workItem from="1507317586831" duration="1955000" />
       <workItem from="1507642783601" duration="13261000" />
-      <workItem from="1507728504207" duration="5076000" />
+      <workItem from="1507728504207" duration="12183000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="135642000" />
+    <option name="totallyTimeSpent" value="142749000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="26" y="23" width="1254" height="728" extended-state="0" />
@@ -509,13 +523,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/custom-map-xml-keys.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1500">
-          <caret line="102" column="37" lean-forward="false" selection-start-line="102" selection-start-column="37" selection-end-line="102" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/prm-full-view-after.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-150">
@@ -586,13 +593,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/html/custom-view-all-component-metadata.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="518">
-          <caret line="50" column="10" lean-forward="true" selection-start-line="50" selection-start-column="10" selection-end-line="50" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/html/prm-view-online-after.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
@@ -600,34 +600,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/prm-search-service.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6225">
-          <caret line="415" column="34" lean-forward="false" selection-start-line="415" selection-start-column="34" selection-end-line="415" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/custom-view-all-component-metadata.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="109" column="93" lean-forward="false" selection-start-line="109" selection-start-column="93" selection-end-line="109" selection-end-column="93" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/prm-view-online-after.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1155">
           <caret line="77" column="116" lean-forward="true" selection-start-line="77" selection-start-column="116" selection-end-line="77" selection-end-column="116" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/html/custom-view-component.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="447">
-          <caret line="73" column="36" lean-forward="false" selection-start-line="73" selection-start-column="36" selection-end-line="73" selection-end-column="36" />
           <folding />
         </state>
       </provider>
@@ -640,10 +616,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/custom-map-xml-keys.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="810">
+          <caret line="54" column="50" lean-forward="false" selection-start-line="54" selection-start-column="50" selection-end-line="54" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/prm-search-service.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="326">
+          <caret line="406" column="50" lean-forward="false" selection-start-line="406" selection-start-column="50" selection-end-line="406" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/html/custom-view-all-component-metadata.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="526">
+          <caret line="50" column="10" lean-forward="true" selection-start-line="50" selection-start-column="10" selection-end-line="50" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/custom-view-all-component-metadata.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1635">
+          <caret line="109" column="93" lean-forward="false" selection-start-line="109" selection-start-column="93" selection-end-line="109" selection-end-column="93" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/custom-view-component.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="705">
-          <caret line="47" column="21" lean-forward="false" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
+        <state relative-caret-position="585">
+          <caret line="39" column="18" lean-forward="true" selection-start-line="39" selection-start-column="18" selection-end-line="39" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/html/custom-view-component.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="77" column="13" lean-forward="true" selection-start-line="77" selection-start-column="13" selection-end-line="77" selection-end-column="13" />
           <folding />
         </state>
       </provider>

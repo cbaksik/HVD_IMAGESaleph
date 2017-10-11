@@ -295,6 +295,10 @@ angular.module('viewCustom')
                  var nodeKey=keys[k];
                  if(nodeKey) {
                      var nodeValue=obj[nodeKey];
+                     if(Array.isArray(nodeValue)) {
+                         nodeValue=nodeValue[0];
+                     }
+
                      if(typeof(nodeValue)==='object') {
                          if(Array.isArray(nodeValue)) {
                              for(var i=0; i < nodeValue.length; i++) {
@@ -372,12 +376,36 @@ angular.module('viewCustom')
                              }
                          } else if(nodeKey) {
                              var nodeKey2=Object.keys(nodeValue);
+
                              if(typeof(nodeKey2)==='object') {
                                  if(Array.isArray(nodeKey2)) {
                                      for(var c=0; c < nodeKey2.length; c++) {
                                          var nodeKey3=nodeKey2[c];
                                          if(nodeKey3) {
-                                             text+=nodeValue[nodeKey3] + '&nbsp;';
+                                             var nodeValue3 = nodeValue[nodeKey3];
+                                             if(Array.isArray(nodeValue3)) {
+                                                 nodeValue3 = nodeValue3[0];
+                                             }
+
+                                             if(typeof(nodeValue3)==='object') {
+                                                var nodeKey4 = Object.keys(nodeValue3);
+                                                if(Array.isArray(nodeKey4)) {
+                                                    for (var b = 0; b < nodeKey4.length; b++) {
+                                                        var nodeKey5 = nodeKey4[b];
+                                                        if (nodeKey5) {
+                                                            text += nodeValue3[nodeKey5] + '&nbsp;';
+                                                        }
+                                                    }
+                                                } else {
+                                                    text += nodeValue3[nodeKey4] + '&nbsp;';
+                                                }
+                                             } else {
+                                                 if(key==='hvd_relatedWork'||key==='relatedWork') {
+                                                     text += nodeValue3 + '<br/>';
+                                                 } else {
+                                                     text += nodeValue3 + '&nbsp;';
+                                                 }
+                                             }
                                          }
                                      }
                                  }

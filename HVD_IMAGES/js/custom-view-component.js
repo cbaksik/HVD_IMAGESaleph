@@ -14,6 +14,7 @@ angular.module('viewCustom')
         // get parameter from angular ui-router
         vm.context=$stateParams.context;
         vm.docid=$stateParams.docid;
+        vm.recordid='';
         vm.filename = $stateParams.filename;
         vm.index='';
         vm.clientIp=sv.getClientIp();
@@ -30,6 +31,18 @@ angular.module('viewCustom')
         vm.componentData={}; // single component data
         vm.componentKey=[];
 
+        // remove HVD_VIA from record id of vm.docid
+        vm.removeHVD_VIA=function () {
+          var pattern = /^(HVD_VIA)/;
+          var docid=angular.copy(vm.docid);
+          if(pattern.test(docid)) {
+              vm.recordid=docid.substring(7,docid.length);
+          } else {
+              vm.recordid = docid;
+          }
+        };
+
+        // find index base on file name
         vm.findFilenameIndex=function (arrList,filename) {
             var k= -1;
             for(var i=0; i < arrList.length; i++){
@@ -175,6 +188,7 @@ angular.module('viewCustom')
         };
 
         vm.$onInit=function() {
+            vm.removeHVD_VIA();
             // if the smaller screen size, make the flex size to 100.
             if($mdMedia('sm')) {
                 vm.flexsize=100;
