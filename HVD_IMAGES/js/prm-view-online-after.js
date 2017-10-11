@@ -65,15 +65,17 @@ angular.module('viewCustom')
         // show the pop up image
         vm.gotoFullPhoto=function ($event, item, index) {
             var filename='';
-            if(item._attr.href._value) {
-                var urlList=item._attr.href._value;
+            if(item.image) {
+                var urlList=item.image[0]._attr.href._value;
                 urlList = urlList.split('/');
                 if(urlList.length >=3) {
                     filename=urlList[3];
                 }
+            } else if(item._attr.componentID) {
+                filename = item._attr.componentID._value;
             }
             // go to full display page
-            var url='/primo-explore/viewcomponent/'+vm.item.context+'/'+vm.item.pnx.control.recordid[0]+'/'+filename+'/'+index+'?vid='+vm.searchData.vid+'&lang='+vm.searchData.lang;
+            var url='/primo-explore/viewcomponent/'+vm.item.context+'/'+vm.item.pnx.control.recordid[0]+'/'+filename+'?vid='+vm.searchData.vid+'&lang='+vm.searchData.lang;
             if(vm.item.adaptor) {
                 url+='&adaptor='+vm.item.adaptor;
             } else {
@@ -99,7 +101,7 @@ angular.module('viewCustom')
 
             )
             .state('exploreMain.viewcomponent', {
-                    url:'/viewcomponent/:context/:docid/:filename/:index',
+                    url:'/viewcomponent/:context/:docid/:filename',
                     views:{
                         '':{
                            template:`<custom-view-component parent-ctrl="$ctrl" item="$ctrl.item" services="$ctrl.services" params="$ctrl.params"></custom-view-component>`

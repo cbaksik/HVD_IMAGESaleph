@@ -677,6 +677,14 @@ prm-search-result-list-after{
 .whiteBg {
     background:#ffffff;
 }
+
+.text-center {
+    text-align: center;
+}
+
+.bigPadding {
+    padding:30px;
+}
 prm-logo {
 	display: flex;
 	flex-direction: row;

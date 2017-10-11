@@ -25,7 +25,7 @@
      </md-button>
      </div>    
     <ul class="hvInline spaceTop" ng-if="$ctrl.item.mis1Data.length > 1" tabindex="-1">
-    <li ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" ng-click="$ctrl.gotoFullPhoto($event,item.image[0],$index)" tabindex="0">
+    <li ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" ng-click="$ctrl.gotoFullPhoto($event,item,$index)" tabindex="0">
         <multiple-thumbnail itemdata="item" searchdata="$ctrl.searchData"></multiple-thumbnail>
     </li>
     </ul>

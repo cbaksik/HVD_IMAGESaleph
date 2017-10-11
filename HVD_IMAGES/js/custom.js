@@ -991,10 +991,12 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
             if (urlList.length >= 3) {
                 filename = urlList[3];
             }
+        } else if (data._attr) {
+            filename = data._attr.componentID._value;
         }
 
         // go to full display page
-        var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '/' + filename + '/' + index + '?vid=' + vm.params.vid;
+        var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '/' + filename + '?vid=' + vm.params.vid;
         if (vm.params.adaptor) {
             url += '&adaptor=' + vm.params.adaptor;
         }
@@ -1052,7 +1054,7 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     vm.context = $stateParams.context;
     vm.docid = $stateParams.docid;
     vm.filename = $stateParams.filename;
-    vm.index = parseInt($stateParams.index);
+    vm.index = '';
     vm.clientIp = sv.getClientIp();
 
     vm.photo = {};
@@ -1067,6 +1069,27 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     vm.componentData = {}; // single component data
     vm.componentKey = [];
 
+    vm.findFilenameIndex = function (arrList, filename) {
+        var k = -1;
+        for (var i = 0; i < arrList.length; i++) {
+            var img = arrList[i];
+            if (img.image) {
+                var url = img.image[0]._attr.href._value;
+                if (url.match(vm.filename)) {
+                    k = i;
+                    i = arrList.length;
+                }
+            } else if (img._attr) {
+                var componentID = img._attr.componentID._value;
+                if (componentID === vm.filename) {
+                    k = i;
+                    i = arrList.length;
+                }
+            }
+        }
+        return k;
+    };
+
     // ajax call to get data
     vm.getData = function () {
         var url = vm.parentCtrl.searchService.cheetah.restBaseURLs.pnxBaseURL + '/' + vm.context + '/' + vm.docid;
@@ -1078,31 +1101,32 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         sv.getAjax(url, params, 'get').then(function (result) {
             vm.item = result.data;
             // convert xml to json
-            if (vm.item.pnx.addata) {
-                var result = sv.parseXml(vm.item.pnx.addata.mis1[0]);
-                if (result.work) {
-                    vm.xmldata = result.work[0];
-                    if (vm.xmldata.component) {
-                        vm.total = vm.xmldata.component.length;
-                        if (vm.index >= vm.total) {
-                            $window.location.href = '/primo-explore/fulldisplay?docid=' + vm.docid + '&vid=' + vm.params.vid;
+            if (vm.item.pnx) {
+                if (vm.item.pnx.addata) {
+                    var result = sv.parseXml(vm.item.pnx.addata.mis1[0]);
+                    if (result.work) {
+                        vm.xmldata = result.work[0];
+                        if (vm.xmldata.component) {
+                            vm.total = vm.xmldata.component.length;
                         }
-                    }
-                    if (vm.item.pnx.display) {
-                        vm.keys = Object.keys(vm.item.pnx.display);
-                        // remove unwanted key
-                        var removeList = cMap.getRemoveList();
-                        for (var i = 0; i < removeList.length; i++) {
-                            var key = removeList[i];
-                            var index = vm.keys.indexOf(key);
-                            if (index !== -1) {
-                                vm.keys.splice(index, 1);
+                        if (vm.item.pnx.display) {
+                            vm.keys = Object.keys(vm.item.pnx.display);
+                            // remove unwanted key
+                            var removeList = cMap.getRemoveList();
+                            for (var i = 0; i < removeList.length; i++) {
+                                var key = removeList[i];
+                                var index = vm.keys.indexOf(key);
+                                if (index !== -1) {
+                                    vm.keys.splice(index, 1);
+                                }
                             }
-                        }
 
-                        vm.keys = cMap.sort(vm.keys);
+                            vm.keys = cMap.sort(vm.keys);
+                        }
                     }
                 }
+            } else {
+                $window.location.href = '/primo-explore/search?vid=' + vm.params.vid;
             }
 
             // display photo
@@ -1155,10 +1179,17 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
         vm.isLoggedIn = sv.getLogInID();
         vm.clientIp = sv.getClientIp();
         if (vm.xmldata.component && !vm.xmldata.image) {
-            vm.componentData = vm.xmldata.component[vm.index];
-            vm.photo = vm.componentData.image[0];
-            // find out if the image is jp2 or not
-            vm.jp2 = sv.findJP2(vm.photo);
+            if (!vm.index && vm.index !== 0) {
+                vm.index = vm.findFilenameIndex(vm.xmldata.component, vm.filename);
+            }
+            if (vm.index >= 0 && vm.index < vm.total) {
+                vm.componentData = vm.xmldata.component[vm.index];
+                if (vm.componentData.image) {
+                    vm.photo = vm.componentData.image[0];
+                    // find out if the image is jp2 or not
+                    vm.jp2 = sv.findJP2(vm.photo);
+                }
+            }
         } else if (vm.xmldata.image) {
             vm.photo = vm.xmldata.image[0];
             vm.jp2 = sv.findJP2(vm.photo);
@@ -1203,9 +1234,6 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
                 }
             }
         }, 1000);
-
-        console.log('*** custom-view-component ***');
-        console.log(vm);
     };
 
     // next photo
@@ -2865,15 +2893,17 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     // show the pop up image
     vm.gotoFullPhoto = function ($event, item, index) {
         var filename = '';
-        if (item._attr.href._value) {
-            var urlList = item._attr.href._value;
+        if (item.image) {
+            var urlList = item.image[0]._attr.href._value;
             urlList = urlList.split('/');
             if (urlList.length >= 3) {
                 filename = urlList[3];
             }
+        } else if (item._attr.componentID) {
+            filename = item._attr.componentID._value;
         }
         // go to full display page
-        var url = '/primo-explore/viewcomponent/' + vm.item.context + '/' + vm.item.pnx.control.recordid[0] + '/' + filename + '/' + index + '?vid=' + vm.searchData.vid + '&lang=' + vm.searchData.lang;
+        var url = '/primo-explore/viewcomponent/' + vm.item.context + '/' + vm.item.pnx.control.recordid[0] + '/' + filename + '?vid=' + vm.searchData.vid + '&lang=' + vm.searchData.lang;
         if (vm.item.adaptor) {
             url += '&adaptor=' + vm.item.adaptor;
         } else {
@@ -2892,7 +2922,7 @@ angular.module('viewCustom').config(function ($stateProvider) {
             }
         }
     }).state('exploreMain.viewcomponent', {
-        url: '/viewcomponent/:context/:docid/:filename/:index',
+        url: '/viewcomponent/:context/:docid/:filename',
         views: {
             '': {
                 template: '<custom-view-component parent-ctrl="$ctrl" item="$ctrl.item" services="$ctrl.services" params="$ctrl.params"></custom-view-component>'

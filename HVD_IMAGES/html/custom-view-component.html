@@ -1,4 +1,4 @@
-<div layout="row" class="whiteBg">
+<div layout="row" class="whiteBg" ng-if="vm.index !== -1">
    <div flex="{{vm.flexsize}}" class="full-view-inner-container whiteBg">
 
        <!-- iframe component -->
@@ -15,7 +15,7 @@
            </md-button>
        </section>
 
-       <single-image src="vm.photo._attr.href._value" imgtitle="vm.imageTitle"
+       <single-image ng-if="vm.item.pnx.addata" src="vm.photo._attr.href._value" imgtitle="vm.imageTitle"
                      restricted="vm.photo._attr.restrictedImage._value" jp2="vm.jp2"></single-image>
        <div layout="row" class="spaceTop" layout-sm="column" ng-if="vm.photo.caption">
            <div flex="20"></div>
@@ -38,9 +38,9 @@
        </div>
 
        <!--- end display title and info from xml format -->
-        <hr/>
+        <hr ng-if="vm.item.pnx.addata"/>
 
-       <!-- display image info surrogate -->
+       <!-- display image component -->
 
 
        <div layout="row" layout-xs="column" class="layout-row">
@@ -62,9 +62,21 @@
            </div>
        </div>
 
-
-       <!-- end display image info surrogate -->
+       <!-- end display image component -->
   
    </div>
+</div>
+
+
+<!-- display error message when the vm.index = -1 -->
+<div layout="row" class="whiteBg" ng-if="vm.index === -1">
+    <div flex class="full-view-inner-container whiteBg">
+    <p class="text-center bigPadding">
+        This component does not exist. Please visit the work record at
+        <a href="http://id.lib.harvard.edu/via/{{vm.docid}}/catalog">
+            http://id.lib.harvard.edu/via/{{vm.docid}}/catalog
+        </a>.
+    </p>
+    </div>
 </div>
 

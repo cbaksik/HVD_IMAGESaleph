@@ -102,10 +102,12 @@ angular.module('viewCustom')
                 if(urlList.length >=3) {
                     filename = urlList[3];
                 }
+            } else if(data._attr) {
+                filename = data._attr.componentID._value;
             }
 
             // go to full display page
-            var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid + '/' + filename + '/' + index + '?vid='+vm.params.vid;
+            var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid + '/' + filename + '?vid='+vm.params.vid;
             if(vm.params.adaptor) {
                 url+='&adaptor='+vm.params.adaptor;
             }
