@@ -3,7 +3,7 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService','$window','$stateParams','$timeout','customMapXmlKeys', function ($sce, $element,$location, prmSearchService, $window, $stateParams, $timeout, customMapXmlKeys) {
+    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService','$window','$stateParams','$timeout','customMapXmlKeys','$mdMedia', function ($sce, $element,$location, prmSearchService, $window, $stateParams, $timeout, customMapXmlKeys, $mdMedia) {
 
         var vm = this;
         var sv=prmSearchService;
@@ -107,10 +107,11 @@ angular.module('viewCustom')
             }
 
             // go to full display page
-            var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid + '/' + filename + '?vid='+vm.params.vid;
+            var url='/primo-explore/viewcomponent/'+vm.context+'/'+vm.docid + '?vid='+vm.params.vid +'&imageId='+filename;
             if(vm.params.adaptor) {
                 url+='&adaptor='+vm.params.adaptor;
             }
+
             $window.open(url,'_blank');
         };
 
@@ -125,11 +126,14 @@ angular.module('viewCustom')
             $timeout(function (e) {
                 var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
                 if(topbar) {
-                    var divNode=document.createElement('div');
-                    divNode.setAttribute('class','metadataHeader');
-                    var textNode=document.createTextNode('FULL COMPONENT METADATA');
-                    divNode.appendChild(textNode);
-                    topbar.insertBefore(divNode,topbar.children[2]);
+                    // hide title in extra small screen size
+                    if(!$mdMedia('xs')) {
+                        var divNode = document.createElement('div');
+                        divNode.setAttribute('class', 'metadataHeader');
+                        var textNode = document.createTextNode('FULL COMPONENT METADATA');
+                        divNode.appendChild(textNode);
+                        topbar.insertBefore(divNode, topbar.children[2]);
+                    }
                     // remove pin and bookmark
                     if(topbar.children.length > 2) {
                         topbar.children[1].remove();

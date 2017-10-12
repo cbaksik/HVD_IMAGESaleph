@@ -251,6 +251,8 @@ angular.module('viewCustom')
                          listArray=subLevel.component;
                      } else if(subLevel.image) {
                          listArray=subLevel;
+                     } else {
+                         listArray=subLevel;
                      }
                 }
 

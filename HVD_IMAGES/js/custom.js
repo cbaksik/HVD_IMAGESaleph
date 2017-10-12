@@ -896,7 +896,7 @@ angular.module('viewCustom').component('customTopMenu', {
  * Created by samsan on 7/17/17.
  */
 
-angular.module('viewCustom').controller('customViewAllComponentMetadataController', ['$sce', '$element', '$location', 'prmSearchService', '$window', '$stateParams', '$timeout', 'customMapXmlKeys', function ($sce, $element, $location, prmSearchService, $window, $stateParams, $timeout, customMapXmlKeys) {
+angular.module('viewCustom').controller('customViewAllComponentMetadataController', ['$sce', '$element', '$location', 'prmSearchService', '$window', '$stateParams', '$timeout', 'customMapXmlKeys', '$mdMedia', function ($sce, $element, $location, prmSearchService, $window, $stateParams, $timeout, customMapXmlKeys, $mdMedia) {
 
     var vm = this;
     var sv = prmSearchService;
@@ -996,10 +996,11 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
         }
 
         // go to full display page
-        var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '/' + filename + '?vid=' + vm.params.vid;
+        var url = '/primo-explore/viewcomponent/' + vm.context + '/' + vm.docid + '?vid=' + vm.params.vid + '&imageId=' + filename;
         if (vm.params.adaptor) {
             url += '&adaptor=' + vm.params.adaptor;
         }
+
         $window.open(url, '_blank');
     };
 
@@ -1014,11 +1015,14 @@ angular.module('viewCustom').controller('customViewAllComponentMetadataControlle
         $timeout(function (e) {
             var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
             if (topbar) {
-                var divNode = document.createElement('div');
-                divNode.setAttribute('class', 'metadataHeader');
-                var textNode = document.createTextNode('FULL COMPONENT METADATA');
-                divNode.appendChild(textNode);
-                topbar.insertBefore(divNode, topbar.children[2]);
+                // hide title in extra small screen size
+                if (!$mdMedia('xs')) {
+                    var divNode = document.createElement('div');
+                    divNode.setAttribute('class', 'metadataHeader');
+                    var textNode = document.createTextNode('FULL COMPONENT METADATA');
+                    divNode.appendChild(textNode);
+                    topbar.insertBefore(divNode, topbar.children[2]);
+                }
                 // remove pin and bookmark
                 if (topbar.children.length > 2) {
                     topbar.children[1].remove();
@@ -1054,7 +1058,7 @@ angular.module('viewCustom').controller('customViewComponentController', ['$sce'
     vm.context = $stateParams.context;
     vm.docid = $stateParams.docid;
     vm.recordid = '';
-    vm.filename = $stateParams.filename;
+    vm.filename = vm.params.imageId;
     vm.index = '';
     vm.clientIp = sv.getClientIp();
 
@@ -2636,6 +2640,8 @@ angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$
                         listArray = subLevel.component;
                     } else if (subLevel.image) {
                         listArray = subLevel;
+                    } else {
+                        listArray = subLevel;
                     }
                 }
             } else {
@@ -2908,13 +2914,13 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
 
         if (vm.item.mis1Data) {
             if (Array.isArray(vm.item.mis1Data) === false) {
+                vm.singleImageFlag = true;
                 if (vm.item.mis1Data.image) {
-                    vm.singleImageFlag = true;
                     vm.photo = vm.item.mis1Data.image[0];
                     vm.jp2 = sv.findJP2(vm.photo); // check to see if the image is jp2 or not
-                    if (vm.item.mis1Data.title) {
-                        vm.imageTitle = vm.item.mis1Data.title[0].textElement[0]._text;
-                    }
+                }
+                if (vm.item.mis1Data.title) {
+                    vm.imageTitle = vm.item.mis1Data.title[0].textElement[0]._text;
                 }
             } else {
                 vm.viewAllComponetMetadataFlag = true;
@@ -2945,7 +2951,7 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
             filename = item._attr.componentID._value;
         }
         // go to full display page
-        var url = '/primo-explore/viewcomponent/' + vm.item.context + '/' + vm.item.pnx.control.recordid[0] + '/' + filename + '?vid=' + vm.searchData.vid + '&lang=' + vm.searchData.lang;
+        var url = '/primo-explore/viewcomponent/' + vm.item.context + '/' + vm.item.pnx.control.recordid[0] + '?vid=' + vm.searchData.vid + '&imageId=' + filename;
         if (vm.item.adaptor) {
             url += '&adaptor=' + vm.item.adaptor;
         } else {
@@ -2964,7 +2970,7 @@ angular.module('viewCustom').config(function ($stateProvider) {
             }
         }
     }).state('exploreMain.viewcomponent', {
-        url: '/viewcomponent/:context/:docid/:filename',
+        url: '/viewcomponent/:context/:docid',
         views: {
             '': {
                 template: '<custom-view-component parent-ctrl="$ctrl" item="$ctrl.item" services="$ctrl.services" params="$ctrl.params"></custom-view-component>'

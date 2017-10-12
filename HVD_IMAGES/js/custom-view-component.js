@@ -15,7 +15,7 @@ angular.module('viewCustom')
         vm.context=$stateParams.context;
         vm.docid=$stateParams.docid;
         vm.recordid='';
-        vm.filename = $stateParams.filename;
+        vm.filename = vm.params.imageId;
         vm.index='';
         vm.clientIp=sv.getClientIp();
 

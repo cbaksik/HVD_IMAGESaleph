@@ -1583,6 +1583,19 @@ div.search-actions > .md-button.button-confirm:hover {
     z-index:0 !important;
 }
 
+
+.hv-image-card2 {
+    padding-top: 0px !important;
+    margin-top:0px !important;
+    margin-bottom:10px !important;
+    padding-bottom:0px !important;
+    padding-left:0px !important;
+    background: transparent !important;
+    width:185px;
+    height:auto;
+    z-index:0 !important;
+}
+
 .nospace {
     padding:0px !important;
     margin-bottom:0px !important;

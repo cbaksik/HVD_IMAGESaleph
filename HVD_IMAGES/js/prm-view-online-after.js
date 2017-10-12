@@ -34,18 +34,18 @@ angular.module('viewCustom')
 
            if(vm.item.mis1Data) {
                if(Array.isArray(vm.item.mis1Data)===false) {
+                   vm.singleImageFlag=true;
                    if (vm.item.mis1Data.image) {
-                       vm.singleImageFlag=true;
                        vm.photo=vm.item.mis1Data.image[0];
                        vm.jp2=sv.findJP2(vm.photo); // check to see if the image is jp2 or not
-                       if(vm.item.mis1Data.title) {
-                           vm.imageTitle = vm.item.mis1Data.title[0].textElement[0]._text;
-                       }
+                   }
+                   if(vm.item.mis1Data.title) {
+                       vm.imageTitle = vm.item.mis1Data.title[0].textElement[0]._text;
                    }
                } else {
-                   vm.viewAllComponetMetadataFlag=true;
-                   vm.singleImageFlag=false;
-                   vm.zoomButtonFlag=true;
+                   vm.viewAllComponetMetadataFlag = true;
+                   vm.singleImageFlag = false;
+                   vm.zoomButtonFlag = true;
                }
            }
 
@@ -75,7 +75,7 @@ angular.module('viewCustom')
                 filename = item._attr.componentID._value;
             }
             // go to full display page
-            var url='/primo-explore/viewcomponent/'+vm.item.context+'/'+vm.item.pnx.control.recordid[0]+'/'+filename+'?vid='+vm.searchData.vid+'&lang='+vm.searchData.lang;
+            var url='/primo-explore/viewcomponent/'+vm.item.context+'/'+vm.item.pnx.control.recordid[0]+'?vid='+vm.searchData.vid+'&imageId='+filename;
             if(vm.item.adaptor) {
                 url+='&adaptor='+vm.item.adaptor;
             } else {
@@ -101,7 +101,7 @@ angular.module('viewCustom')
 
             )
             .state('exploreMain.viewcomponent', {
-                    url:'/viewcomponent/:context/:docid/:filename',
+                    url:'/viewcomponent/:context/:docid',
                     views:{
                         '':{
                            template:`<custom-view-component parent-ctrl="$ctrl" item="$ctrl.item" services="$ctrl.services" params="$ctrl.params"></custom-view-component>`
