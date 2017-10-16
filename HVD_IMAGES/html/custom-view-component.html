@@ -50,13 +50,7 @@
                            <label class="bold-text">{{key|mapXmlFilter}}</label>&nbsp;
                        </div>
                        <div flex flex-gt-sm="80" flex-gt-xs="75" class=" flex-gt-xs-75 flex-gt-sm-80 flex">
-                           <span ng-if="!vm.isArray(vm.componentData[key])">
-                               <span ng-bind-html="vm.getValue(vm.componentData[key],key)"></span>
-                           </span>
-                           <span ng-if="vm.isArray(vm.componentData[key])" ng-repeat="val in vm.componentData[key] track by $index">
-                               <span ng-bind-html="vm.getValue(val,key)"></span>
-                               <span ng-if="key==='topic' && $index < vm.componentData[key].length - 1">;</span>&nbsp;
-                           </span>
+                           <span ng-bind-html="vm.getValue(vm.componentData[key],key)"></span>
                        </div>
                    </div>
            </div>

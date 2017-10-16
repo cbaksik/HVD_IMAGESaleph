@@ -53,7 +53,7 @@ angular.module('viewCustom')
             {'hvd_production':'Image Publication info'},
             {'hvd_relatedInformation':'Image Related info'},
             {'hvd_relatedWork':'Image Related Work'},
-            {'hvd_repository':'Image Repository'},
+            {'hvd_repository':'Harvard Repository'},
             {'hvd_state':'Image Edition'},
             {'hvd_style':'Image Style'},
             {'hvd_title':'Image Title'},
@@ -85,8 +85,8 @@ angular.module('viewCustom')
         };
 
         //re-arrange sorting order
-        serviceObj.order=['title','lds04','creator','edition','lds07','format','lds13','subject','lds31','lds23','lds22',
-        'lds30','identifier','lds44','lds24','lds25','lds27','rights','lds26','creationdate','lds01'];
+        serviceObj.order=['title','lds04','creator','creationdate','edition','lds07','format','lds13','subject','lds31','lds23','lds22',
+        'lds30','identifier','lds44','lds24','lds25','lds27','rights','lds26','lds01'];
 
         serviceObj.sort=function (listKey) {
            var keys=[];
@@ -102,9 +102,9 @@ angular.module('viewCustom')
         };
 
         // re-arrange sorting component order
-        serviceObj.orderList=['title','creator','state','production','description','physicalDescription','materials','dimensions',
+        serviceObj.orderList=['title','creator','freeDate','state','production','description','physicalDescription','materials','dimensions',
         'notes','note','topic','placeName','location','culture','style','workType','classification','itemIdentifier',
-            'associatedName','relatedWork','relatedInformation','useRestrictions','copyright','freeDate','_attr','repository'];
+            'associatedName','relatedWork','relatedInformation','useRestrictions','copyright','repository'];
         serviceObj.getOrderList=function (listKey) {
             var keys=[];
             var hvdKeys=[];
@@ -134,6 +134,12 @@ angular.module('viewCustom')
                     if(index !== -1) {
                         keys.push(key);
                     }
+                }
+            }
+            if(listKey.length > 0) {
+                var index = listKey.indexOf('_attr');
+                if (index !== -1) {
+                    keys.push('_attr');
                 }
             }
 

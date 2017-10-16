@@ -3,11 +3,12 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService','$window','$stateParams','$timeout','customMapXmlKeys','$mdMedia', function ($sce, $element,$location, prmSearchService, $window, $stateParams, $timeout, customMapXmlKeys, $mdMedia) {
+    .controller('customViewAllComponentMetadataController', [ '$sce','$element','$location','prmSearchService','$window','$stateParams','$timeout','customMapXmlKeys','$mdMedia','customMapXmlValues', function ($sce, $element,$location, prmSearchService, $window, $stateParams, $timeout, customMapXmlKeys, $mdMedia, customMapXmlValues) {
 
         var vm = this;
         var sv=prmSearchService;
         var cMap=customMapXmlKeys;
+        var cMapValue=customMapXmlValues;
         vm.params=$location.search();
         // get ui-router parameters
         vm.context=$stateParams.context;
@@ -82,15 +83,8 @@ angular.module('viewCustom')
 
         // get json value base on dynamic key
         vm.getValue=function (obj,key) {
-            return sv.getValue(obj,key);
-        };
-
-        vm.isArray=function (obj) {
-          if(Array.isArray(obj)) {
-              return true;
-          } else {
-              return false;
-          }
+            var values = cMapValue.getValue(obj,key);
+            return values;
         };
 
         // show the pop up image

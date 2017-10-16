@@ -4,11 +4,12 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element','$timeout','customMapXmlKeys','$window', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element, $timeout, customMapXmlKeys,$window) {
+    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element','$timeout','customMapXmlKeys','$window','customMapXmlValues', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element, $timeout, customMapXmlKeys,$window, customMapXmlValues) {
 
         let vm = this;
         var sv=prmSearchService;
         var cMap=customMapXmlKeys;
+        var cMapValue=customMapXmlValues;
         // get location parameter
         vm.params=$location.search();
         // get parameter from angular ui-router
@@ -116,14 +117,7 @@ angular.module('viewCustom')
                 );
 
         };
-
-        vm.isArray=function (obj) {
-            if(Array.isArray(obj)) {
-                return true;
-            } else {
-                return false;
-            }
-        };
+        
 
         // get json key and remove image from the key
         vm.getKeys=function (obj) {
@@ -142,7 +136,7 @@ angular.module('viewCustom')
 
         // get value base on json key
         vm.getValue=function(val,key){
-            return sv.getValue(val,key);
+            return cMapValue.getValue(val,key);
         };
 
         // display each component value key
