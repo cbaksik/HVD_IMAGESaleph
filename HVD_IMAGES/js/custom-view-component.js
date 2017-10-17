@@ -117,7 +117,7 @@ angular.module('viewCustom')
                 );
 
         };
-        
+
 
         // get json key and remove image from the key
         vm.getKeys=function (obj) {
