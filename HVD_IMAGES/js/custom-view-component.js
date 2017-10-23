@@ -4,16 +4,21 @@
  */
 
 angular.module('viewCustom')
-    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element','$timeout', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element, $timeout) {
+    .controller('customViewComponentController', [ '$sce','$mdMedia','prmSearchService','$location','$stateParams', '$element','$timeout','customMapXmlKeys','$window','customMapXmlValues', function ($sce,$mdMedia,prmSearchService,$location,$stateParams, $element, $timeout, customMapXmlKeys,$window, customMapXmlValues) {
 
         let vm = this;
         var sv=prmSearchService;
+        var cMap=customMapXmlKeys;
+        var cMapValue=customMapXmlValues;
         // get location parameter
         vm.params=$location.search();
         // get parameter from angular ui-router
         vm.context=$stateParams.context;
         vm.docid=$stateParams.docid;
-        vm.index=parseInt($stateParams.index);
+        vm.recordid='';
+        vm.filename = vm.params.imageId;
+        vm.index='';
+        vm.clientIp=sv.getClientIp();
 
         vm.photo={};
         vm.flexsize=80;
@@ -21,8 +26,44 @@ angular.module('viewCustom')
         vm.itemData={};
         vm.imageNav=true;
         vm.xmldata={};
+        vm.keys=[];
         vm.imageTitle='';
         vm.jp2=false;
+        vm.componentData={}; // single component data
+        vm.componentKey=[];
+
+        // remove HVD_VIA from record id of vm.docid
+        vm.removeHVD_VIA=function () {
+          var pattern = /^(HVD_VIA)/;
+          var docid=angular.copy(vm.docid);
+          if(pattern.test(docid)) {
+              vm.recordid=docid.substring(7,docid.length);
+          } else {
+              vm.recordid = docid;
+          }
+        };
+
+        // find index base on file name
+        vm.findFilenameIndex=function (arrList,filename) {
+            var k= -1;
+            for(var i=0; i < arrList.length; i++){
+                var img=arrList[i];
+                if(img.image) {
+                    var url=img.image[0]._attr.href._value;
+                    if(url.match(vm.filename)) {
+                        k = i;
+                        i = arrList.length;
+                    }
+                } else if(img._attr){
+                    var componentID = img._attr.componentID._value;
+                    if(componentID===vm.filename) {
+                        k=i;
+                        i=arrList.length;
+                    }
+                }
+            }
+            return k;
+        };
 
         // ajax call to get data
         vm.getData=function () {
@@ -36,18 +77,36 @@ angular.module('viewCustom')
                 .then(function (result) {
                     vm.item=result.data;
                     // convert xml to json
-                    if(vm.item.pnx.addata) {
-                        vm.xmldata = sv.getXMLdata(vm.item.pnx.addata.mis1[0]);
+                    if(vm.item.pnx) {
+                        if(vm.item.pnx.addata) {
+                            var result = sv.parseXml(vm.item.pnx.addata.mis1[0]);
+                            if (result.work) {
+                                vm.xmldata = result.work[0];
+                                if (vm.xmldata.component) {
+                                    vm.total = vm.xmldata.component.length;
+                                }
+                                if (vm.item.pnx.display) {
+                                    vm.keys = Object.keys(vm.item.pnx.display);
+                                    // remove unwanted key
+                                    var removeList = cMap.getRemoveList();
+                                    for (var i = 0; i < removeList.length; i++) {
+                                        var key = removeList[i];
+                                        var index = vm.keys.indexOf(key);
+                                        if (index !== -1) {
+                                            vm.keys.splice(index, 1);
+                                        }
+                                    }
 
+                                    vm.keys = cMap.sort(vm.keys);
+
+                                }
+
+                            }
+                        }
+                    } else {
+                        $window.location.href = '/primo-explore/search?vid=' + vm.params.vid;
                     }
-                    // show total of image
-                    if(vm.xmldata.surrogate) {
-                        vm.total=vm.xmldata.surrogate.length;
-                    } else if(vm.xmldata.image) {
-                        vm.total=vm.xmldata.image.length;
-                    } else if(vm.xmldata.length) {
-                        vm.total=vm.xmldata.length;
-                    }
+
                     // display photo
                     vm.displayPhoto();
 
@@ -60,39 +119,70 @@ angular.module('viewCustom')
         };
 
 
+        // get json key and remove image from the key
+        vm.getKeys=function (obj) {
+            var keys=Object.keys(obj);
+            var removeList = cMap.getRemoveList();
+            for(var i=0; i < removeList.length; i++) {
+                var key=removeList[i];
+                var index = keys.indexOf(key);
+                if (index !== -1) {
+                    // remove image from the list
+                    keys.splice(index, 1);
+                }
+            }
+            return cMap.getOrderList(keys);
+        };
+
+        // get value base on json key
+        vm.getValue=function(val,key){
+            return cMapValue.getValue(val,key);
+        };
+
+        // display each component value key
+        vm.getComponentValue=function(key){
+           var text='';
+           if(vm.componentData && key) {
+               var data=vm.componentData[key];
+               text = sv.getValue(data,key);
+           }
+           return text;
+        };
+
+
+        // display each photo component
         vm.displayPhoto=function () {
             vm.isLoggedIn=sv.getLogInID();
-            if (vm.xmldata.surrogate && !vm.xmldata.image) {
-                if(vm.xmldata.surrogate[vm.index].image) {
-                    vm.photo = vm.xmldata.surrogate[vm.index].image[0];
-                    // find out if the image is jp2 or not
-                    vm.jp2=sv.findJP2(vm.photo);
+            vm.clientIp=sv.getClientIp();
+            if (vm.xmldata.component && !vm.xmldata.image) {
+                if(!vm.index && vm.index !== 0) {
+                    vm.index = vm.findFilenameIndex(vm.xmldata.component, vm.filename);
+                }
+                if(vm.index >= 0 && vm.index < vm.total) {
+                    vm.componentData = vm.xmldata.component[vm.index];
+                    if (vm.componentData.image) {
+                        vm.photo = vm.componentData.image[0];
+                        // find out if the image is jp2 or not
+                        vm.jp2 = sv.findJP2(vm.photo);
+                    }
+                }
 
-                } else {
-                    vm.photo = vm.xmldata.surrogate[vm.index];
-                    vm.jp2=sv.findJP2(vm.photo);
-                }
-                if(vm.xmldata.surrogate[vm.index].title) {
-                    vm.imageTitle = vm.xmldata.surrogate[vm.index].title[0].textElement[0]._text;
-                }
             } else if(vm.xmldata.image) {
-                vm.photo=vm.xmldata.image[vm.index];
+                vm.photo=vm.xmldata.image[0];
                 vm.jp2=sv.findJP2(vm.photo);
-            } else {
-                vm.photo=vm.xmldata[vm.index];
+                vm.componentData=vm.xmldata.image[0];
             }
 
             if(vm.photo._attr && vm.photo._attr.restrictedImage) {
-                if(vm.photo._attr.restrictedImage._value && vm.isLoggedIn===false) {
+                if(vm.photo._attr.restrictedImage._value && vm.isLoggedIn===false && !vm.clientIp.status) {
                     vm.imageNav=false;
                 }
             }
 
-
         };
 
-        vm.$onChanges=function() {
-
+        vm.$onInit=function() {
+            vm.removeHVD_VIA();
             // if the smaller screen size, make the flex size to 100.
             if($mdMedia('sm')) {
                 vm.flexsize=100;
@@ -107,7 +197,6 @@ angular.module('viewCustom')
                 el.style.display = 'none';
             }
 
-
             // insert a header into black topbar
             $timeout(function (e) {
                 var topbar = $element[0].parentNode.parentNode.children[0].children[0].children[1];
@@ -118,16 +207,16 @@ angular.module('viewCustom')
                     divNode.appendChild(textNode);
                     topbar.insertBefore(divNode,topbar.children[2]);
                     // remove pin and bookmark
-                    topbar.children[3].remove();
-                    // remove user login message
-                    topbar.children[3].remove();
+                    if(topbar.children.length > 2) {
+                        topbar.children[1].remove();
+                        topbar.children[2].remove();
+                    }
+
                 }
 
-
-            },300);
+            },1000);
 
         };
-
 
         // next photo
         vm.nextPhoto=function () {
@@ -138,6 +227,7 @@ angular.module('viewCustom')
                 vm.index=0;
                 vm.displayPhoto();
             }
+
         };
         // prev photo
         vm.prevPhoto=function () {
@@ -150,14 +240,6 @@ angular.module('viewCustom')
             }
         };
 
-        // check if the item is array or not
-        vm.isArray=function (obj) {
-            if(Array.isArray(obj)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
 
     }]);
 
@@ -169,3 +251,12 @@ angular.module('viewCustom')
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/custom-view-component.html'
     });
 
+// truncate word to limit 60 characters
+angular.module('viewCustom').filter('mapXmlFilter',['customMapXmlKeys',function (customMapXmlKeys) {
+    var cMap=customMapXmlKeys;
+    return function (key) {
+        var newKey=cMap.mapKey(key);
+        return newKey.charAt(0).toUpperCase() + newKey.slice(1);
+    }
+
+}]);

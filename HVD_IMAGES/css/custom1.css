@@ -664,6 +664,27 @@ prm-search-result-list-after{
     font-weight: normal;
     text-transform: uppercase;
 }
+
+.hv-toggle {
+    text-align: right;
+}
+
+.hv-toggle > button {
+    margin-bottom:10px !important;
+    margin-top:0px !important;
+}
+
+.whiteBg {
+    background:#ffffff;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.bigPadding {
+    padding:30px;
+}
 prm-logo {
 	display: flex;
 	flex-direction: row;
@@ -1559,6 +1580,19 @@ div.search-actions > .md-button.button-confirm:hover {
     background: transparent !important;
     width:185px;
     height:230px;
+    z-index:0 !important;
+}
+
+
+.hv-image-card2 {
+    padding-top: 0px !important;
+    margin-top:0px !important;
+    margin-bottom:10px !important;
+    padding-bottom:0px !important;
+    padding-left:0px !important;
+    background: transparent !important;
+    width:185px;
+    height:auto;
     z-index:0 !important;
 }
 

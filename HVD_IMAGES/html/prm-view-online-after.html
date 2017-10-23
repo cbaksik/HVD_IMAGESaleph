@@ -1,4 +1,4 @@
-<div ng-if="$ctrl.singleImageFlag" ng-repeat="item in $ctrl.item.mis1Data track by $index">
+<div ng-if="$ctrl.singleImageFlag">
     <div layout="column" layout-align="center center" ng-if="$ctrl.zoomButtonFlag">
         <md-button class="md-raised md-primary btn-margin-bottom" (click)="$ctrl.gotoFullPhoto($event,item,$index)" tabindex="0">
             <md-icon md-svg-src="/primo-explore/custom/HVD_IMAGES/img/file-find.svg"></md-icon> ZOOM OPTIONS AND FULL RECORD DETAILS
@@ -6,8 +6,14 @@
     </div>
     <div layout="row">
         <div flex="grow">
-            <responsive-image ng-if="!item.image" src="item._attr.href._value" imgtitle="item.pnx.display.title[0]" restricted="item._attr.restrictedImage._value"></responsive-image>
-            <responsive-image ng-if="item.image" src="item.image[0]._attr.href._value" imgtitle="item.title[0].textElement[0]._text" restricted="item.image[0]._attr.restrictedImage._value"></responsive-image>
+            <!-- single image -->
+            <single-image src="$ctrl.photo._attr.href._value" imgtitle="$ctrl.imageTitle"
+                          restricted="$ctrl.photo._attr.restrictedImage._value" jp2="$ctrl.jp2"></single-image>
+            <div layout="row" class="spaceTop" layout-sm="column" ng-if="$ctrl.photo.caption">
+                <div flex="20"></div>
+                <div flex="80"><span class="bold-text spaceRight">Caption:</span>  {{$ctrl.photo.caption[0]._text}}</div>
+            </div>
+            <!-- end single image -->
         </div>
     </div>
 </div>
@@ -18,11 +24,8 @@
         VIEW ALL COMPONENT METADATA
      </md-button>
      </div>    
-    <ul class="hvInline spaceTop" ng-if="$ctrl.item.mis1Data[0].image.length > 1 || $ctrl.item.mis1Data.length > 1" tabindex="-1">
-    <li ng-if="$ctrl.item.mis1Data.length === 1 && $ctrl.item.mis1Data[0].image.length > 1" ng-repeat="item in $ctrl.item.mis1Data[0].image track by $index" ng-click="$ctrl.gotoFullPhoto($event,item,$index)" tabindex="0">
-        <multiple-thumbnail itemdata="item" searchdata="$ctrl.searchData"></multiple-thumbnail>
-    </li>
-    <li ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" ng-click="$ctrl.gotoFullPhoto($event,item.image[0],$index)" tabindex="0">
+    <ul class="hvInline spaceTop" ng-if="$ctrl.item.mis1Data.length > 1" tabindex="-1">
+    <li ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" ng-click="$ctrl.gotoFullPhoto($event,item,$index)" tabindex="0">
         <multiple-thumbnail itemdata="item" searchdata="$ctrl.searchData"></multiple-thumbnail>
     </li>
     </ul>

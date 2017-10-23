@@ -23,12 +23,14 @@ angular.module('viewCustom')
             vm.params=$location.search();
             vm.localScope={'imgClass':'','loading':true,'hideLockIcon':false};
             vm.isLoggedIn=sv.getLogInID();
+            vm.clientIp=sv.getClientIp();
 
             // check if image is not empty and it has width and height and greater than 150, then add css class
             vm.$onChanges=function () {
-
+                vm.clientIp=sv.getClientIp();
                 vm.isLoggedIn=sv.getLogInID();
-                if(vm.restricted && !vm.isLoggedIn) {
+
+                if(vm.restricted && !vm.isLoggedIn && !vm.clientIp.status) {
                     vm.showImage=false;
                 }
                 vm.localScope={'imgClass':'','loading':true,'hideLockIcon':false};
