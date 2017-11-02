@@ -10,7 +10,8 @@ angular.module('viewCustom')
 
         // get rest endpoint Url
         vm.getUrl=function () {
-            cs.getAjax('/primo-explore/custom/HVD_IMAGES/html/config.html','','get')
+            var configFile = cs.getEnv();
+            cs.getAjax('/primo-explore/custom/HVD_IMAGES/html/'+configFile,'','get')
                 .then(function (res) {
                         vm.api=res.data;
                         cs.setApi(vm.api);
@@ -21,10 +22,6 @@ angular.module('viewCustom')
                 )
         };
 
-        vm.$onChanges=function() {
-            // get api url for cross site
-            vm.getUrl();
-        };
 
         vm.$onInit=function() {
             // hide primo tab menu
@@ -37,6 +34,8 @@ angular.module('viewCustom')
             if(el.children[0].className !== 'topMenu') {
                 el.prepend(div);
             }
+
+            vm.getUrl();
 
         };
 

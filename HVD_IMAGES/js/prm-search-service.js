@@ -7,6 +7,19 @@ angular.module('viewCustom')
     .service('prmSearchService',['$http','$window','$filter','$sce',function ($http, $window, $filter,$sce) {
     let serviceObj={};
 
+    // get environment to run config.html
+    serviceObj.getEnv=function () {
+        var host = $window.location.hostname;
+        var config='config-prod.html';
+        if(host.toLowerCase()==='localhost'){
+            config='config-local.html';
+        } else if(host.toLowerCase()==='harvard-primosb.hosted.exlibrisgroup.com') {
+            config='config-dev.html';
+        }
+
+        return config;
+    };
+
     serviceObj.getBrowserType=function () {
         var userAgent=$window.navigator.userAgent;
         var browsers = {chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer/i};

@@ -1990,7 +1990,8 @@ angular.module('viewCustom').controller('prmAuthenticationAfterController', ['pr
 
     // get rest endpoint Url
     vm.getUrl = function () {
-        sv.getAjax('/primo-explore/custom/HVD_IMAGES/html/config.html', '', 'get').then(function (res) {
+        var configFile = sv.getEnv();
+        sv.getAjax('/primo-explore/custom/HVD_IMAGES/html/' + configFile, '', 'get').then(function (res) {
             vm.api = res.data;
             sv.setApi(vm.api);
             vm.getClientIP();
@@ -2758,6 +2759,19 @@ angular.module('viewCustom').component('prmSearchResultListAfter', {
 angular.module('viewCustom').service('prmSearchService', ['$http', '$window', '$filter', '$sce', function ($http, $window, $filter, $sce) {
     var serviceObj = {};
 
+    // get environment to run config.html
+    serviceObj.getEnv = function () {
+        var host = $window.location.hostname;
+        var config = 'config-prod.html';
+        if (host.toLowerCase() === 'localhost') {
+            config = 'config-local.html';
+        } else if (host.toLowerCase() === 'harvard-primosb.hosted.exlibrisgroup.com') {
+            config = 'config-dev.html';
+        }
+
+        return config;
+    };
+
     serviceObj.getBrowserType = function () {
         var userAgent = $window.navigator.userAgent;
         var browsers = { chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer/i };
@@ -3046,17 +3060,13 @@ angular.module('viewCustom').controller('prmTopbarAfterController', ['$element',
 
     // get rest endpoint Url
     vm.getUrl = function () {
-        cs.getAjax('/primo-explore/custom/HVD_IMAGES/html/config.html', '', 'get').then(function (res) {
+        var configFile = cs.getEnv();
+        cs.getAjax('/primo-explore/custom/HVD_IMAGES/html/' + configFile, '', 'get').then(function (res) {
             vm.api = res.data;
             cs.setApi(vm.api);
         }, function (error) {
             console.log(error);
         });
-    };
-
-    vm.$onChanges = function () {
-        // get api url for cross site
-        vm.getUrl();
     };
 
     vm.$onInit = function () {
@@ -3070,6 +3080,8 @@ angular.module('viewCustom').controller('prmTopbarAfterController', ['$element',
         if (el.children[0].className !== 'topMenu') {
             el.prepend(div);
         }
+
+        vm.getUrl();
     };
 }]);
 
