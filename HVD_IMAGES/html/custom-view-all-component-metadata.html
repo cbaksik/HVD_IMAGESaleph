@@ -25,7 +25,7 @@
         </md-button>
     </div>
     <div  ng-repeat="data in vm.xmldata.component track by $index" ng-hide="vm.toggleData.flag">
-        <div layout="row" layout-xs="column" layout-sm="column" class="layout-row">
+        <div layout="row" layout-xs="column" layout-sm="column" class="layout-row" >
             <span>{{$index + 1}}.</span>
             <div flex-gt-sm="20" flex-sm="100" ng-click="vm.gotoFullPhoto($index,data)">
                 <custom-thumbnail itemdata="data" searchdata="vm.params"></custom-thumbnail>

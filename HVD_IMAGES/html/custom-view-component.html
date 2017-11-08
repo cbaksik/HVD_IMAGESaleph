@@ -46,10 +46,10 @@
        <div layout="row" layout-xs="column" class="layout-row">
            <div flex>
                <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="key in vm.getKeys(vm.componentData) track by $index" ng-if="vm.componentData[key]" ng-init="val=vm.getValue(vm.componentData[key],key)">
-                   <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex" ng-if="val && val !== 'null'">
+                   <div flex-gt-sm="20" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-20 flex" ng-if="val">
                        <label class="bold-text">{{key|mapXmlFilter}}</label>&nbsp;
                    </div>
-                   <div flex flex-gt-sm="80" flex-gt-xs="75" class=" flex-gt-xs-75 flex-gt-sm-80 flex">
+                   <div flex flex-gt-sm="80" flex-gt-xs="75" class=" flex-gt-xs-75 flex-gt-sm-80 flex" ng-if="val">
                        <span ng-bind-html="val"></span>
                    </div>
                </div>
