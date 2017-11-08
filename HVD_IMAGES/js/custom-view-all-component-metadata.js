@@ -138,7 +138,6 @@ angular.module('viewCustom')
             },1000);
 
             vm.getData();
-
         };
 
     }]);

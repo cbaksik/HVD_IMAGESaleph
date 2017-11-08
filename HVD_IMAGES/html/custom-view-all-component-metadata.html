@@ -31,12 +31,12 @@
                 <custom-thumbnail itemdata="data" searchdata="vm.params"></custom-thumbnail>
             </div>
             <div flex-gt-sm="80" flex-sm="100">
-                <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="key in vm.getKeys(data) track by $index" ng-if="data[key]">
-                <div flex-gt-sm="25" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-25 flex">
+                <div layout="row" layout-xs="column" class="layout-block-xs layout-xs-column layout-row space" ng-repeat="key in vm.getKeys(data) track by $index" ng-if="data[key]" ng-init="val=vm.getValue(data[key],key)">
+                <div flex-gt-sm="25" flex-gt-xs="25" flex class="flex-gt-xs-25 flex-gt-sm-25 flex" ng-if="val">
                     <label class="bold-text">{{key|mapXmlFilter}}</label>&nbsp;
                 </div>
-                <div flex flex-gt-sm="75" flex-gt-xs="75" class=" flex-gt-xs-75 flex-gt-sm-75 flex">
-                    <span ng-bind-html="vm.getValue(data[key],key)"></span>
+                <div flex flex-gt-sm="75" flex-gt-xs="75" class=" flex-gt-xs-75 flex-gt-sm-75 flex" ng-if="val">
+                    <span ng-bind-html="val"></span>
                 </div>
                 </div>
             </div>
