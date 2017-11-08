@@ -98,7 +98,7 @@ angular.module('viewCustom')
                 var index = keys.indexOf('componentID');
                 if(index !== -1) {
                     var componentID = nodeValue['componentID'];
-                    if(typeof(componentID)==='object') {
+                    if(typeof(componentID)==='object' && componentID!==null) {
                         componentID = componentID['_value'];
                     }
                     str=componentID;
@@ -116,17 +116,17 @@ angular.module('viewCustom')
                 for(var i=0; i < keys.length; i++) {
                     var nodeKey=keys[i];
                     var values=nodeValue[nodeKey];
-                    if(typeof(values)==='object') {
+                    if(typeof(values)==='object' && values!==null) {
                         var nodeKeys2=Object.keys(values);
                         for(var k=0; k < nodeKeys2.length; k++) {
                             var nodekey3=nodeKeys2[k];
                             if(nodekey3) {
                                 var values2 = values[nodekey3];
-                                if(typeof(values2)==='object') {
+                                if(typeof(values2)==='object' && values2!==null) {
                                     var nodekeys4 = Object.keys(values2);
                                     if(nodekeys4) {
                                         var values3=values2[nodekeys4];
-                                        if(typeof(values3)==='object') {
+                                        if(typeof(values3)==='object' && values3!==null) {
                                             var nodeKeys5=Object.keys(values3);
                                             for (var c = 0; c < nodeKeys5.length; c++) {
                                                 var nodekey5 = nodeKeys5[c];
@@ -163,19 +163,19 @@ angular.module('viewCustom')
                     var values=nodeValue[nodeKey];
                     if(values) {
                         var nodeKeys=Object.keys(values);
-                        if(typeof(nodeKeys)==='object') {
+                        if(typeof(nodeKeys)==='object' && nodeKeys!==null) {
                             for(var k=0; k < nodeKeys.length; k++) {
                                 var key2=nodeKeys[k];
                                 if(key2) {
                                     var values2=values[key2];
-                                    if(typeof(values2)==='object') {
+                                    if(typeof(values2)==='object' && values2!==null) {
                                         var nodeKeys2=Object.keys(values2);
-                                        if(typeof(nodeKeys2)==='object') {
+                                        if(typeof(nodeKeys2)==='object' && nodeKeys2!==null) {
                                             for(var c=0; c < nodeKeys2.length; c++) {
                                                 var key3=nodeKeys2[c];
                                                 if(key3) {
                                                     var values3=values2[key3];
-                                                    if(typeof(values3)==='object') {
+                                                    if(typeof(values3)==='object' && values3!==null) {
                                                         var nodeKeys3=Object.keys(values3);
                                                         for(var j=0; j < nodeKeys3.length; j++) {
                                                             var key4=nodeKeys3[j];
