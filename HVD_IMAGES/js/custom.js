@@ -582,7 +582,7 @@ angular.module('viewCustom').service('customMapXmlValues', [function () {
             var index = keys.indexOf('componentID');
             if (index !== -1) {
                 var componentID = nodeValue['componentID'];
-                if ((typeof componentID === 'undefined' ? 'undefined' : _typeof(componentID)) === 'object') {
+                if ((typeof componentID === 'undefined' ? 'undefined' : _typeof(componentID)) === 'object' && componentID !== null) {
                     componentID = componentID['_value'];
                 }
                 str = componentID;
@@ -599,17 +599,17 @@ angular.module('viewCustom').service('customMapXmlValues', [function () {
             for (var i = 0; i < keys.length; i++) {
                 var nodeKey = keys[i];
                 var values = nodeValue[nodeKey];
-                if ((typeof values === 'undefined' ? 'undefined' : _typeof(values)) === 'object') {
+                if ((typeof values === 'undefined' ? 'undefined' : _typeof(values)) === 'object' && values !== null) {
                     var nodeKeys2 = Object.keys(values);
                     for (var k = 0; k < nodeKeys2.length; k++) {
                         var nodekey3 = nodeKeys2[k];
                         if (nodekey3) {
                             var values2 = values[nodekey3];
-                            if ((typeof values2 === 'undefined' ? 'undefined' : _typeof(values2)) === 'object') {
+                            if ((typeof values2 === 'undefined' ? 'undefined' : _typeof(values2)) === 'object' && values2 !== null) {
                                 var nodekeys4 = Object.keys(values2);
                                 if (nodekeys4) {
                                     var values3 = values2[nodekeys4];
-                                    if ((typeof values3 === 'undefined' ? 'undefined' : _typeof(values3)) === 'object') {
+                                    if ((typeof values3 === 'undefined' ? 'undefined' : _typeof(values3)) === 'object' && values3 !== null) {
                                         var nodeKeys5 = Object.keys(values3);
                                         for (var c = 0; c < nodeKeys5.length; c++) {
                                             var nodekey5 = nodeKeys5[c];
@@ -645,19 +645,19 @@ angular.module('viewCustom').service('customMapXmlValues', [function () {
                 var values = nodeValue[nodeKey];
                 if (values) {
                     var nodeKeys = Object.keys(values);
-                    if ((typeof nodeKeys === 'undefined' ? 'undefined' : _typeof(nodeKeys)) === 'object') {
+                    if ((typeof nodeKeys === 'undefined' ? 'undefined' : _typeof(nodeKeys)) === 'object' && nodeKeys !== null) {
                         for (var k = 0; k < nodeKeys.length; k++) {
                             var key2 = nodeKeys[k];
                             if (key2) {
                                 var values2 = values[key2];
-                                if ((typeof values2 === 'undefined' ? 'undefined' : _typeof(values2)) === 'object') {
+                                if ((typeof values2 === 'undefined' ? 'undefined' : _typeof(values2)) === 'object' && values2 !== null) {
                                     var nodeKeys2 = Object.keys(values2);
-                                    if ((typeof nodeKeys2 === 'undefined' ? 'undefined' : _typeof(nodeKeys2)) === 'object') {
+                                    if ((typeof nodeKeys2 === 'undefined' ? 'undefined' : _typeof(nodeKeys2)) === 'object' && nodeKeys2 !== null) {
                                         for (var c = 0; c < nodeKeys2.length; c++) {
                                             var key3 = nodeKeys2[c];
                                             if (key3) {
                                                 var values3 = values2[key3];
-                                                if ((typeof values3 === 'undefined' ? 'undefined' : _typeof(values3)) === 'object') {
+                                                if ((typeof values3 === 'undefined' ? 'undefined' : _typeof(values3)) === 'object' && values3 !== null) {
                                                     var nodeKeys3 = Object.keys(values3);
                                                     for (var j = 0; j < nodeKeys3.length; j++) {
                                                         var key4 = nodeKeys3[j];
@@ -871,6 +871,7 @@ angular.module('viewCustom').service('customMapXmlValues', [function () {
 
 /**
  * Created by samsan on 9/5/17.
+ * This for printing page when a user click on print icon
  */
 
 angular.module('viewCustom').controller('customPrintPageCtrl', ['$element', '$stateParams', 'customService', '$timeout', '$window', function ($element, $stateParams, customService, $timeout, $window) {
@@ -894,7 +895,6 @@ angular.module('viewCustom').controller('customPrintPageCtrl', ['$element', '$st
         vm.context = $stateParams.context;
         vm.vid = $stateParams.vid;
         vm.getItem();
-
         $timeout(function () {
             // remove top menu and search bar
             var el = $element[0].parentNode.parentNode;
@@ -912,7 +912,13 @@ angular.module('viewCustom').controller('customPrintPageCtrl', ['$element', '$st
             if (actionList) {
                 actionList.remove();
             }
-        }, 500);
+
+            // remove right column of the page
+            var el2 = $element[0].children[1].children[0].children[1];
+            if (el2) {
+                el2.remove();
+            }
+        }, 1000);
     };
 
     vm.$postLink = function () {
@@ -3107,8 +3113,9 @@ angular.module('viewCustom').component('prmTopbarAfter', {
 /**
  * Created by samsan on 5/17/17.
  * This component is to insert images into online section
+ * It list different print view size
  */
-angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSearchService', '$mdDialog', '$timeout', '$window', '$location', function (prmSearchService, $mdDialog, $timeout, $window, $location) {
+angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSearchService', '$mdDialog', '$timeout', '$window', '$location', '$mdMedia', function (prmSearchService, $mdDialog, $timeout, $window, $location, $mdMedia) {
 
     var vm = this;
     var sv = prmSearchService;
@@ -3123,9 +3130,9 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
     vm.jp2 = false;
     vm.imageTitle = '';
     vm.auth = sv.getAuth();
+    vm.gridColumn = '3'; // default print view size
 
     vm.$onInit = function () {
-
         vm.isLoggedIn = sv.getLogInID();
         // get item data from service
         itemData = sv.getItem();
@@ -3152,6 +3159,13 @@ angular.module('viewCustom').controller('prmViewOnlineAfterController', ['prmSea
                 vm.singleImageFlag = false;
                 vm.zoomButtonFlag = true;
             }
+        }
+
+        // show print view base on the screen size
+        if ($mdMedia('xs')) {
+            vm.gridColumn = '1';
+        } else if ($mdMedia('sm')) {
+            vm.gridColumn = '2';
         }
     };
 

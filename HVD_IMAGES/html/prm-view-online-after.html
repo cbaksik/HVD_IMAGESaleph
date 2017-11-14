@@ -23,12 +23,15 @@
      <md-button class="md-raised md-primary btn-margin-bottom" (click)="$ctrl.viewAllComponentMetaData()" tabindex="0">
         VIEW ALL COMPONENT METADATA
      </md-button>
-     </div>    
-    <ul class="hvInline spaceTop" ng-if="$ctrl.item.mis1Data.length > 1" tabindex="-1">
-    <li ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" ng-click="$ctrl.gotoFullPhoto($event,item,$index)" tabindex="0">
-        <multiple-thumbnail itemdata="item" searchdata="$ctrl.searchData"></multiple-thumbnail>
-    </li>
-    </ul>
+     </div>
+
+    <!-- list thumbnail images -->
+    <md-grid-list md-row-height="210px" md-cols="{{$ctrl.gridColumn}}" ng-if="$ctrl.item.mis1Data.length > 1" tabindex="-1">
+        <md-grid-tile ng-if="$ctrl.item.mis1Data.length > 1" ng-repeat="item in $ctrl.item.mis1Data track by $index" ng-click="$ctrl.gotoFullPhoto($event,item,$index)" tabindex="0">
+            <multiple-thumbnail itemdata="item" searchdata="$ctrl.searchData"></multiple-thumbnail>
+        </md-grid-tile>
+    </md-grid-list>
+
 </div>
 
 

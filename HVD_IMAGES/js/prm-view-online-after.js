@@ -1,9 +1,10 @@
 /**
  * Created by samsan on 5/17/17.
  * This component is to insert images into online section
+ * It list different print view size
  */
 angular.module('viewCustom')
-    .controller('prmViewOnlineAfterController', ['prmSearchService','$mdDialog','$timeout','$window','$location', function (prmSearchService, $mdDialog, $timeout,$window,$location) {
+    .controller('prmViewOnlineAfterController', ['prmSearchService','$mdDialog','$timeout','$window','$location','$mdMedia', function (prmSearchService, $mdDialog, $timeout,$window,$location, $mdMedia) {
 
         var vm = this;
         var sv=prmSearchService;
@@ -18,9 +19,9 @@ angular.module('viewCustom')
         vm.jp2 = false;
         vm.imageTitle = '';
         vm.auth = sv.getAuth();
+        vm.gridColumn='3'; // default print view size
 
         vm.$onInit=function() {
-
             vm.isLoggedIn=sv.getLogInID();
            // get item data from service
            itemData=sv.getItem();
@@ -49,6 +50,12 @@ angular.module('viewCustom')
                }
            }
 
+           // show print view base on the screen size
+            if($mdMedia('xs')) {
+               vm.gridColumn='1';
+            } else if($mdMedia('sm')){
+               vm.gridColumn='2';
+            }
 
         };
 
@@ -116,9 +123,6 @@ angular.module('viewCustom')
         controller: 'prmViewOnlineAfterController',
         'templateUrl':'/primo-explore/custom/HVD_IMAGES/html/prm-view-online-after.html'
     });
-
-
-
 
 // truncate word to limit 60 characters
 angular.module('viewCustom').filter('truncatefilter',function () {

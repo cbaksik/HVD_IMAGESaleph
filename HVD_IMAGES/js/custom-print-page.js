@@ -1,5 +1,6 @@
 /**
  * Created by samsan on 9/5/17.
+ * This for printing page when a user click on print icon
  */
 
 angular.module('viewCustom')
@@ -29,7 +30,6 @@ angular.module('viewCustom')
             vm.context=$stateParams.context;
             vm.vid=$stateParams.vid;
             vm.getItem();
-
             $timeout(function () {
                 // remove top menu and search bar
                 var el=$element[0].parentNode.parentNode;
@@ -48,7 +48,13 @@ angular.module('viewCustom')
                     actionList.remove();
                 }
 
-            },500)
+                // remove right column of the page
+                var el2=$element[0].children[1].children[0].children[1];
+                if(el2) {
+                    el2.remove();
+                }
+
+            },1000)
         };
 
         vm.$postLink=function () {
