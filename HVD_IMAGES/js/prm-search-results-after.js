@@ -59,6 +59,7 @@ angular.module('viewCustom')
        params.sort=vm.parentCtrl.$stateParams.sortby;
        params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
        params.searchString=vm.parentCtrl.searchString;
+       params.scope=vm.parentCtrl.$stateParams.search_scope;
 
        // set up advance search
         var queries=vm.parentCtrl.searchService.$stateParams.query;
@@ -199,6 +200,7 @@ angular.module('viewCustom')
 
         // set data to pass into favorite list controller
         sv.setData(vm.parentCtrl);
+
     };
 
     vm.$doCheck=function() {
