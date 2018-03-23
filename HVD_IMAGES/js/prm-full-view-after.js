@@ -80,7 +80,10 @@ angular.module('viewCustom')
         vm.$onInit=function() {
 
             vm.params=$location.search();
-            vm.showFullViewPage();
+            setTimeout(()=>{
+                vm.showFullViewPage();
+            },1000);
+
         }
 
 

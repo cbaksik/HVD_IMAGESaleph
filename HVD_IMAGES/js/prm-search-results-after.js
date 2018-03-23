@@ -37,8 +37,7 @@ angular.module('viewCustom')
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
     vm.ajaxSearch=function () {
-       var facets = sv.getFacets();
-       var facetsParam='';
+
        this.searchInfo=sv.getPage();
        var limit=this.searchInfo.pageSize;
        var remainder = parseInt(this.searchInfo.totalItems) - (parseInt(this.searchInfo.currentPage - 1) * parseInt(this.searchInfo.pageSize));
@@ -48,41 +47,33 @@ angular.module('viewCustom')
        }
 
        var params={'addfields':[],'offset':0,'limit':10,'lang':'en_US','inst':'HVD','getMore':0,'pcAvailability':true,'q':'','rtaLinks':true,
-       'sort':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':'','searchString':'','mode':''};
-       params.addfields=vm.parentCtrl.searchService.cheetah.searchData.addfields;
-       params.qExclude=vm.parentCtrl.searchService.cheetah.searchData.qExclude;
-       params.getMore=vm.parentCtrl.searchService.cheetah.searchData.getMore;
-       params.pcAvailability=vm.parentCtrl.searchService.cheetah.searchData.pcAvailability;
-       params.limit=limit;
-       params.lang=vm.parentCtrl.$stateParams.lang;
-       params.vid=vm.parentCtrl.$stateParams.vid;
-       params.sort=vm.parentCtrl.$stateParams.sortby;
-       params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
-       params.searchString=vm.parentCtrl.searchString;
-       params.scope=vm.parentCtrl.$stateParams.search_scope;
+       'sort':'rank','tab':'default_tab','vid':'HVD_IMAGES','scope':'default_scope','qExclude':'','qInclude':'','searchString':'','mode':'','multiFacets':''};
 
-       // set up advance search
-        var queries=vm.parentCtrl.searchService.$stateParams.query;
-        if(vm.parentCtrl.searchService.$stateParams.mode && Array.isArray(queries)) {
-            params.mode='advanced';
-            var strq='';
-            for(var i=0; i < queries.length; i++) {
-                strq+=queries[i]+';'
-            }
-            strq=strq.replace(/\;$/,'');
-            params.q=strq;
-        } else {
-            params.q=vm.parentCtrl.$stateParams.query;
+       params.limit=limit;
+       params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
+
+        if(vm.parentCtrl.searchService.cheetah.searchData) {
+            params.q = vm.parentCtrl.searchService.cheetah.searchData.q;
+            params.searchString = vm.parentCtrl.searchService.cheetah.searchData.searchString;
+            params.mode = vm.parentCtrl.searchService.cheetah.searchData.mode;
+            params.lang = vm.parentCtrl.searchService.cheetah.searchData.lang;
+            params.sort = vm.parentCtrl.searchService.cheetah.searchData.sort;
+            params.tab = vm.parentCtrl.searchService.cheetah.searchData.tab;
+            params.scope = vm.parentCtrl.searchService.cheetah.searchData.scope;
+            params.inst = vm.parentCtrl.searchService.cheetah.searchData.inst;
+            params.vid = vm.parentCtrl.searchService.cheetah.searchData.vid;
+            params.qInclude = vm.parentCtrl.searchService.cheetah.searchData.qInclude;
+            params.qExclude=vm.parentCtrl.searchService.cheetah.searchData.qExclude;
+            params.getMore=vm.parentCtrl.searchService.cheetah.searchData.getMore;
+            params.pcAvailability=vm.parentCtrl.searchService.cheetah.searchData.pcAvailability;
+            params.addfields=vm.parentCtrl.searchService.cheetah.searchData.addfields;
         }
 
-       for(var i=0; i < facets.length; i++){
-           facetsParam+='facet_'+facets[i].name+','+facets[i].displayedType+','+facets[i].value+'|,|';
-       }
-       // remove the last string of [,]
-       if(facetsParam.length > 5) {
-           facetsParam=facetsParam.substring(0,facetsParam.length - 3);
-       }
-       params.qInclude=facetsParam;
+        // multiFacets
+        if(vm.parentCtrl.searchService.cheetah.searchData.multiFacets) {
+            params.multiFacets = vm.parentCtrl.searchService.cheetah.searchData.multiFacets.toString();
+        }
+
 
        // start ajax loader progress bar
        vm.parentCtrl.searchService.searchStateService.searchObject.newSearch=true;

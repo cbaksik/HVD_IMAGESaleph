@@ -2301,7 +2301,9 @@ angular.module('viewCustom').controller('prmFullViewAfterController', ['$sce', '
     vm.$onInit = function () {
 
         vm.params = $location.search();
-        vm.showFullViewPage();
+        setTimeout(function () {
+            vm.showFullViewPage();
+        }, 1000);
     };
 }]);
 
@@ -2548,29 +2550,6 @@ angular.module('viewCustom').component('prmSearchHistoryAfter2', {
     'templateUrl': '/primo-explore/custom/HVD_IMAGES/html/prm-search-history-after.html'
 });
 
-/**
- * Created by samsan on 6/30/17.
- */
-
-angular.module('viewCustom').controller('prmSearchResultAvailabilityAfterController', ['$element', '$timeout', function ($element, $timeout) {
-    var vm = this;
-    vm.$onChanges = function () {
-        // remove  access online and icon
-        $timeout(function () {
-            var el = $element[0].parentNode.childNodes[1].children;
-            if (el) {
-                el[0].remove();
-                el[0].remove();
-            }
-        }, 200);
-    };
-}]);
-
-angular.module('viewCustom').component('prmSearchResultAvailabilityLineAfter', {
-    bindings: { parentCtrl: '<' },
-    controller: 'prmSearchResultAvailabilityAfterController'
-});
-
 /* Author: Sam San
  This custom component is used for search result list which display all the images in thumbnail.
  */
@@ -2607,8 +2586,7 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
 
     // when a user click on next page or select new row from the drop down, it call this search function to get new data
     vm.ajaxSearch = function () {
-        var facets = sv.getFacets();
-        var facetsParam = '';
+
         this.searchInfo = sv.getPage();
         var limit = this.searchInfo.pageSize;
         var remainder = parseInt(this.searchInfo.totalItems) - parseInt(this.searchInfo.currentPage - 1) * parseInt(this.searchInfo.pageSize);
@@ -2618,41 +2596,32 @@ angular.module('viewCustom').controller('prmSearchResultListAfterController', ['
         }
 
         var params = { 'addfields': [], 'offset': 0, 'limit': 10, 'lang': 'en_US', 'inst': 'HVD', 'getMore': 0, 'pcAvailability': true, 'q': '', 'rtaLinks': true,
-            'sort': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '', 'searchString': '', 'mode': '' };
-        params.addfields = vm.parentCtrl.searchService.cheetah.searchData.addfields;
-        params.qExclude = vm.parentCtrl.searchService.cheetah.searchData.qExclude;
-        params.getMore = vm.parentCtrl.searchService.cheetah.searchData.getMore;
-        params.pcAvailability = vm.parentCtrl.searchService.cheetah.searchData.pcAvailability;
+            'sort': 'rank', 'tab': 'default_tab', 'vid': 'HVD_IMAGES', 'scope': 'default_scope', 'qExclude': '', 'qInclude': '', 'searchString': '', 'mode': '', 'multiFacets': '' };
+
         params.limit = limit;
-        params.lang = vm.parentCtrl.$stateParams.lang;
-        params.vid = vm.parentCtrl.$stateParams.vid;
-        params.sort = vm.parentCtrl.$stateParams.sortby;
         params.offset = (this.searchInfo.currentPage - 1) * this.searchInfo.pageSize;
-        params.searchString = vm.parentCtrl.searchString;
-        params.scope = vm.parentCtrl.$stateParams.search_scope;
 
-        // set up advance search
-        var queries = vm.parentCtrl.searchService.$stateParams.query;
-        if (vm.parentCtrl.searchService.$stateParams.mode && Array.isArray(queries)) {
-            params.mode = 'advanced';
-            var strq = '';
-            for (var i = 0; i < queries.length; i++) {
-                strq += queries[i] + ';';
-            }
-            strq = strq.replace(/\;$/, '');
-            params.q = strq;
-        } else {
-            params.q = vm.parentCtrl.$stateParams.query;
+        if (vm.parentCtrl.searchService.cheetah.searchData) {
+            params.q = vm.parentCtrl.searchService.cheetah.searchData.q;
+            params.searchString = vm.parentCtrl.searchService.cheetah.searchData.searchString;
+            params.mode = vm.parentCtrl.searchService.cheetah.searchData.mode;
+            params.lang = vm.parentCtrl.searchService.cheetah.searchData.lang;
+            params.sort = vm.parentCtrl.searchService.cheetah.searchData.sort;
+            params.tab = vm.parentCtrl.searchService.cheetah.searchData.tab;
+            params.scope = vm.parentCtrl.searchService.cheetah.searchData.scope;
+            params.inst = vm.parentCtrl.searchService.cheetah.searchData.inst;
+            params.vid = vm.parentCtrl.searchService.cheetah.searchData.vid;
+            params.qInclude = vm.parentCtrl.searchService.cheetah.searchData.qInclude;
+            params.qExclude = vm.parentCtrl.searchService.cheetah.searchData.qExclude;
+            params.getMore = vm.parentCtrl.searchService.cheetah.searchData.getMore;
+            params.pcAvailability = vm.parentCtrl.searchService.cheetah.searchData.pcAvailability;
+            params.addfields = vm.parentCtrl.searchService.cheetah.searchData.addfields;
         }
 
-        for (var i = 0; i < facets.length; i++) {
-            facetsParam += 'facet_' + facets[i].name + ',' + facets[i].displayedType + ',' + facets[i].value + '|,|';
+        // multiFacets
+        if (vm.parentCtrl.searchService.cheetah.searchData.multiFacets) {
+            params.multiFacets = vm.parentCtrl.searchService.cheetah.searchData.multiFacets.toString();
         }
-        // remove the last string of [,]
-        if (facetsParam.length > 5) {
-            facetsParam = facetsParam.substring(0, facetsParam.length - 3);
-        }
-        params.qInclude = facetsParam;
 
         // start ajax loader progress bar
         vm.parentCtrl.searchService.searchStateService.searchObject.newSearch = true;

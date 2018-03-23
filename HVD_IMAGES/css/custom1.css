@@ -650,7 +650,7 @@ prm-search-result-list-after{
 
 #homePageAlert {
     background: #a51c30 !important;
-    opacity: 0.9;
+    opacity: 0.9 !important;
 }
 
 #homePageAlert a {
@@ -1241,6 +1241,9 @@ img.md-card-image {
 }
 
 
+prm-search-result-availability-line {
+    display: none;
+}
 
 .hvfullsize {
   width: 100%;
