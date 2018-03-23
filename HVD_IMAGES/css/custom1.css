@@ -648,6 +648,14 @@ prm-search-result-list-after{
     text-align: center; }
 
 
+#homePageAlert {
+    background: #a51c30 !important;
+    opacity: 0.9;
+}
+
+#homePageAlert a {
+    color: #750000;
+}
 #componentMetadata {
     padding:15px;
     background: #ffffff;

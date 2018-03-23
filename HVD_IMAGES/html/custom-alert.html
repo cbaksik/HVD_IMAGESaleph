@@ -1,0 +1,15 @@
+<md-card class="default-card" id="homePageAlert" ng-if="vm.alertMsg.status=='on'">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">{{vm.alertMsg.title}}</span>
+        </md-card-title-text>
+    </md-card-title>
+    <md-card-content>
+        <p>{{vm.alertMsg.description}}
+            <a ng-if="vm.alertMsg.link" href="{{vm.alertMsg.link}}" target="_blank" title="Click here for more information">{{vm.alertMsg.linkText}}</a>
+        </p>
+        <p ng-if="vm.alertMsg.date">
+            Date : {{vm.alertMsg.date}}
+        </p>
+    </md-card-content>
+</md-card>
