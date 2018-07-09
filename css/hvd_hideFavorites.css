@@ -1,0 +1,9 @@
+/* temp code while we're in between primo servers; don't want anyone saving to favorites */
+
+prm-search-bookmark-filter #favorites-button {
+    display:none;
+}
+
+prm-save-to-favorites-button {
+    display:none;
+}
