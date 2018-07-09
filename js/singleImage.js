@@ -36,7 +36,8 @@ angular.module('viewCustom')
                 vm.localScope={'imgClass':'','loading':true,'hideLockIcon':false};
                 if(vm.src && vm.showImage) {
                     if(vm.jp2===true) {
-                        var url = sv.getHttps(vm.src) + '?buttons=Y';
+                        //var url = sv.getHttps(vm.src) + '?buttons=Y';
+                        var url = sv.getHttps(vm.src);
                         vm.imageUrl = $sce.trustAsResourceUrl(url);
                     } else {
                         vm.imageUrl=vm.src;
