@@ -2,7 +2,7 @@
 <div ng-if="vm.showImage" layout="column" layout-align="center center">
     <md-card class="hv-md-card">
         <div ng-if="vm.jp2">
-            <iframe src="{{vm.imageUrl}}" class="iframeClass"></iframe>
+            <iframe src="{{vm.imageUrl}}" class="iframeClass" allowfullscreen="true"></iframe>
         </div>
         <div ng-if="!vm.jp2">
             <img ng-if="vm.imageUrl" src="{{vm.imageUrl}}" class="md-card-image {{vm.localScope.imgClass}}" alt="{{vm.imgtitle}}" aria-label="{{vm.imgtitle}}" title="{{vm.imgtitle}}"/>
